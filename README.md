@@ -1,36 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GrapeRank
 
-## Getting Started
+Purpose of this repo is to repeat the functionality of `interpretation-brainstorm.vercel.app` and `calculation-brainstorm.vercel.app` but with improved performance by moving from vercel to AWS ec2, which scales, and using neo4j as the core database. An API will be exposed for communication with the grapevine front end, similar to what is already functional at `grapevine-brainstorm.vercel.app`. 
 
-First, run the development server:
+An API will also be exposed for communication with nostr clients such as Coracle which will return grapevine data. 
+- Goal 1: We may submit a nostr client PR so that grapevine customers can activate a funcionality in settings that will show the DoS and GrapeRank WoT Score on individual profile pages, if such data is available over an API to graperank.tech.
+- Goal 2: Expose an API that provides a list of Recommended Pubkeys that can be used in place of follows for the main content feed. Especially useful for new nostr users with only a handful of follows.
+- Goal 3 - less well defined: Expose one or more APIs that output a list of GrapeRank WoT Scores which can be used to stratify content, similar to PageRank in keyword search.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This will be a grapevine interpretation and calculation engine merged together.  Will use an AWS ec2 instance that will connect to nostr relays, keep channels open, and maintain a neo4j database of follows and mutes. Will later add reports and other event kinds. 
+
+Plan to set up these things that I already know how to do:
+- aws ecs instance
+- nextjs
+- neo4j
+- certbot, use `graperank.tech`
+- cicd using github actions
+- nostr relay (but not yet done this on ec2)
+
+Things I have done but not on ec2:
+- nostr relay
+- sql on ec2
+- S3 bucket on ec2
+- auto scaling 
+
+## tutorials
+
+- nginx, certbot, pm2:
+    - https://dev.to/j3rry320/deploy-your-nextjs-app-like-a-pro-a-step-by-step-guide-using-nginx-pm2-certbot-and-git-on-your-linux-server-3286
+- cicd using github actions
+    - https://www.abcsoftwarecompany.com/showcases/deploy-web-application-with-git-hub-actions-ci-cd-and-amazon-web-service-ec-2
+    - but modifications to the workflow as per the cicd-test-next repo
+- neo4j:
+    - https://medium.com/@khasnobis.sanjit890/create-your-own-neo4j-graph-db-instance-at-aws-ec2-fac0f77a57dc
+    - https://neo4j.com/docs/operations-manual/current/installation/linux/debian/#debian-installation
+
+## log of steps taken
+
+On local machine:
+
+```
+npx create-next-app@latest graperank
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Synced to GitHub account.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Created AWS EC2 instance: GrapeRankTech. t2.medium, 30 GB.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Added two Inbound rules: 7474, 7867, which will be used with neo4j. 
 
-## Learn More
+locally: `chmod 400 "pgftGrapeRanktech.pem"`
+use `ssh -i "pgftGrapeRanktech.pem" ubuntu@ec2-44-201-138-209.compute-1.amazonaws.com` to connect
 
-To learn more about Next.js, take a look at the following resources:
+in ec2:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+following https://dev.to/j3rry320/deploy-your-nextjs-app-like-a-pro-a-step-by-step-guide-using-nginx-pm2-certbot-and-git-on-your-linux-server-3286:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+sudo apt-get update
+sudo apt-get install nginx
+sudo apt install npm
+sudo npm install -g pm2 
+```
 
-## Deploy on Vercel
+```
+git clone https://github.com/wds4/graperank.git
+cd graperank
+npm install
+npm run build
+pm2 start npm --name "graperank" -- start
+sudo nano /etc/nginx/sites-available/graperank.tech
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Created this file:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+server {
+    listen 80;
+    server_name graperank.tech www.graperank.tech;
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+```
+sudo ln -s /etc/nginx/sites-available/graperank.tech /etc/nginx/sites-enabled/
+```
+
+Then went to godaddy and redirected graperank.tech DNS to 44.201.138.209
+
+```
+sudo apt-get update
+sudo apt-get install certbot python3-certbot-nginx
+cd .. 
+sudo certbot --nginx -d graperank.tech -d www.graperank.tech (to my old y addy)
+sudo nano /etc/nginx/sites-available/graperank.tech
+```
+
+and replaced file with:
+
+```
+server {
+    listen 80;
+    server_name graperank.tech www.graperank.tech;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name graperank.tech www.graperank.tech;
+
+    ssl_certificate /etc/letsencrypt/live/graperank.tech/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/graperank.tech/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+```
+sudo systemctl restart nginx 
+```
+
+Currently http://44.201.138.209 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https:/graperank.tech shows nextjs landing page
+
+add secrets to github (settings, secrets and variables, Actions, Repository Secrets)
+AWS_EC2_USER: ubuntu 
+AWS_EC2_HOST: graperank.tech
+AWS_EC2_KEY: my pem key 
+
+Create .github/workflows/deploy.yml (copied from my other repo)
