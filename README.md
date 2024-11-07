@@ -89,12 +89,12 @@ server {
 sudo ln -s /etc/nginx/sites-available/graperank.tech /etc/nginx/sites-enabled/
 ```
 
-Then went to godaddy and redirected graperank.tech DNS to 44.201.138.209
+Then went to godaddy and redirected graperank.tech DNS to 52.207.221.14
 
 ```
+cd .. 
 sudo apt-get update
 sudo apt-get install certbot python3-certbot-nginx
-cd .. 
 sudo certbot --nginx -d graperank.tech -d www.graperank.tech (to my old y addy)
 sudo nano /etc/nginx/sites-available/graperank.tech
 ```
@@ -127,7 +127,7 @@ server {
 sudo systemctl restart nginx 
 ```
 
-Currently http://44.201.138.209 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https:/graperank.tech shows nextjs landing page
+Currently http://52.207.221.14 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https:/graperank.tech shows nextjs landing page
 
 add secrets to github (settings, secrets and variables, Actions, Repository Secrets)
 AWS_EC2_USER: ubuntu 
@@ -143,4 +143,14 @@ Next:
 - add basic neo4j functioning
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
 - add basic nostr functioning
+
+following https://neo4j.com/docs/operations-manual/current/installation/linux/debian/#debian-installation:
+
+```
+wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/neotechnology.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
+sudo apt-get update
+
+sudo add-apt-repository -y ppa:openjdk-r/ppa
+```
 
