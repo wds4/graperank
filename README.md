@@ -135,3 +135,12 @@ AWS_EC2_HOST: graperank.tech
 AWS_EC2_KEY: my pem key 
 
 Create .github/workflows/deploy.yml (copied from my other repo)
+
+Update, push changes; and I can see update at graperank.tech!
+
+Next:
+- more changes to nextjs page structure
+- add basic neo4j functioning
+- maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
+- add basic nostr functioning
+
