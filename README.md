@@ -158,9 +158,16 @@ Create .github/workflows/deploy.yml (copied from my other repo)
 
 Update, push changes; and I can see update at graperank.tech!
 
-Next:
-- more changes to nextjs page structure
-- add basic neo4j functioning
+locally: 
+```
+npm install neo4j-driver
+```
+
+add lib/neo4j and /api/tests/neo4j/index.ts
+
+neo4j api endpoint works!!
+
+## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
 - add basic nostr functioning
 
