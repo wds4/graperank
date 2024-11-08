@@ -165,7 +165,7 @@ npm install neo4j-driver
 
 add lib/neo4j and /api/tests/neo4j/index.ts
 
-neo4j api endpoint works!!
+neo4j api endpoint works!! (locally)
 
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
