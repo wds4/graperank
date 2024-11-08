@@ -9,7 +9,8 @@ https://interpretation-brainstorm.vercel.app/api/tests/neo4j
 */
 
 type ResponseData = {
-  message: string
+  message: string,
+  result: object
 }
 
 export default async function handler(
@@ -20,5 +21,10 @@ export default async function handler(
   const result = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
   console.log(`result: ${JSON.stringify(result)}`)
 
-  res.status(200).json({ message: 'Hello from Next.js!' })
+  const foo = {
+    message: 'Hello from Next.js!',
+    result
+  }
+
+  res.status(200).json(foo)
 }
