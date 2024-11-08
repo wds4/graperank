@@ -62,6 +62,26 @@ sudo apt install npm
 sudo npm install -g pm2 
 ```
 
+install neo4j following https://neo4j.com/docs/operations-manual/current/installation/linux/debian/#debian-installation:
+
+```
+sudo apt-get update
+sudo add-apt-repository -y ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt install java-common
+wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/neotechnology.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
+sudo apt-get update
+apt list -a neo4j
+java -version
+sudo nano /etc/neo4j/neo4j.conf
+(make 3 changes to file)
+sudo service neo4j restart
+neo4j status
+```
+
+check http://0.0.0.0:7474 and see dashboard; load sample data
+
 ```
 git clone https://github.com/wds4/graperank.git
 cd graperank
@@ -89,7 +109,7 @@ server {
 sudo ln -s /etc/nginx/sites-available/graperank.tech /etc/nginx/sites-enabled/
 ```
 
-Then went to godaddy and redirected graperank.tech DNS to 52.207.221.14
+Then went to godaddy and redirected graperank.tech DNS to 52.91.115.172
 
 ```
 cd .. 
@@ -127,7 +147,7 @@ server {
 sudo systemctl restart nginx 
 ```
 
-Currently http://52.207.221.14 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https:/graperank.tech shows nextjs landing page
+Currently http://52.91.115.172 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https:/graperank.tech shows nextjs landing page
 
 add secrets to github (settings, secrets and variables, Actions, Repository Secrets)
 AWS_EC2_USER: ubuntu 
@@ -144,13 +164,4 @@ Next:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
 - add basic nostr functioning
 
-following https://neo4j.com/docs/operations-manual/current/installation/linux/debian/#debian-installation:
-
-```
-wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/neotechnology.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
-sudo apt-get update
-
-sudo add-apt-repository -y ppa:openjdk-r/ppa
-```
 
