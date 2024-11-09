@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@noble/hashes": "^1.5.0",
+    "@nostr-dev-kit/ndk": "^2.10.5",
     "neo4j-driver": "^5.26.0",
     "next": "15.0.2",
+    "nostr-tools": "^2.10.1",
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028"
   },

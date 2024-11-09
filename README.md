@@ -159,6 +159,7 @@ Create .github/workflows/deploy.yml (copied from my other repo)
 Update, push changes; and I can see update at graperank.tech!
 
 locally: 
+
 ```
 npm install neo4j-driver
 ```
@@ -166,6 +167,14 @@ npm install neo4j-driver
 add lib/neo4j and /api/tests/neo4j/index.ts
 
 neo4j api endpoint works!! (locally)
+
+locally:
+
+```
+npm install nostr-tools
+npm install @nostr-dev-kit/ndk 
+npm install @noble/hashes
+```
 
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)

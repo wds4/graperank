@@ -22,7 +22,7 @@ export default async function handler(
   console.log(`result: ${JSON.stringify(result)}`)
 
   const foo = {
-    message: 'Hello from Next.js!',
+    message: 'api/tests/neo4j Hello from Next.js!',
     result
   }
 
