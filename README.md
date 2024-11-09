@@ -179,5 +179,7 @@ npm install @noble/hashes
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
 - add basic nostr functioning
+- add s3 bucket functionality
+- add mysql functionality 
 
 

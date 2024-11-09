@@ -24,10 +24,10 @@ export default async function handler(
     await ndk.connect()
     const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey], limit: 10 }
     const sub1 = ndk.subscribe(filter)
-    const receivedEvents:NDKEvent[] = []
+    const receivedEvents:string[] = []
     sub1.on('event', async (event:NDKEvent) => {
       console.log(`event.id: ${event.id}`)
-      // receivedEvents.push(event)
+      receivedEvents.push(event.id)
     })
     sub1.on('eose', async () => {
       const response = {
