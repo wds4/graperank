@@ -176,10 +176,37 @@ npm install @nostr-dev-kit/ndk
 npm install @noble/hashes
 ```
 
+pushed changes to grapevine.tech; nostr endpoint works!
+
+Adding s3
+
+locally:
+
+```
+npm install @aws-sdk/client-s3
+```
+
+s3 not yet demonstrated to be working; switch now to mysql 
+
+adding mysql, following https://medium.com/@lovelyalice.kim/ep-1-backend-development-aws-ec2-mysql-node-js-fb847050ed87
+
+edited inbound rules, added mysql/aurora 
+
+locally:
+
+```
+npm install mysql-server
+```
+
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
-- add basic nostr functioning
 - add s3 bucket functionality
 - add mysql functionality 
+
+Probably will follow:
+https://medium.com/@lovelyalice.kim/ep-1-backend-development-aws-ec2-mysql-node-js-fb847050ed87
+and will use:
+
+apt-get install mysql-server
 
 
