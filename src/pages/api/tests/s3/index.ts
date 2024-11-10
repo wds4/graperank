@@ -1,22 +1,47 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import { S3Client, ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3'
-/*
-const Bucket = process.env.AMPLIFY_BUCKET;
+import { S3Client, ListObjectsCommand, ListBucketsCommand } from '@aws-sdk/client-s3'
+
 const client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-  },
+  region: 'us-east-1',
 })
-*/
+const params1 = {
+  /** input parameters */
+};
+const command1 = new ListBucketsCommand(params1);
+const command2 = new ListObjectsCommand({
+  Bucket: 'grapevine-nostr-cache-bucket'
+});
+
 type ResponseData = {
-  message: string
+  success: boolean,
+  message: string,
+  data?: object,
 }
  
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  res.status(200).json({ message: 'api/tests/s3 Hello from Next.js!' })
+  try {
+    const data1 = await client.send(command1);
+    console.log(`data1: ${JSON.stringify(data1)}`)
+    const data2 = await client.send(command2);
+    console.log(`data2: ${JSON.stringify(data2)}`)
+    const response:ResponseData = {
+      success: true,
+      message: `api/tests/s3 data!`,
+      data: { data1, data2 },
+    }
+    res.status(200).json(response)
+  } catch (error) {
+    // error handling.
+    console.log(`error: ${JSON.stringify(error)}`)
+    const response:ResponseData = {
+      success: true,
+      message: `api/tests/s3 error: ${error}!`,
+    }
+    res.status(500).json(response)
+  } finally {
+    // finally.
+  }
 }

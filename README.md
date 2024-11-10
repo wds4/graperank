@@ -178,13 +178,21 @@ npm install @noble/hashes
 
 pushed changes to grapevine.tech; nostr endpoint works!
 
-Adding s3
+## Adding s3
+
+follow: https://www.npmjs.com/package/@aws-sdk/client-s3
 
 locally:
 
 ```
 npm install @aws-sdk/client-s3
 ```
+added /api/tests/s3 endpoint
+
+basic command works!!
+
+
+## mysql
 
 s3 not yet demonstrated to be working; switch now to mysql 
 
@@ -198,15 +206,29 @@ locally:
 npm install mysql-server
 ```
 
+but `mysql -u root -p` fails
+
+try this:
+https://www.bacancytechnology.com/blog/connect-mysql-to-ec2-instance
+
+on ec2:
+
+```
+sudo apt-get install mysql-server -y
+mysql --version 
+```
+(shows Ver 8.0.39)
+
+```
+sudo mysql_secure_installation
+```
+
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
 - add s3 bucket functionality
 - add mysql functionality 
 
-Probably will follow:
-https://medium.com/@lovelyalice.kim/ep-1-backend-development-aws-ec2-mysql-node-js-fb847050ed87
-and will use:
 
-apt-get install mysql-server
+
 
 
