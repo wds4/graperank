@@ -8,9 +8,7 @@ const params1 = {
   /** input parameters */
 };
 const command1 = new ListBucketsCommand(params1);
-const command2 = new ListObjectsCommand({
-  Bucket: 'grapevine-nostr-cache-bucket'
-});
+// const command2 = new ListObjectsCommand({ Bucket: 'grapevine-nostr-cache-bucket' });
 
 type ResponseData = {
   success: boolean,
@@ -25,12 +23,13 @@ export default async function handler(
   try {
     const data1 = await client.send(command1);
     console.log(`data1: ${JSON.stringify(data1)}`)
-    const data2 = await client.send(command2);
-    console.log(`data2: ${JSON.stringify(data2)}`)
+    
+    // const data2 = await client.send(command2);
+    // console.log(`data2: ${JSON.stringify(data2)}`)
     const response:ResponseData = {
       success: true,
       message: `api/tests/s3 data!`,
-      data: { data1, data2 },
+      data: { data1, },
     }
     res.status(200).json(response)
   } catch (error) {

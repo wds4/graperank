@@ -189,7 +189,9 @@ npm install @aws-sdk/client-s3
 ```
 added /api/tests/s3 endpoint
 
-basic command works!!
+basic command works!! (locally)
+
+but doesn't work on ec2 ...
 
 
 ## mysql
