@@ -25,6 +25,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   try {
+    console.log(`key: ${process.env.AWS_ACCESS_KEY_ID}`)
     const data1 = await client.send(command1);
     console.log(`data1: ${JSON.stringify(data1)}`)
     
