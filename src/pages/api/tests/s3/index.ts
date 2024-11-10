@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListBucketsCommand, ListObjectsCommand } from '@aws-sdk/client-s3'
 
 const client = new S3Client({
-  region: 'us-east-1',
+  region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
