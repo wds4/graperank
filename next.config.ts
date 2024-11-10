@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* 
+  config options here 
+  This file is protected from update by github using gitignore
+  so that env vars can be set locally
+  */
   env: {
     AWS_REGION: 'us-east-1'
   }
