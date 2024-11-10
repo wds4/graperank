@@ -200,6 +200,15 @@ export AWS_SECRET_ACCESS_KEY=...
 export AWS_REGION=us-east-1
 ```
 
+that did not work: ${process.env.AWS_REGION} returns us-east-1 locally but not in ec2
+
+So: add secrets to github (settings, secrets and variables, Actions, Repository Secrets)
+AWS_REGION: us-east-1 
+AWS_ACCESS_KEY_ID: ... 
+AWS_SECRET_ACCESS_KEY: ...
+
+and edit deploy.yml to include those in env 
+
 ## mysql
 
 s3 not yet demonstrated to be working; switch now to mysql 
