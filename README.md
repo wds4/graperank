@@ -209,6 +209,8 @@ AWS_SECRET_ACCESS_KEY: ...
 
 and edit deploy.yml to include those in env 
 
+For now, those 3 env vars are stored in next.config.ts which is excluded using gitignore and updated in ec2 (kept out of repo).  Not sure if that is the proper way to do it. For some reason, process.env.AWS_... works on local machine but not on ec2, even though all 3 of those vars have been exported locally and in ec2.
+
 ## mysql
 
 s3 not yet demonstrated to be working; switch now to mysql 
