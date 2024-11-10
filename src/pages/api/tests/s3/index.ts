@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, ListObjectsCommand, ListBucketsCommand } from '@aws-sdk/client-s3'
+import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3'
 
 const client = new S3Client({
   region: 'us-east-1',
