@@ -193,6 +193,11 @@ basic command works!! (locally)
 
 but doesn't work on ec2 ...
 
+locally and in ec2:
+```
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+```
 
 ## mysql
 
