@@ -252,6 +252,17 @@ locally:
 npm install --save mysql2
 ```
 
+can get sql endpoint to connect and function on ec2 (using admin) but not locally 
+
+following https://repost.aws/knowledge-center/duplicate-master-user-mysql to create new user
+
+in ec2
+
+```
+mysql > CREATE USER 'pgft_admin'@'%' IDENTIFIED BY '...';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, PROCESS, REFERENCES, INDEX, ALTER, SHOW DATABASES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER ON *.* TO 'pgft_admin'@'%' WITH GRANT OPTION;
+```
+
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
 - add s3 bucket functionality

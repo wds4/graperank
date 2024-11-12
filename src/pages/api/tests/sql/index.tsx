@@ -15,8 +15,8 @@ export default async function handler(
       const connection = await mysql.createConnection({
         host: 'database-1.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
         port: 3306,
-        user: 'admin',
-        password: 'xyDbud-zevfof-8tizru',
+        user: process.env.AWS_MYSQL_USER,
+        password: process.env.AWS_MYSQL_PWD,
         database: 'test',
       });
       const [results, fields] = await connection.query(
