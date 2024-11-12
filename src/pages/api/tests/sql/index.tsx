@@ -17,6 +17,7 @@ export default async function handler(
         port: 3306,
         user: 'admin',
         password: 'xyDbud-zevfof-8tizru',
+        database: 'test',
       });
       const [results, fields] = await connection.query(
         'SELECT * FROM `first_table` WHERE `id` = 1'
