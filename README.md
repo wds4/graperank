@@ -213,6 +213,8 @@ For now, those 3 env vars are stored in next.config.ts which is excluded using g
 
 ## mysql
 
+
+
 s3 not yet demonstrated to be working; switch now to mysql 
 
 adding mysql, following https://medium.com/@lovelyalice.kim/ep-1-backend-development-aws-ec2-mysql-node-js-fb847050ed87
@@ -240,6 +242,14 @@ mysql --version
 
 ```
 sudo mysql_secure_installation
+```
+
+switching now to mysql2
+
+locally: 
+
+```
+npm install --save mysql2
 ```
 
 ## TODO:
