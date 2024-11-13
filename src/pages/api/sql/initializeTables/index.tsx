@@ -23,7 +23,7 @@ export default async function handler(
         password: process.env.AWS_MYSQL_PWD,
         database: process.env.AWS_MYSQL_DB,
       });
-      /*
+
       let command1 = `CREATE TABLE IF NOT EXISTS events ( `
       command1 += ` id INT PRIMARY KEY, `
       command1 += ` pubkey VARCHAR(255), `
@@ -31,17 +31,16 @@ export default async function handler(
       command1 += ` created_at INT, `
       command1 += ` kind INT `
       command1 += ` ); `
-      */
 
-      let command2 = `CREATE TABLE IF NOT EXISTS users ( `
+      let command2 = ` CREATE TABLE IF NOT EXISTS users ( `
       command2 += ` id INT PRIMARY KEY, `
       command2 += ` pubkey VARCHAR(255) UNIQUE, `
       command2 += ` npub VARCHAR(255) UNIQUE, `
       command2 += ` created_at int, `
       command2 += ` kind int `
-      command2 += ` );`
+      command2 += ` ); `
 
-      const results = await connection.query(command2);
+      const results = await connection.query(command1 + command2);
       console.log(results); // results contains rows returned by server
       const response:ResponseData = {
         success: true,
