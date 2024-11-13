@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { validateEvent } from 'nostr-tools'
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -44,10 +45,15 @@ export default async function handler(
           oEvent = JSON.parse(sEvent) 
         }
 
+        const isEventValid = validateEvent(oEvent)
+
         const response:ResponseData = {
           success: true,
           message: `api/s3/fetchEvent data:`,
-          data: { data: oEvent }
+          data: { 
+            isEventValid,
+            event: oEvent
+          }
         }
         res.status(200).json(response)
       } catch (error) {
