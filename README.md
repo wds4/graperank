@@ -264,8 +264,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, PROCESS, REFERENCES,
 grapevine-nostr-cache-db - able to mysql in via ecs CLI
 mysql -h grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com -P 3306 -u pgft -p
 
+in ec2, to access mysql:
+mysql -h grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com -P 3306 -u pgft -p
+
 ## TODO:
-- maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)
+- maybe get rid of nginx landing page (44.215.170.113) (delete /etc/nginx/sites-available/default?)
 - add s3 bucket functionality
 - add mysql functionality 
 
