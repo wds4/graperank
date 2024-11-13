@@ -45,11 +45,19 @@ export default async function handler(
       const results2 = await connection.query(command2);
       console.log(results2);
 
+      const command3 = ` CREATE TABLE IF NOT EXISTS customers ( 
+id INT PRIMARY KEY, 
+pubkey VARCHAR(255) UNIQUE, 
+whenSignedUp int 
+); `
+      const results3 = await connection.query(command3);
+      console.log(results3);
+
       const response:ResponseData = {
         success: true,
         message: `api/sql/initializeTables data:`,
         data: {
-          results1, results2,
+          results1, results2, results3
         }
       }
       res.status(500).json(response)
