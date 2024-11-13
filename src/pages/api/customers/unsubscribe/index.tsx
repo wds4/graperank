@@ -33,6 +33,7 @@ export default async function handler(
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       // remove customer from customer table in sql database
+      const command = ` DELETE FROM customers WHERE pubkey='${pubkey1}' ;`
       try {
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
@@ -42,9 +43,6 @@ export default async function handler(
           database: process.env.AWS_MYSQL_DB,
         });
 
-        const command = ` DELETE FROM customers 
-WHERE pubkey=${pubkey1}
-;`
         const results = await connection.query(command);
         console.log(results);
 
@@ -52,6 +50,7 @@ WHERE pubkey=${pubkey1}
           success: true,
           message: `api/customers/unsubscribe data:`,
           data: {
+            command,
             results
           }
         }
@@ -59,7 +58,10 @@ WHERE pubkey=${pubkey1}
       } catch (error) {
         const response = {
           success: false,
-          message: `api/customers/unsubscribe error: ${error}`
+          message: `api/customers/unsubscribe error: ${error}`,
+          data: {
+            command
+          }
         }
         res.status(500).json(response)
       }
