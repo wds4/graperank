@@ -60,7 +60,7 @@ whenSignedUp int
           results1, results2, results3
         }
       }
-      res.status(500).json(response)
+      res.status(200).json(response)
     } catch (error) {
       console.log(`error: ${JSON.stringify(error)}`)
       const response:ResponseData = {

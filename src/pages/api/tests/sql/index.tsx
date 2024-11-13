@@ -24,7 +24,7 @@ export default async function handler(
         database: process.env.AWS_MYSQL_DB,
       });
       const [results, fields] = await connection.query(
-        'SELECT * FROM `first_table` WHERE `id` = 1'
+        'SELECT * FROM `users` WHERE `id` = 1'
       );
       console.log(results); // results contains rows returned by server
       console.log(fields); // fields contains extra meta data about results, if available

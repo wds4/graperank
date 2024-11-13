@@ -28,15 +28,13 @@ const explicitRelayUrls = [
 ]
 const ndk = new NDK({explicitRelayUrls})
 
-const pubkey = 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'
-
 type ResponseData = {
   success: boolean
   message: string
   data?: object
 }
 
-const fooFxn = async (event:NostrEvent) => {
+const serializeEvent = async (event:NostrEvent) => {
   const oOutput = makeEventSerializable(event)
   const sOutput = JSON.stringify(oOutput)
   return sOutput
@@ -63,7 +61,7 @@ export default async function handler(
       // const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
         await ndk.connect()
-        const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey], limit: 10 }
+        const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
         const sub1 = ndk.subscribe(filter)
         const receivedEvents:string[] = []
         sub1.on('event', async (event:NDKEvent) => {
@@ -74,7 +72,7 @@ export default async function handler(
             const params = {
               Bucket: 'grapevine-nostr-cache-bucket',
               Key: event.id,
-              Body: await fooFxn(event)
+              Body: await serializeEvent(event)
             }
             const command = new PutObjectCommand(params);
             const data = await client.send(command);
