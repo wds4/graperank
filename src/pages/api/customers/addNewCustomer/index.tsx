@@ -35,6 +35,7 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       // add new customer to sql database
       const currentTimestamp = Math.floor(Date.now() / 1000)
+      const command = ` INSERT INTO customers (id, pubkey, whenSignedUp) VALUES ( 2, ${pubkey1}, ${currentTimestamp} ); `
       try {
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
@@ -44,10 +45,7 @@ export default async function handler(
           database: process.env.AWS_MYSQL_DB,
         });
 
-        const command = ` INSERT INTO customers 
-(id, pubkey, whenSignedUp) 
-VALUES ( 2, ${pubkey1}, ${currentTimestamp} )
-;`
+
         const results = await connection.query(command);
         console.log(results);
 
@@ -55,6 +53,7 @@ VALUES ( 2, ${pubkey1}, ${currentTimestamp} )
           success: true,
           message: `api/customers/addNewCustomer data:`,
           data: {
+            command,
             results
           }
         }
@@ -62,7 +61,10 @@ VALUES ( 2, ${pubkey1}, ${currentTimestamp} )
       } catch (error) {
         const response = {
           success: false,
-          message: `api/customers/addNewCustomer error: ${error}`
+          message: `api/customers/addNewCustomer error: ${error}`,
+          data: {
+            command
+          }
         }
         res.status(500).json(response)
       }
