@@ -24,14 +24,18 @@ export default async function handler(
         database: process.env.AWS_MYSQL_DB,
       });
       const command1 = `DROP TABLE IF EXISTS events; `
-      // const command2 = `DROP TABLE IF EXISTS users; `
-      const results = await connection.query(command1);
-      console.log(results); // results contains rows returned by server
+      const results1 = await connection.query(command1);
+      console.log(results1);
+
+      const command2 = `DROP TABLE IF EXISTS users; `
+      const results2 = await connection.query(command2);
+      console.log(results2);
+
       const response:ResponseData = {
         success: true,
         message: `api/sql/deleteTables data:`,
         data: {
-          results,
+          results1, results2,
         }
       }
       res.status(500).json(response)
