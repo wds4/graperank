@@ -23,17 +23,15 @@ export default async function handler(
         password: process.env.AWS_MYSQL_PWD,
         database: process.env.AWS_MYSQL_DB,
       });
-      const [results, fields] = await connection.query(
+      const results = await connection.query(
         'SELECT * FROM `first_table` WHERE `id` = 1'
       );
       console.log(results); // results contains rows returned by server
-      console.log(fields); // fields contains extra meta data about results, if available
       const response:ResponseData = {
         success: true,
         message: `api/sql/initializeTables data:`,
         data: {
           results,
-          fields
         }
       }
       res.status(500).json(response)
