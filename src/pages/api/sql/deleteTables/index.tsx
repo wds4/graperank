@@ -24,8 +24,8 @@ export default async function handler(
         database: process.env.AWS_MYSQL_DB,
       });
       const command1 = `DROP TABLE IF EXISTS events; `
-      const command2 = `DROP TABLE IF EXISTS users; `
-      const results = await connection.query(command1 + command2);
+      // const command2 = `DROP TABLE IF EXISTS users; `
+      const results = await connection.query(command1);
       console.log(results); // results contains rows returned by server
       const response:ResponseData = {
         success: true,
