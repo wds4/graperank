@@ -24,7 +24,7 @@ export default async function handler(
   }
   if (!searchParams.pubkey) {
     const response:ResponseData = {
-      success: true,
+      success: false,
       message: `api/customers/queryCustomerStatus: no pubkey was provided`
     }
     res.status(500).json(response)
@@ -67,14 +67,14 @@ export default async function handler(
       }
     } else {
       const response:ResponseData = {
-        success: true,
+        success: false,
         message: `api/customers/queryCustomerStatus: the provided pubkey is invalid`
       }
       res.status(500).json(response)
     }
   } else {
     const response:ResponseData = {
-      success: true,
+      success: false,
       message: `api/customers/queryCustomerStatus: no pubkey was provided`
     }
     res.status(500).json(response)

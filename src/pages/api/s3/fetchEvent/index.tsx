@@ -19,39 +19,54 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  try {
-    /* GetObjectCommand */
-    
-    const params = {
-      Bucket: 'grapevine-nostr-cache-bucket',
-      Key: 'c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f',
-    }
-    const command = new GetObjectCommand(params);
-    const data = await client.send(command);
-    const foo = await data.Body?.transformToString()
-
-    let data_ = ''
-    if (typeof foo == 'string') {
-      data_ = JSON.parse(foo) 
-    }
-
-    console.log(`=============== data Body transformToString: ${foo}`)
-
-    const response:ResponseData = {
-      success: true,
-      message: `api/s3/fetchEvent data!`,
-      data: { data: data_ }
-    }
-    res.status(200).json(response)
-  } catch (error) {
-    // error handling.
-    console.log(`error: ${JSON.stringify(error)}`)
+  const searchParams = req.query
+  if (!searchParams.eventid) {
     const response:ResponseData = {
       success: false,
-      message: `api/s3/fetchEvent error: ${error}!`,
+      message: `api/s3/fetchEvent: no eventid was provided`
     }
     res.status(500).json(response)
-  } finally {
-    // finally.
+  }
+  if (searchParams.eventid) {
+    const eventId = searchParams.eventid
+    if (typeof eventId == 'string') {
+      try {
+        const params = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: eventId,
+        }
+        const command = new GetObjectCommand(params);
+        const data = await client.send(command);
+        const sEvent = await data.Body?.transformToString()
+
+        let oEvent = ''
+        if (typeof sEvent == 'string') {
+          oEvent = JSON.parse(sEvent) 
+        }
+
+        const response:ResponseData = {
+          success: true,
+          message: `api/s3/fetchEvent data:`,
+          data: { data: oEvent }
+        }
+        res.status(200).json(response)
+      } catch (error) {
+        // error handling.
+        console.log(`error: ${JSON.stringify(error)}`)
+        const response:ResponseData = {
+          success: false,
+          message: `api/s3/fetchEvent error: ${error}!`,
+        }
+        res.status(500).json(response)
+      } finally {
+        // finally.
+      }
+    } else {
+      const response:ResponseData = {
+        success: false,
+        message: `api/s3/fetchEvent error: the provided eventid is not valid`,
+      }
+      res.status(500).json(response)
+    }
   }
 }
