@@ -26,7 +26,7 @@ export default async function handler(
       console.log(fields); // fields contains extra meta data about results, if available
       const response:ResponseData = {
         success: true,
-        message: `api/tests/s3 data!:`,
+        message: `api/tests/sql data:`,
         data: {
           results,
           fields
@@ -37,7 +37,7 @@ export default async function handler(
       console.log(`error: ${JSON.stringify(error)}`)
       const response:ResponseData = {
         success: false,
-        message: `api/tests/s3; user: ${process.env.AWS_MYSQL_USER} error: ${error}!`,
+        message: `api/tests/sql; user: ${process.env.AWS_MYSQL_USER} error: ${error}!`,
       }
       res.status(500).json(response)
     }
