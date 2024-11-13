@@ -45,8 +45,8 @@ export default async function handler(
         });
 
         const command = ` INSERT INTO customers 
-('pubkey', 'whenSignedUp')
-VALUES ( '${pubkey1}', ${currentTimestamp} )
+(id, pubkey, whenSignedUp)
+VALUES ( 1, ${pubkey1}, ${currentTimestamp} )
 ;`
         const results = await connection.query(command);
         console.log(results);
