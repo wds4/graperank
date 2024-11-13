@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 
 /*
-https://www.graperank.tech/api/tests/sql
+https://www.graperank.tech/api/sql/initializeTables
 */
 
 type ResponseData = {
@@ -30,7 +30,7 @@ export default async function handler(
       console.log(fields); // fields contains extra meta data about results, if available
       const response:ResponseData = {
         success: true,
-        message: `api/tests/sql data:`,
+        message: `api/sql/initializeTables data:`,
         data: {
           results,
           fields
@@ -41,7 +41,7 @@ export default async function handler(
       console.log(`error: ${JSON.stringify(error)}`)
       const response:ResponseData = {
         success: false,
-        message: `api/tests/sql; user: ${process.env.AWS_MYSQL_USER} error: ${error}!`,
+        message: `api/sql/initializeTables error: ${error}!`,
       }
       res.status(500).json(response)
     }
