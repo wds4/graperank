@@ -261,15 +261,8 @@ mysql > CREATE USER 'pgft_admin'@'%' IDENTIFIED BY '...';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, PROCESS, REFERENCES, INDEX, ALTER, SHOW DATABASES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER ON *.* TO 'pgft_admin'@'%' WITH GRANT OPTION;
 ```
 
-mysql -h database-1.cp4a4040m8c9.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
-xyDbud-zevfof-8tizru
-
 grapevine-nostr-cache-db - able to mysql in via ecs CLI
 mysql -h grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com -P 3306 -u pgft -p
-dedguB-0pinqy-dykfep
-
-database-2.cp4a4040m8c9.us-east-1.rds.amazonaws.com
-SAZG4UN90F7dAY4PUmfy
 
 ## TODO:
 - maybe get rid of nginx landing page (delete /etc/nginx/sites-available/default?)

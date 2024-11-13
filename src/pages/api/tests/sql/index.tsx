@@ -15,9 +15,9 @@ export default async function handler(
       const connection = await mysql.createConnection({
         host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
         port: 3306,
-        user: 'pgft',
-        password: 'dedguB-0pinqy-dykfep',
-        database: 'grapevineNostrCacheDb',
+        user: process.env.AWS_MYSQL_USER,
+        password: process.env.AWS_MYSQL_PWD,
+        database: process.env.AWS_MYSQL_DB,
       });
       const [results, fields] = await connection.query(
         'SELECT * FROM `first_table` WHERE `id` = 1'
