@@ -13,11 +13,11 @@ export default async function handler(
 ) {
     try {
       const connection = await mysql.createConnection({
-        host: 'database-1.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
+        host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
         port: 3306,
-        user: process.env.AWS_MYSQL_USER,
-        password: process.env.AWS_MYSQL_PWD,
-        database: 'test',
+        user: 'pgft',
+        password: 'dedguB-0pinqy-dykfep',
+        database: 'grapevineNostrCacheDb',
       });
       const [results, fields] = await connection.query(
         'SELECT * FROM `first_table` WHERE `id` = 1'
@@ -37,7 +37,7 @@ export default async function handler(
       console.log(`error: ${JSON.stringify(error)}`)
       const response:ResponseData = {
         success: false,
-        message: `api/tests/s3 error: ${error}!`,
+        message: `api/tests/s3; user: ${process.env.AWS_MYSQL_USER} error: ${error}!`,
       }
       res.status(500).json(response)
     }
