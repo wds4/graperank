@@ -2,6 +2,13 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 
+/*
+usage:
+pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/customers/addNewCustomer?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
+*/
+
 type ResponseData = {
   success: boolean,
   message: string,
@@ -38,8 +45,8 @@ export default async function handler(
         });
 
         const command = ` INSERT INTO customers 
-(pubkey, whenSignedUp)
-VALUES ( ${pubkey1}, ${currentTimestamp} )
+('pubkey', 'whenSignedUp')
+VALUES ( '${pubkey1}', ${currentTimestamp} )
 ;`
         const results = await connection.query(command);
         console.log(results);
