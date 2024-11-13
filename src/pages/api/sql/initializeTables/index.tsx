@@ -38,12 +38,13 @@ export default async function handler(
       command2 += ` id INT PRIMARY KEY, `
       command2 += ` pubkey VARCHAR(255) UNIQUE, `
       command2 += ` npub VARCHAR(255) UNIQUE, `
-      command2 += ` created_at int, `
-      command2 += ` kind int `
+      command2 += ` kind3EventId int, `
+      command2 += ` kind10000EventId int, `
+      command2 += ` whenLastListened int `
       command2 += ` ); `
       const results2 = await connection.query(command2);
       console.log(results2);
-      
+
       const response:ResponseData = {
         success: true,
         message: `api/sql/initializeTables data:`,
