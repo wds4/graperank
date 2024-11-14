@@ -28,7 +28,7 @@ export default async function handler(
   try {
     const params = {
       Bucket: 'grapevine-nostr-cache-bucket',
-      Delimiter: 'eventsByEventId/',
+      Key: 'eventsByEventId',
     }
     const command = new ListObjectsCommand(params);
     const data = await client.send(command);

@@ -45,7 +45,7 @@ export default async function handler(
     /* PutObjectCommand */
     const params3 = {
       Bucket: 'grapevine-nostr-cache-bucket',
-      Key: 'sampleObject',
+      Key: 'sampleDirectory/sampleObject',
       Body: await fooFxn()
     }
     const command3 = new PutObjectCommand(params3);
@@ -56,7 +56,7 @@ export default async function handler(
     
     const params4 = {
       Bucket: 'grapevine-nostr-cache-bucket',
-      Key: 'sampleObject',
+      Key: 'sampleDirectory/sampleObject',
     }
     const command4 = new GetObjectCommand(params4);
     const data4 = await client.send(command4);
