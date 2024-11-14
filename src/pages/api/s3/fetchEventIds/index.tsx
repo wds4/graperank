@@ -3,7 +3,7 @@ import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 
 /*
 usage:
-https://graperank.tech/api/s3/fetchEventIds?foo=eventsByEventId
+https://graperank.tech/api/s3/fetchEventIds
 
 */
 
@@ -25,15 +25,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  let delimiter:string = ''
-  if (typeof req.query.foo == 'string') {
-    delimiter = req.query.foo
-  }
-  // const delimiter = 'eventsByEventId'
   try {
     const params = {
       Bucket: 'grapevine-nostr-cache-bucket',
-      Delimiter: delimiter,
+      prefix: 'eventsByEventId',
     }
     const command = new ListObjectsCommand(params);
     const data = await client.send(command);
