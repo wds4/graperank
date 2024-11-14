@@ -4,6 +4,13 @@ import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
+/*
+usage:
+pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/sql/transferSingleEventToEventsTableFromS3?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
+*/
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -44,7 +51,7 @@ export default async function handler(
 
         const params = {
           Bucket: 'grapevine-nostr-cache-bucket',
-          Key: eventId,
+          Key: 'eventsByEventId/' + eventId,
         }
         const command = new GetObjectCommand(params);
         const data = await client.send(command);

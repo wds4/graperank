@@ -71,7 +71,7 @@ export default async function handler(
             /* PutObjectCommand */
             const params = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: event.id,
+              Key: 'eventsByEventId/' + event.id,
               Body: await serializeEvent(event)
             }
             const command = new PutObjectCommand(params);

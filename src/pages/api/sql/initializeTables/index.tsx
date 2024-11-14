@@ -38,6 +38,7 @@ export default async function handler(
       command2 += ` id INT PRIMARY KEY, `
       command2 += ` pubkey VARCHAR(255) UNIQUE, `
       command2 += ` npub VARCHAR(255) UNIQUE, `
+      command2 += ` kind0EventId int, `
       command2 += ` kind3EventId int, `
       command2 += ` kind10000EventId int, `
       command2 += ` whenLastListened int `
