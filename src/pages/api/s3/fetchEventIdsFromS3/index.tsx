@@ -30,7 +30,7 @@ export default async function handler(
       Bucket: 'grapevine-nostr-cache-bucket',
       Prefix: 'eventsByEventId',
       Metadata: {
-        enteredIntoSqlEventsTable: 'false'
+        enteredintosqleventstable: 'false'
       },
     }
     const command = new ListObjectsCommand(params);
