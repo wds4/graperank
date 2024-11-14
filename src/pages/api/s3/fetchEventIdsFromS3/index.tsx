@@ -29,6 +29,9 @@ export default async function handler(
     const params = {
       Bucket: 'grapevine-nostr-cache-bucket',
       Prefix: 'eventsByEventId',
+      Metadata: {
+        enteredIntoSqlEventsTable: 'true'
+      },
     }
     const command = new ListObjectsCommand(params);
     const data = await client.send(command);
