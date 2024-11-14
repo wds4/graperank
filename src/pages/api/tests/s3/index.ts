@@ -1,6 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand, PutObjectCommand, ListBucketsCommand, ListObjectsCommand } from '@aws-sdk/client-s3'
 
+/*
+usage:
+https://graperank.tech/api/tests/s3
+
+*/
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
