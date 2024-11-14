@@ -77,7 +77,9 @@ export default async function handler(
               Bucket: 'grapevine-nostr-cache-bucket',
               Key: 'eventsByEventId/' + event.id,
               Body: await serializeEvent(event),
-              Tagging: 'unprocessed',
+              Metadata: {
+                enteredIntoSqlEventsTable: 'false'
+              },
             }
             const command = new PutObjectCommand(params);
             const data = await client.send(command);
