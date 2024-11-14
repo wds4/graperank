@@ -33,11 +33,23 @@ export default async function handler(
     const command = new ListObjectsCommand(params);
     const data = await client.send(command);
 
+    const aContents = data.Contents
+    const aEventsIds = []
+    if (typeof aContents == 'object') {
+      for (let x=0; x < aContents.length; x++) {
+        const oNextKey = aContents[x]
+        const nextKey = oNextKey.Key
+        const eventId = nextKey?.substring(16)
+        aEventsIds.push(eventId)
+      }
+    }
+
     const response:ResponseData = {
       success: true,
       message: `api/s3/fetchEventIds data:`,
       data: { 
-        data
+        aEventsIds,
+        data,
       }
     }
     res.status(200).json(response)
