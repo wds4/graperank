@@ -2,6 +2,14 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { validateEvent } from 'nostr-tools'
 
+/*
+usage:
+eventid: c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f
+eventid: 323a878a6a3478a2d1789aacbb9d51d14a7754bd22a03b629b1deb5f10fc2297
+https://graperank.tech/api/s3/fetchEvent?eventid=323a878a6a3478a2d1789aacbb9d51d14a7754bd22a03b629b1deb5f10fc2297
+
+*/
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {

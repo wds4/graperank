@@ -6,8 +6,9 @@ import mysql from 'mysql2/promise'
 
 /*
 usage:
-pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/sql/transferSingleEventToEventsTableFromS3?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+eventid: c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f
+eventid: 323a878a6a3478a2d1789aacbb9d51d14a7754bd22a03b629b1deb5f10fc2297
+https://www.graperank.tech/api/sql/transferSingleEventToEventsTableFromS3?eventid=c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f
 
 */
 
