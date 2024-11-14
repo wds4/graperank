@@ -13,6 +13,10 @@ const client = new S3Client({
   },
 })
 /*
+Given a pubkey, this endpoint listens for kinds 3 and 10000 events and inserts them into S3
+
+A separate script is necessary to transfer event data into the relevant sql tables
+
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 http://localhost:3000/api/nostr/listeners/singleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
@@ -72,7 +76,8 @@ export default async function handler(
             const params = {
               Bucket: 'grapevine-nostr-cache-bucket',
               Key: 'eventsByEventId/' + event.id,
-              Body: await serializeEvent(event)
+              Body: await serializeEvent(event),
+              Tagging: 'unprocessed',
             }
             const command = new PutObjectCommand(params);
             const data = await client.send(command);
