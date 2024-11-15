@@ -3,7 +3,7 @@ import NDK, { NDKEvent, NDKFilter, NostrEvent } from '@nostr-dev-kit/ndk'
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import { validateEvent } from 'nostr-tools'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { makeEventSerializable } from '@/helpers/indes'
+import { makeEventSerializable, timeout } from '@/helpers'
 import mysql from 'mysql2/promise'
 
 const client = new S3Client({
@@ -83,13 +83,6 @@ export default async function handler(
         sub1.on('event', async (event:NDKEvent) => {
           if (validateEvent(event)) {
             console.log(`event.id: ${event.id}`)
-            
-            /*  INSERT into events */
-            const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
-            const results1 = await connection.query(command_sql);
-            console.log(results1);
-            aMysqlResults.push(results1)
-
             receivedEvents.push(event.id)
             /* PutObjectCommand */
             const params = {
@@ -118,7 +111,11 @@ export default async function handler(
             console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
 
             // MYSQL
-
+            /*  INSERT into events */
+            const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
+            const results1 = await connection.query(command_sql);
+            console.log(results1);
+            aMysqlResults.push(results1)
 
             /* UPDATE users */
             const command2_sql = ` INSERT INTO users (pubkey, whenLastListened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
@@ -140,6 +137,7 @@ export default async function handler(
           }
         })
         sub1.on('eose', async () => {
+          await timeout(5000)
           const response = {
             success: true,
             message: `api/tests/listeners/singleUser eose!`,
