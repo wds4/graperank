@@ -136,6 +136,7 @@ export default async function handler(
               console.log(results4);
               aMysqlResults.push(results4)
             }
+            /*
             const response = {
               success: true,
               message: `api/tests/listeners/singleUser eose!`,
@@ -148,6 +149,7 @@ export default async function handler(
               }
             }
             res.status(200).json(response)
+            */
           }
         })
         sub1.on('eose', async () => {
