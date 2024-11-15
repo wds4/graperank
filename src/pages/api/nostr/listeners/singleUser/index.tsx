@@ -137,11 +137,17 @@ export default async function handler(
           }
         })
         sub1.on('eose', async () => {
+          const [results, fields] = await connection.query(
+            'SELECT * FROM `events` WHERE `id` = 1'
+          );
           await timeout(5000)
           const response = {
             success: true,
             message: `api/tests/listeners/singleUser eose!`,
             data: {
+              test: {
+                results, fields
+              },
               awsMysqlUser: process.env.AWS_MYSQL_USER,
               receivedEvents,
               aMysqlResults,
