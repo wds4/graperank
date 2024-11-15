@@ -4,6 +4,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import { validateEvent } from 'nostr-tools'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { makeEventSerializable } from '@/helpers/indes'
+import mysql from 'mysql2/promise'
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -13,7 +14,9 @@ const client = new S3Client({
   },
 })
 /*
-Given a pubkey, this endpoint listens for kinds 3 and 10000 events and inserts them into S3
+Given a pubkey, this endpoint listens on nostr for kinds 3 and 10000 events and:
+- inserts events into S3
+- inserts events into sql table: events
 
 A separate script is necessary to transfer event data into the relevant sql tables
 
@@ -64,6 +67,14 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       // const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
+        const connection = await mysql.createConnection({
+          host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
+          port: 3306,
+          user: process.env.AWS_MYSQL_USER,
+          password: process.env.AWS_MYSQL_PWD,
+          database: process.env.AWS_MYSQL_DB,
+        });
+
         await ndk.connect()
         const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
         const sub1 = ndk.subscribe(filter)
@@ -77,14 +88,31 @@ export default async function handler(
               Bucket: 'grapevine-nostr-cache-bucket',
               Key: 'eventsByEventId/' + event.id,
               Body: await serializeEvent(event),
-              Metadata: {
-                enteredIntoSqlEventsTable: 'false'
-              },
             }
-            const command = new PutObjectCommand(params);
-            const data = await client.send(command);
+            const command_s3 = new PutObjectCommand(params);
+            const data = await client.send(command_s3);
             console.log(`===== data: ${JSON.stringify(data)}`)
+            /* put metadata */
+            const returnMetadata = async () => {
+              const oMetadata = {
+                transferred: 'false'
+              }
+              return JSON.stringify(oMetadata)
+            }
+            const params_metadata = {
+              Bucket: 'grapevine-nostr-cache-bucket',
+              Key: 'eventsByEventId/' + event.id + '/customMetadata',
+              Body: await returnMetadata(),
+            }
+            const command_s3_metadata = new PutObjectCommand(params_metadata);
+            const data_metadata = await client.send(command_s3_metadata);
+            console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
             
+            /*  INSERT into events */
+            const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
+            const results = await connection.query(command_sql);
+            console.log(results);
+
             if (event.kind == 3) {
             }
             if (event.kind == 10000) {
