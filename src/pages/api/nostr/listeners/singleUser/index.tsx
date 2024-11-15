@@ -112,24 +112,24 @@ export default async function handler(
 
             // MYSQL
             /*  INSERT into events */
-            const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
+            const command_sql = ` INSERT INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
             const results1 = await connection.query(command_sql);
             console.log(results1);
             aMysqlResults.push(results1)
 
             /* UPDATE users */
-            const command2_sql = ` INSERT INTO users (pubkey, whenLastListened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
+            const command2_sql = ` INSERT INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
             const results2 = await connection.query(command2_sql);
             aMysqlResults.push(results2)
             console.log(results2);
             if (event.kind == 3) {
-              const command_sql = ` UPDATE users SET kind3EventId='${event.id}', whenLastListened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
+              const command_sql = ` UPDATE users SET kind3eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
               const results3 = await connection.query(command_sql);
               console.log(results3);
               aMysqlResults.push(results3)
             }
             if (event.kind == 10000) {
-              const command_sql = ` UPDATE users SET kind10000EventId='${event.id}', whenLastListened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
+              const command_sql = ` UPDATE users SET kind10000eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
               const results4 = await connection.query(command_sql);
               console.log(results4);
               aMysqlResults.push(results4)
