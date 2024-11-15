@@ -65,7 +65,7 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      // const currentTimestamp = Math.floor(Date.now() / 1000)
+      const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
@@ -92,7 +92,8 @@ export default async function handler(
             const command_s3 = new PutObjectCommand(params);
             const data = await client.send(command_s3);
             console.log(`===== data: ${JSON.stringify(data)}`)
-            /* put metadata */
+
+            // include needToProcess key for later processing
             const returnMetadata = async () => {
               const oMetadata = {
                 transferred: 'false'
@@ -101,21 +102,31 @@ export default async function handler(
             }
             const params_metadata = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: 'eventsByEventId/' + event.id + '/customMetadata',
+              Key: 'eventsByEventId/needToProcess/' + event.id + '/customMetadata',
               Body: await returnMetadata(),
             }
             const command_s3_metadata = new PutObjectCommand(params_metadata);
             const data_metadata = await client.send(command_s3_metadata);
             console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
-            
+
             /*  INSERT into events */
             const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
             const results = await connection.query(command_sql);
             console.log(results);
 
+            /* UPDATE users */
+            const command2_sql = ` INSERT INTO users (pubkey, whenLastListened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
+            const results2 = await connection.query(command2_sql);
+            console.log(results2);
             if (event.kind == 3) {
+              const command_sql = ` UPDATE users SET kind3EventId='${event.id}', whenLastListened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
+              const results = await connection.query(command_sql);
+              console.log(results);
             }
             if (event.kind == 10000) {
+              const command_sql = ` UPDATE users SET kind10000EventId='${event.id}', whenLastListened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
+              const results = await connection.query(command_sql);
+              console.log(results);
             }
           }
         })

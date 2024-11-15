@@ -37,7 +37,6 @@ export default async function handler(
       let command2 = ` CREATE TABLE IF NOT EXISTS users ( `
       command2 += ` id INT PRIMARY KEY, `
       command2 += ` pubkey VARCHAR(255) UNIQUE, `
-      command2 += ` npub VARCHAR(255) UNIQUE, `
       command2 += ` kind0EventId int, `
       command2 += ` kind3EventId int, `
       command2 += ` kind10000EventId int, `
