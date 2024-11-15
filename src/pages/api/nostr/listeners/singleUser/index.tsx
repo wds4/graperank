@@ -83,6 +83,13 @@ export default async function handler(
         sub1.on('event', async (event:NDKEvent) => {
           if (validateEvent(event)) {
             console.log(`event.id: ${event.id}`)
+            
+            /*  INSERT into events */
+            const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
+            const results1 = await connection.query(command_sql);
+            console.log(results1);
+            aMysqlResults.push(results1)
+
             receivedEvents.push(event.id)
             /* PutObjectCommand */
             const params = {
@@ -111,11 +118,7 @@ export default async function handler(
             console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
 
             // MYSQL
-            /*  INSERT into events */
-            const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
-            const results1 = await connection.query(command_sql);
-            console.log(results1);
-            aMysqlResults.push(results1)
+
 
             /* UPDATE users */
             const command2_sql = ` INSERT INTO users (pubkey, whenLastListened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
@@ -141,6 +144,7 @@ export default async function handler(
             success: true,
             message: `api/tests/listeners/singleUser eose!`,
             data: {
+              awsMysqlUser: process.env.AWS_MYSQL_USER,
               receivedEvents,
               aMysqlResults,
             }
