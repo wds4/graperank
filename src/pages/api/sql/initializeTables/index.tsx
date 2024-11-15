@@ -27,7 +27,7 @@ export default async function handler(
       let command1 = `CREATE TABLE IF NOT EXISTS events ( `
       command1 += ` id INT PRIMARY KEY, `
       command1 += ` pubkey VARCHAR(255), `
-      command1 += ` eventID VARCHAR(255) UNIQUE, `
+      command1 += ` eventId VARCHAR(255) UNIQUE, `
       command1 += ` created_at INT, `
       command1 += ` kind INT `
       command1 += ` ); `
@@ -37,9 +37,9 @@ export default async function handler(
       let command2 = ` CREATE TABLE IF NOT EXISTS users ( `
       command2 += ` id INT PRIMARY KEY, `
       command2 += ` pubkey VARCHAR(255) UNIQUE, `
-      command2 += ` kind0EventId int, `
-      command2 += ` kind3EventId int, `
-      command2 += ` kind10000EventId int, `
+      command2 += ` kind0EventId VARCHAR(255), `
+      command2 += ` kind3EventId VARCHAR(255), `
+      command2 += ` kind10000EventId VARCHAR(255), `
       command2 += ` whenLastListened int `
       command2 += ` ); `
       const results2 = await connection.query(command2);
