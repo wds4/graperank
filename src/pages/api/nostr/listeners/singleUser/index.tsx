@@ -134,6 +134,18 @@ export default async function handler(
               console.log(results4);
               aMysqlResults.push(results4)
             }
+            const response = {
+              success: true,
+              message: `api/tests/listeners/singleUser eose!`,
+              data: {
+                results1,
+                results2,
+                awsMysqlUser: process.env.AWS_MYSQL_USER,
+                receivedEvents,
+                aMysqlResults,
+              }
+            }
+            res.status(200).json(response)
           }
         })
         sub1.on('eose', async () => {
