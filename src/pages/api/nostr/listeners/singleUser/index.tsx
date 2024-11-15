@@ -128,13 +128,13 @@ export default async function handler(
             aMysqlResults.push(results2)
             console.log(results2);
             if (event.kind == 3) {
-              const command3_sql = ` UPDATE users SET kind3eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
+              command3_sql = ` UPDATE users SET kind3eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
               const results3 = await connection.query(command3_sql);
               console.log(results3);
               aMysqlResults.push(results3)
             }
             if (event.kind == 10000) {
-              const command4_sql = ` UPDATE users SET kind10000eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
+              command4_sql = ` UPDATE users SET kind10000eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
               const results4 = await connection.query(command4_sql);
               console.log(results4);
               aMysqlResults.push(results4)
