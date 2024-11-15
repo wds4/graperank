@@ -114,14 +114,13 @@ export default async function handler(
 
             // MYSQL
             /*  INSERT into events */
-            command2_sql = ` INSERT INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
-            command_sql = ` INSERT INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
+            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
             const results1 = await connection.query(command_sql);
             console.log(results1);
             aMysqlResults.push(results1)
 
             /* UPDATE users */
-            
+            command2_sql = ` INSERT IGNORE INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ); `
             const results2 = await connection.query(command2_sql);
             aMysqlResults.push(results2)
             console.log(results2);
