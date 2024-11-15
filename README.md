@@ -269,6 +269,7 @@ in ec2, to access mysql and edit database grapevineNostrCacheDb:
 mysql -h grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com -P 3306 -u pgft -p
 mysql> use grapevineNostrCacheDb
 mysql> show tables
+mysql> SELECT * FROM users;
 ```
 
 ## TODO:

@@ -79,6 +79,7 @@ export default async function handler(
         const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
         const sub1 = ndk.subscribe(filter)
         const receivedEvents:string[] = []
+        const aMysqlResults:object[] = []
         sub1.on('event', async (event:NDKEvent) => {
           if (validateEvent(event)) {
             console.log(`event.id: ${event.id}`)
@@ -109,24 +110,29 @@ export default async function handler(
             const data_metadata = await client.send(command_s3_metadata);
             console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
 
+            // MYSQL
             /*  INSERT into events */
             const command_sql = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ) ON CONFLICT DO NOTHING; `
-            const results = await connection.query(command_sql);
-            console.log(results);
+            const results1 = await connection.query(command_sql);
+            console.log(results1);
+            aMysqlResults.push(results1)
 
             /* UPDATE users */
             const command2_sql = ` INSERT INTO users (pubkey, whenLastListened) VALUES ( '${event.pubkey}', ${currentTimestamp} ) ON CONFLICT DO NOTHING; `
             const results2 = await connection.query(command2_sql);
+            aMysqlResults.push(results2)
             console.log(results2);
             if (event.kind == 3) {
               const command_sql = ` UPDATE users SET kind3EventId='${event.id}', whenLastListened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
-              const results = await connection.query(command_sql);
-              console.log(results);
+              const results3 = await connection.query(command_sql);
+              console.log(results3);
+              aMysqlResults.push(results3)
             }
             if (event.kind == 10000) {
               const command_sql = ` UPDATE users SET kind10000EventId='${event.id}', whenLastListened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
-              const results = await connection.query(command_sql);
-              console.log(results);
+              const results4 = await connection.query(command_sql);
+              console.log(results4);
+              aMysqlResults.push(results4)
             }
           }
         })
@@ -134,7 +140,10 @@ export default async function handler(
           const response = {
             success: true,
             message: `api/tests/listeners/singleUser eose!`,
-            data: receivedEvents
+            data: {
+              receivedEvents,
+              aMysqlResults,
+            }
           }
           res.status(200).json(response)
         })
