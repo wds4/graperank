@@ -55,6 +55,30 @@ export default async function handler(
     const command2 = new ListObjectsCommand(params2);
     const data2 = await client.send(command2);
 
+    const aUnprocessedEventIds = []
+    if (data1.Contents) {
+      const numEvents = data1.Contents.length
+      for (let x=0; x < numEvents; x++) {
+        const oNextEventContent = data1.Contents[x]
+        if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
+          const nextEventId = oNextEventContent.Key.substring(33)
+          aUnprocessedEventIds.push(nextEventId)
+        }
+      }
+    }
+
+    const aProcessedEventIds = []
+    if (data2.Contents) {
+      const numEvents = data2.Contents.length
+      for (let x=0; x < numEvents; x++) {
+        const oNextEventContent = data2.Contents[x]
+        if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
+          const nextEventId = oNextEventContent.Key.substring(33)
+          aProcessedEventIds.push(nextEventId)
+        }
+      }
+    }
+
     /*
     const connection = await mysql.createConnection({
       host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
@@ -90,6 +114,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
+        aUnprocessedEventIds, aProcessedEventIds,
         data1, data2
       }
     }
