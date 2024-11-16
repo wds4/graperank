@@ -10,3 +10,8 @@ export default function handler(
 ) {
   res.status(200).json({ message: 'api/s3 Hello from Next.js!' })
 }
+
+/*
+eventsByEventId/<eventId>
+unprocessedEventsByEventId/<eventId>
+*/

@@ -8,7 +8,7 @@ import mysql from 'mysql2/promise'
 usage:
 eventid: c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f
 eventid: 323a878a6a3478a2d1789aacbb9d51d14a7754bd22a03b629b1deb5f10fc2297
-https://www.graperank.tech/api/sql/transferSingleEventToEventsTableFromS3?eventid=c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f
+https://www.graperank.tech/api/dataManagement/transferSingleEventToEventsTableFromS3?eventid=c346a79311bbf7d574024854fcc41884441a023d5c685cd0d317b9bd1e66f30f
 
 */
 
@@ -34,7 +34,7 @@ export default async function handler(
   if (!searchParams.eventid) {
     const response:ResponseData = {
       success: false,
-      message: `api/sql/transferSingleEventToEventsTableFromS3: no eventid was provided`
+      message: `api/dataManagement/transferSingleEventToEventsTableFromS3: no eventid was provided`
     }
     res.status(500).json(response)
   }
@@ -73,7 +73,7 @@ export default async function handler(
           console.log(results);
           const response:ResponseData = {
             success: true,
-            message: `api/sql/transferSingleEventToEventsTableFromS3 data:`,
+            message: `api/dataManagement/transferSingleEventToEventsTableFromS3 data:`,
             data: { 
               isEventValid,
               results,
@@ -84,7 +84,7 @@ export default async function handler(
         } else {
           const response:ResponseData = {
             success: false,
-            message: `api/sql/transferSingleEventToEventsTableFromS3 error: the stored event is not valid`,
+            message: `api/dataManagement/transferSingleEventToEventsTableFromS3 error: the stored event is not valid`,
           }
           res.status(500).json(response)
         }
@@ -93,7 +93,7 @@ export default async function handler(
         console.log(`error: ${JSON.stringify(error)}`)
         const response:ResponseData = {
           success: false,
-          message: `api/sql/transferSingleEventToEventsTableFromS3 error: ${error}!`,
+          message: `api/dataManagement/transferSingleEventToEventsTableFromS3 error: ${error}!`,
         }
         res.status(500).json(response)
       } finally {
@@ -102,7 +102,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/sql/transferSingleEventToEventsTableFromS3 error: the provided eventid is not valid`,
+        message: `api/dataManagement/transferSingleEventToEventsTableFromS3 error: the provided eventid is not valid`,
       }
       res.status(500).json(response)
     }
