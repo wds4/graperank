@@ -15,13 +15,13 @@ export default function handler(
 /*
 1. api/nostr/listeners/singleUser (this applies to all other listeners too)
   - create filter and connect to nostr relays
-  - write each event to s3 using key: unprocessedEventsByEventId/<eventId>
+  - write each event to s3 using key: recentlyAddedEventsByEventId/<eventId>
 2. api/dataManagement/processNewEvents or /transferEventsToEventsTableFromS3 (first N events in S3) or /transferSpecifiedEventToEventsTableFromS3 (eventId provided in url)
-  - generate list of events in endpoint: unprocessedEventsByEventId/* 
+  - generate list of events in endpoint: recentlyAddedEventsByEventId/* 
   for each event:
     - if event already present in table: events, do nothing
     - if not already present, write event to sql table: events with flaggedForProcessing=1
-    - in s3, move event from unprocessedEventsByEventId/ into processedEventsByEventId/
+    - in s3, move event from recentlyAddedEventsByEventId/ into processedEventsByEventId/
 3. api/dataManagement/processKind3Events
 - select * from events where kind=3 and flaggedForProcessing=1
 - for each row:

@@ -88,7 +88,7 @@ export default async function handler(
             /* PutObjectCommand */
             const params = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: 'eventsByEventId/unprocessedEvents/' + event.id,
+              Key: 'recentlyAddedEventsByEventId/' + event.id,
               Body: await serializeEvent(event),
             }
             const command_s3 = new PutObjectCommand(params);
@@ -105,7 +105,7 @@ export default async function handler(
             }
             const params_metadata = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: 'eventsByEventId/unprocessedEvents/' + event.id + '/customMetadata',
+              Key: 'recentlyAddedEventsByEventId/' + event.id + '/customMetadata',
               Body: await returnMetadata(),
             }
             const command_s3_metadata = new PutObjectCommand(params_metadata);

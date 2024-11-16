@@ -39,45 +39,50 @@ export default async function handler(
   console.log(`numEventsToProcess: ${numEventsToProcess}`)
 
   try {
-    // fetch events that have not yet been processed
+
+    // fetch events that have been processed
     const params1 = {
       Bucket: 'grapevine-nostr-cache-bucket',
-      Prefix: 'unprocessedEventsByEventId',
+      Prefix: 'eventsByEventId',
     }
     const command1 = new ListObjectsCommand(params1);
     const data1 = await client.send(command1);
 
-    // fetch events that have been processed
+    // fetch events that have not yet been processed
     const params2 = {
       Bucket: 'grapevine-nostr-cache-bucket',
-      Prefix: 'eventsByEventId',
+      Prefix: 'recentlyAddedEventsByEventId',
     }
     const command2 = new ListObjectsCommand(params2);
     const data2 = await client.send(command2);
 
-    const aUnprocessedEventIds = []
+    const aProcessedEventIds = []
     if (data1.Contents) {
       const numEvents = data1.Contents.length
       for (let x=0; x < numEvents; x++) {
         const oNextEventContent = data1.Contents[x]
         if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
           const nextEventId = oNextEventContent.Key.substring(33)
-          aUnprocessedEventIds.push(nextEventId)
+          aProcessedEventIds.push(nextEventId)
         }
       }
     }
 
-    const aProcessedEventIds = []
+    const aUnprocessedEventIds = []
     if (data2.Contents) {
       const numEvents = data2.Contents.length
       for (let x=0; x < numEvents; x++) {
         const oNextEventContent = data2.Contents[x]
         if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
-          const nextEventId = oNextEventContent.Key.substring(33)
-          aProcessedEventIds.push(nextEventId)
+          const nextEventId = oNextEventContent.Key.substring(36)
+          if (!aProcessedEventIds.includes(nextEventId)) {
+            aUnprocessedEventIds.push(nextEventId)
+          }
         }
       }
     }
+
+
 
     /*
     const connection = await mysql.createConnection({
@@ -88,7 +93,7 @@ export default async function handler(
       database: process.env.AWS_MYSQL_DB,
     });
 
-    for (let n=0; n < Math.min(numEventsToProcess, 5); n++) {
+    for (let n=0; n < Math.min(aUnprocessedEventIds, numEventsToProcess); n++) {
       const params = {
         Bucket: 'grapevine-nostr-cache-bucket',
         Key: 'eventsByEventId/' + eventId,

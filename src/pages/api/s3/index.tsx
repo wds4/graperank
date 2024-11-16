@@ -13,5 +13,5 @@ export default function handler(
 
 /*
 eventsByEventId/<eventId>
-unprocessedEventsByEventId/<eventId>
+recentlyAddedEventsByEventId/<eventId>
 */
