@@ -88,13 +88,14 @@ export default async function handler(
             /* PutObjectCommand */
             const params = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: 'unprocessedEventsByEventId/' + event.id,
+              Key: 'eventsByEventId/unprocessedEvents/' + event.id,
               Body: await serializeEvent(event),
             }
             const command_s3 = new PutObjectCommand(params);
             const data = await client.send(command_s3);
             console.log(`===== data: ${JSON.stringify(data)}`)
 
+            /*
             // include needToProcess key for later processing
             const returnMetadata = async () => {
               const oMetadata = {
@@ -104,12 +105,13 @@ export default async function handler(
             }
             const params_metadata = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: 'eventsByEventId/needToProcess/' + event.id + '/customMetadata',
+              Key: 'eventsByEventId/unprocessedEvents/' + event.id + '/customMetadata',
               Body: await returnMetadata(),
             }
             const command_s3_metadata = new PutObjectCommand(params_metadata);
             const data_metadata = await client.send(command_s3_metadata);
             console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
+            */
 
             /*
             // MYSQL -- MOVING THIS TO SEPARATE SCRIPT

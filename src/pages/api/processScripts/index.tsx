@@ -12,7 +12,7 @@ export default function handler(
 }
 
 /*
-1. listener writes events to s3 under: unprocessedEvents
+1. listener writes events to s3 using key: unprocessedEventsByEventId/<eventId>
 2. processNewEvents adds event to sql table: events if not already present and moves s3 file out of unprocessedEvents folder into events folder
 3. process kind3 events
 - select * from events where kind=3 and flaggedForProcessing=1
