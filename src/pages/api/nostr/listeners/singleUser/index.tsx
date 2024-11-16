@@ -4,7 +4,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import { validateEvent } from 'nostr-tools'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { makeEventSerializable, timeout } from '@/helpers'
-import mysql from 'mysql2/promise'
+// import mysql from 'mysql2/promise'
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -65,8 +65,9 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const currentTimestamp = Math.floor(Date.now() / 1000)
+      // const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
+        /*
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
           port: 3306,
@@ -74,29 +75,20 @@ export default async function handler(
           password: process.env.AWS_MYSQL_PWD,
           database: process.env.AWS_MYSQL_DB,
         });
+        */
 
         await ndk.connect()
         const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
         const sub1 = ndk.subscribe(filter)
-        const receivedEvents:string[] = []
-        const aMysqlResults:object[] = []
-        
-        let command_sql = ''
-        let command2_sql = ''
-        let command3_sql = ''
-        let command4_sql = ''
+        const receivedEvents:string[] = []        
         sub1.on('event', async (event:NDKEvent) => {
           if (validateEvent(event)) {
-            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
-            command2_sql = ` INSERT IGNORE INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ); `
-            aMysqlResults.push({command_sql})
-            aMysqlResults.push({command2_sql})
             console.log(`event.id: ${event.id}`)
             receivedEvents.push(event.id)
             /* PutObjectCommand */
             const params = {
               Bucket: 'grapevine-nostr-cache-bucket',
-              Key: 'eventsByEventId/' + event.id,
+              Key: 'unprocessedEventsByEventId/' + event.id,
               Body: await serializeEvent(event),
             }
             const command_s3 = new PutObjectCommand(params);
@@ -119,12 +111,19 @@ export default async function handler(
             const data_metadata = await client.send(command_s3_metadata);
             console.log(`===== data_metadata: ${JSON.stringify(data_metadata)}`)
 
-            // MYSQL
-            /*  INSERT into events */
+            /*
+            // MYSQL -- MOVING THIS TO SEPARATE SCRIPT
+            let command_sql = ''
+            let command2_sql = ''
+            let command3_sql = ''
+            let command4_sql = ''
+            //  INSERT into events
+            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
             const results1 = await connection.query(command_sql);
             console.log(results1);
             aMysqlResults.push(results1)
-            /* UPDATE users */
+            // UPDATE users 
+            command2_sql = ` INSERT IGNORE INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ); `
             const results2 = await connection.query(command2_sql);
             aMysqlResults.push(results2)
             
@@ -140,43 +139,17 @@ export default async function handler(
               const results4 = await connection.query(command4_sql);
               console.log(results4);
               aMysqlResults.push(results4)
-              
             }
-            /*
-            const response = {
-              success: true,
-              message: `api/tests/listeners/singleUser eose!`,
-              data: {
-                results1,
-                results2,
-                awsMysqlUser: process.env.AWS_MYSQL_USER,
-                receivedEvents,
-                aMysqlResults,
-              }
-            }
-            res.status(200).json(response)
             */
           }
         })
         sub1.on('eose', async () => {
-          const [results, fields] = await connection.query(
-            'SELECT * FROM `events` WHERE `id` = 1'
-          );
           await timeout(5000)
           const response = {
             success: true,
             message: `api/tests/listeners/singleUser eose!`,
             data: {
-              test: {
-                command_sql,
-                command2_sql,
-                command3_sql,
-                command4_sql,
-                results, fields
-              },
-              awsMysqlUser: process.env.AWS_MYSQL_USER,
               receivedEvents,
-              aMysqlResults,
             }
           }
           res.status(200).json(response)
