@@ -87,6 +87,10 @@ export default async function handler(
         let command4_sql = ''
         sub1.on('event', async (event:NDKEvent) => {
           if (validateEvent(event)) {
+            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
+            command2_sql = ` INSERT IGNORE INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ); `
+            aMysqlResults.push({command_sql})
+            aMysqlResults.push({command2_sql})
             console.log(`event.id: ${event.id}`)
             receivedEvents.push(event.id)
             /* PutObjectCommand */
@@ -117,16 +121,13 @@ export default async function handler(
 
             // MYSQL
             /*  INSERT into events */
-            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
             const results1 = await connection.query(command_sql);
             console.log(results1);
-            aMysqlResults.push({command_sql})
             aMysqlResults.push(results1)
-
             /* UPDATE users */
-            command2_sql = ` INSERT IGNORE INTO users (pubkey, whenlastlistened) VALUES ( '${event.pubkey}', ${currentTimestamp} ); `
             const results2 = await connection.query(command2_sql);
             aMysqlResults.push(results2)
+            
             console.log(results2);
             if (event.kind == 3) {
               command3_sql = ` UPDATE users SET kind3eventid='${event.id}', whenlastlistened=${currentTimestamp} WHERE pubkey='${event.pubkey}' ; `
