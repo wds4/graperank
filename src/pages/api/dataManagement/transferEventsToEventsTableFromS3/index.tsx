@@ -9,7 +9,7 @@ usage:
 
 http://localhost:3000/api/dataManagement/transferEventsToEventsTableFromS3?n=1
 
-https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=1
+https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=3
 
 */
 

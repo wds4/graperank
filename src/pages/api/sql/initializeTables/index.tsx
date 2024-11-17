@@ -27,29 +27,33 @@ export default async function handler(
       let command1 = `CREATE TABLE IF NOT EXISTS events ( `
       command1 += ` id INT NOT NULL AUTO_INCREMENT, `
       command1 += ` pubkey VARCHAR(255) NOT NULL, `
-      command1 += ` eventId VARCHAR(255) UNIQUE, `
+      command1 += ` eventId VARCHAR(255) NOT NULL UNIQUE, `
       command1 += ` created_at INT NOT NULL, `
       command1 += ` kind INT NOT NULL, `
+      command1 += ` flaggedForProcessing INT NOT NULL DEFAULT 1, `
       command1 += ` PRIMARY KEY (id) `
       command1 += ` ); `
       const results1 = await connection.query(command1);
       console.log(results1);
 
       let command2 = ` CREATE TABLE IF NOT EXISTS users ( `
-      command2 += ` id INT PRIMARY KEY, `
-      command2 += ` pubkey VARCHAR(255) UNIQUE, `
+      command2 += ` id INT NOT NULL AUTO_INCREMENT, `
+      command2 += ` pubkey VARCHAR(255) NOT NULL UNIQUE, `
       command2 += ` kind0EventId VARCHAR(255), `
       command2 += ` kind3EventId VARCHAR(255), `
       command2 += ` kind10000EventId VARCHAR(255), `
-      command2 += ` whenLastListened int `
+      command2 += ` whenLastListened int, `
+      command2 += ` flaggedForProcessing INT NOT NULL DEFAULT 1, `
+      command2 += ` PRIMARY KEY (id) `
       command2 += ` ); `
       const results2 = await connection.query(command2);
       console.log(results2);
 
       const command3 = ` CREATE TABLE IF NOT EXISTS customers ( 
-id INT PRIMARY KEY, 
-pubkey VARCHAR(255) UNIQUE, 
-whenSignedUp int 
+id INT NOT NULL AUTO_INCREMENT, 
+pubkey VARCHAR(255) NOT NULL UNIQUE, 
+whenSignedUp int,
+PRIMARY KEY (id)
 ); `
       const results3 = await connection.query(command3);
       console.log(results3);
