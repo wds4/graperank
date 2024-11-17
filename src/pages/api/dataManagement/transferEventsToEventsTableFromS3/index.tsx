@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
-import { validateEvent } from 'nostr-tools'
-import { NostrEvent } from "@nostr-dev-kit/ndk"
-import mysql from 'mysql2/promise'
+import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
+// import { validateEvent } from 'nostr-tools'
+// import { NostrEvent } from "@nostr-dev-kit/ndk"
+// import mysql from 'mysql2/promise'
 
 /*
 usage:
@@ -39,7 +39,6 @@ export default async function handler(
   console.log(`numEventsToProcess: ${numEventsToProcess}`)
 
   try {
-
     // fetch events that have been processed
     const params1 = {
       Bucket: 'grapevine-nostr-cache-bucket',
@@ -57,6 +56,7 @@ export default async function handler(
     const data2 = await client.send(command2);
 
     const aProcessedEventIds = []
+    
     if (data1.Contents) {
       const numEvents = data1.Contents.length
       for (let x=0; x < numEvents; x++) {
@@ -82,6 +82,7 @@ export default async function handler(
       }
     }
 
+    /*
     const connection = await mysql.createConnection({
       host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
       port: 3306,
@@ -113,12 +114,13 @@ export default async function handler(
         }
       }
     }
+    */
 
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
-        aUnprocessedEventIds, aProcessedEventIds, aEvents,
+        data1, data2,
       }
     }
     res.status(200).json(response)
