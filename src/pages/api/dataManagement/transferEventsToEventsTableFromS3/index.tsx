@@ -78,6 +78,7 @@ export default async function handler(
     }
 
     const aUnprocessedEventIds:string[] = []
+    const aDuplicatedEventIds:string[] = []
     if (data2.Contents) {
       const numEvents = data2.Contents.length
       for (let x=0; x < numEvents; x++) {
@@ -85,7 +86,11 @@ export default async function handler(
         if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
           const nextEventId = oNextEventContent.Key.substring(29)
           if (!aProcessedEventIds.includes(nextEventId)) {
+            // need to process event
             aUnprocessedEventIds.push(nextEventId)
+          } else {
+            // no need to process, but need to delete from recentlyAddedEventsByEventId/ s3 bucket
+            aDuplicatedEventIds.push(nextEventId)
           }
         }
       }
@@ -145,13 +150,26 @@ export default async function handler(
         }
       }
     }
+
+    // duplicated events need to be removed from recentlyAddedEventsByEventId but have already been processed (are already in eventsByEventId)
+    for (let n=0; n < aDuplicatedEventIds.length; n++) {
+      const eventId = aDuplicatedEventIds[n]
+      // s3 DeleteObjectCommand: delete event from recentlyAddedEventsByEventId
+      const params_delete = {
+        Bucket: 'grapevine-nostr-cache-bucket',
+        Key: 'recentlyAddedEventsByEventId/' + eventId,
+      }
+      const command_s3_delete = new DeleteObjectCommand(params_delete);
+      const data_delete = await client.send(command_s3_delete);
+      console.log(`===== data: ${JSON.stringify(data_delete)}`)
+    }
     
 
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
-        aCommands, numEventsToProcess, aProcessedEventIds, aUnprocessedEventIds, data1, data2, aEvents,
+        aCommands, numEventsToProcess, aProcessedEventIds, aUnprocessedEventIds, aDuplicatedEventIds, data1, data2, aEvents,
       }
     }
     res.status(200).json(response)
