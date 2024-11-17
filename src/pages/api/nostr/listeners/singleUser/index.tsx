@@ -3,7 +3,7 @@ import NDK, { NDKEvent, NDKFilter, NostrEvent } from '@nostr-dev-kit/ndk'
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import { validateEvent } from 'nostr-tools'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { makeEventSerializable, timeout } from '@/helpers'
+import { makeEventSerializable } from '@/helpers'
 // import mysql from 'mysql2/promise'
 
 const client = new S3Client({
@@ -146,7 +146,7 @@ export default async function handler(
           }
         })
         sub1.on('eose', async () => {
-          await timeout(5000)
+          // await timeout(5000)
           const response = {
             success: true,
             message: `api/tests/listeners/singleUser eose!`,
