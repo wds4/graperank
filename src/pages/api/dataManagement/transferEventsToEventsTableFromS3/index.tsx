@@ -110,7 +110,7 @@ export default async function handler(
         const isEventValid = validateEvent(event)
         if (isEventValid) {
           aEvents.push(event)
-          const command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
+          const command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.pubkey}', '${event.id}', ${event.created_at}, ${event.kind} ); `
           aCommands.push(command_sql)
           const results1 = await connection.query(command_sql);
           console.log(results1);

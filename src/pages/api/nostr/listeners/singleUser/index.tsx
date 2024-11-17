@@ -120,7 +120,7 @@ export default async function handler(
             let command3_sql = ''
             let command4_sql = ''
             //  INSERT into events
-            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
+            command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.pubkey}', '${event.id}', ${event.created_at}, ${event.kind} ); `
             const results1 = await connection.query(command_sql);
             console.log(results1);
             aMysqlResults.push(results1)
