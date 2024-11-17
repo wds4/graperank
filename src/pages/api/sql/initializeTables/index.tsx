@@ -25,11 +25,12 @@ export default async function handler(
       });
 
       let command1 = `CREATE TABLE IF NOT EXISTS events ( `
-      command1 += ` id INT PRIMARY KEY, `
-      command1 += ` pubkey VARCHAR(255), `
+      command1 += ` id INT NOT NULL AUTO_INCREMENT, `
+      command1 += ` pubkey VARCHAR(255) NOT NULL, `
       command1 += ` eventId VARCHAR(255) UNIQUE, `
-      command1 += ` created_at INT, `
-      command1 += ` kind INT `
+      command1 += ` created_at INT NOT NULL, `
+      command1 += ` kind INT NOT NULL, `
+      command1 += ` PRIMARY KEY (id) `
       command1 += ` ); `
       const results1 = await connection.query(command1);
       console.log(results1);
