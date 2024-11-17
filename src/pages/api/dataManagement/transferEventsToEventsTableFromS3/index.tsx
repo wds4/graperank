@@ -33,8 +33,8 @@ export default async function handler(
 ) {
   const searchParams = req.query
   let numEventsToProcess = 1;
-  if (searchParams.n && typeof searchParams.n == 'number') {
-    numEventsToProcess = searchParams.n
+  if (searchParams.n && typeof searchParams.n == 'string') {
+    numEventsToProcess = Number(searchParams.n)
   }
   console.log(`numEventsToProcess: ${numEventsToProcess}`)
 
