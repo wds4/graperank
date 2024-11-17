@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
-// import { validateEvent } from 'nostr-tools'
-// import { NostrEvent } from "@nostr-dev-kit/ndk"
-// import mysql from 'mysql2/promise'
+import { S3Client, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { validateEvent } from 'nostr-tools'
+import { NostrEvent } from "@nostr-dev-kit/ndk"
+import mysql from 'mysql2/promise'
 
 /*
 usage:
@@ -63,7 +63,9 @@ export default async function handler(
         const oNextEventContent = data1.Contents[x]
         if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
           const nextEventId = oNextEventContent.Key.substring(16)
-          aProcessedEventIds.push(nextEventId)
+          if (nextEventId) {
+            aProcessedEventIds.push(nextEventId)
+          }
         }
       }
     }
@@ -82,7 +84,6 @@ export default async function handler(
       }
     }
 
-    /*
     const connection = await mysql.createConnection({
       host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
       port: 3306,
@@ -114,7 +115,6 @@ export default async function handler(
         }
       }
     }
-      */
     
 
     const response:ResponseData = {
