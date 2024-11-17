@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
-// import { validateEvent } from 'nostr-tools'
-// import { NostrEvent } from "@nostr-dev-kit/ndk"
-// import mysql from 'mysql2/promise'
+import { S3Client, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { validateEvent } from 'nostr-tools'
+import { NostrEvent } from "@nostr-dev-kit/ndk"
+import mysql from 'mysql2/promise'
 
 /*
 usage:
@@ -68,7 +68,7 @@ export default async function handler(
       }
     }
 
-    const aUnprocessedEventIds = []
+    const aUnprocessedEventIds:string[] = []
     if (data2.Contents) {
       const numEvents = data2.Contents.length
       for (let x=0; x < numEvents; x++) {
@@ -82,9 +82,6 @@ export default async function handler(
       }
     }
 
-
-
-    /*
     const connection = await mysql.createConnection({
       host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
       port: 3306,
@@ -93,7 +90,10 @@ export default async function handler(
       database: process.env.AWS_MYSQL_DB,
     });
 
-    for (let n=0; n < Math.min(aUnprocessedEventIds, numEventsToProcess); n++) {
+    const aEvents = []
+
+    for (let n=0; n < Math.min(aUnprocessedEventIds.length, numEventsToProcess); n++) {
+      const eventId = aUnprocessedEventIds[n]
       const params = {
         Bucket: 'grapevine-nostr-cache-bucket',
         Key: 'eventsByEventId/' + eventId,
@@ -102,25 +102,23 @@ export default async function handler(
       const data = await client.send(command);
       const sEvent = await data.Body?.transformToString()
 
-      let oEvent = ''
       if (typeof sEvent == 'string') {
-        oEvent = JSON.parse(sEvent) 
+        const event:NostrEvent = JSON.parse(sEvent) 
+        const isEventValid = validateEvent(event)
+        if (isEventValid) {
+          aEvents.push(event)
+          const command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
+          const results1 = await connection.query(command_sql);
+          console.log(results1);
+        }
       }
-
-      const isEventValid = validateEvent(oEvent)
-
-      const command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
-      const results1 = await connection.query(command_sql);
-      console.log(results1);
     }
-    */
 
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
-        aUnprocessedEventIds, aProcessedEventIds,
-        data1, data2
+        aUnprocessedEventIds, aProcessedEventIds, aEvents,
       }
     }
     res.status(200).json(response)
