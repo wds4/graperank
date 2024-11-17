@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
+import { S3Client, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
