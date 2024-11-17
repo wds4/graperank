@@ -93,6 +93,7 @@ export default async function handler(
     });
 
     const aEvents = []
+    const aCommands = []
 
     for (let n=0; n < Math.min(aUnprocessedEventIds.length, numEventsToProcess); n++) {
       const eventId = aUnprocessedEventIds[n]
@@ -110,6 +111,7 @@ export default async function handler(
         if (isEventValid) {
           aEvents.push(event)
           const command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
+          aCommands.push(command_sql)
           const results1 = await connection.query(command_sql);
           console.log(results1);
         }
@@ -121,7 +123,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
-        aProcessedEventIds, aUnprocessedEventIds, data1, data2,
+        aCommands, numEventsToProcess, aProcessedEventIds, aUnprocessedEventIds, data1, data2, aEvents,
       }
     }
     res.status(200).json(response)
