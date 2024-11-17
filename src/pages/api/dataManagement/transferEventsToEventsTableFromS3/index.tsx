@@ -97,7 +97,7 @@ export default async function handler(
       const eventId = aUnprocessedEventIds[n]
       const params = {
         Bucket: 'grapevine-nostr-cache-bucket',
-        Key: 'eventsByEventId/' + eventId,
+        Key: 'recentlyAddedEventsByEventId/' + eventId,
       }
       const command = new GetObjectCommand(params);
       const data = await client.send(command);
