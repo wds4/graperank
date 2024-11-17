@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, ListObjectsCommand, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
+import { makeEventSerializable } from '@/helpers'
 
 /*
 usage:
@@ -25,6 +26,12 @@ type ResponseData = {
   success: boolean,
   message: string,
   data?: object,
+}
+
+const serializeEvent = async (event:NostrEvent) => {
+  const oOutput = makeEventSerializable(event)
+  const sOutput = JSON.stringify(oOutput)
+  return sOutput
 }
  
 export default async function handler(
@@ -110,10 +117,31 @@ export default async function handler(
         const isEventValid = validateEvent(event)
         if (isEventValid) {
           aEvents.push(event)
+          
+          // sql: add event to events table
           const command_sql = ` INSERT IGNORE INTO events (pubkey, eventid, created_at, kind) VALUES ( '${event.pubkey}', '${event.id}', ${event.created_at}, ${event.kind} ); `
           aCommands.push(command_sql)
           const results1 = await connection.query(command_sql);
           console.log(results1);
+
+          // s3 PutObjectCommand: add event to eventsByEventId
+          const params_put = {
+            Bucket: 'grapevine-nostr-cache-bucket',
+            Key: 'eventsByEventId/' + event.id,
+            Body: await serializeEvent(event),
+          }
+          const command_s3_put = new PutObjectCommand(params_put);
+          const data_put = await client.send(command_s3_put);
+          console.log(`===== data: ${JSON.stringify(data_put)}`)
+
+          // s3 DeleteObjectCommand: delete event from recentlyAddedEventsByEventId
+          const params_delete = {
+            Bucket: 'grapevine-nostr-cache-bucket',
+            Key: 'recentlyAddedEventsByEventId/' + event.id,
+          }
+          const command_s3_delete = new DeleteObjectCommand(params_delete);
+          const data_delete = await client.send(command_s3_delete);
+          console.log(`===== data: ${JSON.stringify(data_delete)}`)
         }
       }
     }
