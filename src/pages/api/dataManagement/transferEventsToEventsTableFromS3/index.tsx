@@ -62,7 +62,7 @@ export default async function handler(
       for (let x=0; x < numEvents; x++) {
         const oNextEventContent = data1.Contents[x]
         if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
-          const nextEventId = oNextEventContent.Key.substring(33)
+          const nextEventId = oNextEventContent.Key.substring(16)
           aProcessedEventIds.push(nextEventId)
         }
       }
@@ -74,7 +74,7 @@ export default async function handler(
       for (let x=0; x < numEvents; x++) {
         const oNextEventContent = data2.Contents[x]
         if (oNextEventContent.Key && typeof oNextEventContent.Key == 'string') {
-          const nextEventId = oNextEventContent.Key.substring(36)
+          const nextEventId = oNextEventContent.Key.substring(29)
           if (!aProcessedEventIds.includes(nextEventId)) {
             aUnprocessedEventIds.push(nextEventId)
           }
@@ -121,7 +121,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
-        aUnprocessedEventIds, data1, data2,
+        aProcessedEventIds, aUnprocessedEventIds, data1, data2,
       }
     }
     res.status(200).json(response)
