@@ -4,7 +4,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import { validateEvent } from 'nostr-tools'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { makeEventSerializable } from '@/helpers'
-// import mysql from 'mysql2/promise'
+import mysql from 'mysql2/promise'
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -65,9 +65,8 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      // const currentTimestamp = Math.floor(Date.now() / 1000)
+      const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
-        /*
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
           port: 3306,
@@ -75,7 +74,9 @@ export default async function handler(
           password: process.env.AWS_MYSQL_PWD,
           database: process.env.AWS_MYSQL_DB,
         });
-        */
+        const command_sql_insert = ` INSERT IGNORE INTO users (pubkey, whenlastlistened) VALUES ( '${pubkey1}', ${currentTimestamp} ); `
+        const results_insert = await connection.query(command_sql_insert);
+        console.log(`results_insert: ${results_insert}`)
 
         await ndk.connect()
         const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
