@@ -8,7 +8,7 @@ import { makeEventSerializable } from '@/helpers'
 /*
 usage:
 
-http://localhost:3000/api/dataManagement/transferEventsToEventsTableFromS3?n=1
+http://localhost:3000/api/dataManagement/transferEventsToEventsTableFromS3?n=3
 
 https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=3
 
