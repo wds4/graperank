@@ -49,7 +49,7 @@ export default async function handler(
     console.log(results_events);
     const aEvents = results_events[0]
 
-    const command_sql_none = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
+    const command_sql_none = ` SELECT * FROM events where kind=4 and flaggedForProcessing=1 `
     const results_events_none = await connection.query(command_sql_none);
 
 
