@@ -43,7 +43,7 @@ export default async function handler(
       command2 += ` kind3EventId VARCHAR(255), `
       command2 += ` kind10000EventId VARCHAR(255), `
       command2 += ` whenLastListened int, `
-      command2 += ` flaggedForProcessing INT NOT NULL DEFAULT 1, `
+      command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 1, `
       command2 += ` PRIMARY KEY (id) `
       command2 += ` ); `
       const results2 = await connection.query(command2);

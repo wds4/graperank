@@ -45,8 +45,12 @@ export default async function handler(
 
   try {
     const command_sql = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
-    const results1 = await connection.query(command_sql);
-    console.log(results1);
+    const results_events = await connection.query(command_sql);
+    console.log(results_events);
+    const aEvents = results_events[0]
+
+    const command_sql_none = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
+    const results_events_none = await connection.query(command_sql_none);
 
 
 
@@ -56,7 +60,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        results1
+        aEvents, results_events,results_events_none
       }
     }
     res.status(200).json(response)
