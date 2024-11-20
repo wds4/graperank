@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-// import { validateEvent } from 'nostr-tools'
-// import { NostrEvent } from "@nostr-dev-kit/ndk"
+import { validateEvent } from 'nostr-tools'
+import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
 /*
@@ -64,7 +64,7 @@ export default async function handler(
     
     const debuggingLog = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
-      const created_at_old = 0
+      let created_at_old = 0
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
@@ -89,9 +89,8 @@ export default async function handler(
           console.log(data_get)
           const sEvent = await data_get.Body?.transformToString()
           debuggingLog.push({sEvent})
-          /*
-          
-          console.log(`===== data: ${JSON.stringify(data_get)}`)
+
+        
           if (typeof sEvent == 'string') {
             const event_old:NostrEvent = JSON.parse(sEvent) 
             const isEventValid = validateEvent(event_old)
@@ -99,7 +98,9 @@ export default async function handler(
               created_at_old = event_old.created_at
             }
           }
-            */
+
+
+
         }
       }
       /*
