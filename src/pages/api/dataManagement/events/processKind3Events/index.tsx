@@ -63,14 +63,16 @@ export default async function handler(
     const sql1 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql1 = await connection.query(sql1);
     const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
-    /*
+    
+    const debuggingLog = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
-      let created_at_old = 0
+      const created_at_old = 0
       const oNextEvent = aEvents[x]
-      const pubkey = oNextEvent.pubkey
+      // const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
-      const kind3EventId_new = oNextEvent.eventId
-
+      // const kind3EventId_new = oNextEvent.eventId
+      debuggingLog.push({created_at_old, created_at_new, oNextEvent})
+      /*
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
 
@@ -97,6 +99,7 @@ export default async function handler(
           }
         }
       }
+
       
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
@@ -109,13 +112,15 @@ export default async function handler(
       const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE eventId='${kind3EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
-    }
+
       */
+    }
+    
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        aEvents, results_sql1
+        debuggingLog,  aEvents, results_sql1
       }
     }
     res.status(200).json(response)
