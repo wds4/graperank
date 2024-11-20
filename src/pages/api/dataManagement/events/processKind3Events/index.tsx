@@ -62,7 +62,7 @@ export default async function handler(
     const results_sql1 = await connection.query(sql1);
     const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
     
-    const debuggingLog = []
+    // const debuggingLog = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
       let created_at_old = 0
       const oNextEvent = aEvents[x]
@@ -72,7 +72,7 @@ export default async function handler(
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
       const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
-      debuggingLog.push({aUsers, results_sql2, created_at_old, created_at_new, oNextEvent})
+      // debuggingLog.push({aUsers, results_sql2, created_at_old, created_at_new, oNextEvent})
       console.log(aUsers.length)
 
       if (aUsers.length == 1) {
@@ -88,7 +88,7 @@ export default async function handler(
           const data_get = await client.send(command_s3_get);
           console.log(data_get)
           const sEvent = await data_get.Body?.transformToString()
-          debuggingLog.push({sEvent})
+          // debuggingLog.push({sEvent})
           if (typeof sEvent == 'string') {
             const event_old:NostrEvent = JSON.parse(sEvent) 
             const isEventValid = validateEvent(event_old)
@@ -99,7 +99,6 @@ export default async function handler(
         }
       }
 
-      
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
         const sql3= ` UPDATE users SET kind3eventId='${kind3EventId_new}', flaggedForKind3EventProcessing=1 WHERE pubkey='${pubkey}' `
@@ -111,15 +110,13 @@ export default async function handler(
       const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE eventId='${kind3EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
-
-
     }
     
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        debuggingLog,  aEvents, results_sql1
+        aEvents
       }
     }
     res.status(200).json(response)
