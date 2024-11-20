@@ -125,7 +125,7 @@ export default async function handler(
       }
 
       // cleaning up 
-      const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE kind3EventId='${kind3EventId_new}' `
+      const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE eventId='${kind3EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
 
