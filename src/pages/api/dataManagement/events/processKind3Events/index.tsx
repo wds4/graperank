@@ -113,13 +113,13 @@ export default async function handler(
 
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
-        const sql3= ` UPDATE users SET kind3eventId='${kind3EventId_new}', flagForKind3EventProcessing=1 WHERE pubkey=${pubkey} `
+        const sql3= ` UPDATE users SET kind3eventId='${kind3EventId_new}', flagForKind3EventProcessing=1 WHERE pubkey='${pubkey}' `
         const results_sql3 = await connection.query(sql3);
         console.log(results_sql3)
       }
 
       // cleaning up 
-      const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE kind3EventId=${kind3EventId_new} `
+      const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE kind3EventId='${kind3EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
     }
