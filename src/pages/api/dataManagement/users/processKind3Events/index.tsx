@@ -14,7 +14,7 @@ for each pubkey_parent:
   - get kind3Event from s3 using kind3EventId
   - cycle through each pubkey_child in kind3Event:
     - const pubkey_child
-    - sql3: INSERT OR IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES (pubkey_child, 1)
+    - sql3: INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES (pubkey_child, 1)
       (if already present, do nothing, including no need to set flaggedToUpdateNeo4jNode=1)
   // cleaning up
   - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
@@ -95,10 +95,10 @@ export default async function handler(
                 const pubkey_child = aTag[1]
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
-                const sql3 = ` INSERT OR IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `
+                const sql3 = ` INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `
                 aPubkeysDiscovered.push(sql3)
-                // const results3 = await connection.query(sql3);
-                // console.log(results3)
+                const results3 = await connection.query(sql3);
+                console.log(results3)
               }
             }
           }
@@ -106,11 +106,9 @@ export default async function handler(
       }
 
       // cleaning up 
-      /*
       const sql4 = ` UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey='${pubkey_parent}' `
       const results4 = await connection.query(sql4);
       console.log(results4)
-      */
     }
 
     const response:ResponseData = {
