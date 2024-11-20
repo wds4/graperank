@@ -68,7 +68,7 @@ export default async function handler(
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
-      // const kind3EventId_new = oNextEvent.eventId
+      const kind3EventId_new = oNextEvent.eventId
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
       const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
@@ -89,8 +89,6 @@ export default async function handler(
           console.log(data_get)
           const sEvent = await data_get.Body?.transformToString()
           debuggingLog.push({sEvent})
-
-        
           if (typeof sEvent == 'string') {
             const event_old:NostrEvent = JSON.parse(sEvent) 
             const isEventValid = validateEvent(event_old)
@@ -98,12 +96,9 @@ export default async function handler(
               created_at_old = event_old.created_at
             }
           }
-
-
-
         }
       }
-      /*
+
       
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
@@ -117,7 +112,7 @@ export default async function handler(
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
 
-      */
+
     }
     
     const response:ResponseData = {
