@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 
 /*
-- select * from users where flaggedForKind3EventProcessing=1
+- sql1: select * from users where flaggedForKind3EventProcessing=1
 for each pubkey_parent:
   - fetch full event from s3 bucket using kind3eventId
   - in neo4j, remove all follows emanating from pubkey_parent
@@ -46,8 +46,9 @@ export default async function handler(
   });
 
   try {
-    const command_sql = ` SELECT * FROM users where flaggedForKind3EventProcessing=1 `
-    const results1 = await connection.query(command_sql);
+    const sql1 = ` SELECT * FROM users where flaggedForKind3EventProcessing=1 `
+    const results1 = await connection.query(sql1);
+    const aUsers = JSON.parse(JSON.stringify(results1[0]))
     console.log(results1);
 
 
@@ -58,7 +59,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/processKind3Events data:`,
       data: { 
-        results1
+        aUsers, results1
       }
     }
     res.status(200).json(response)

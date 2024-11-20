@@ -16,6 +16,7 @@ import mysql from 'mysql2/promise'
     - sql3: update users set kind3eventId, flaggedForKind3EventProcessing=1 where pubkey;
   cleaning up:
   - sql4: update events set flaggedForProcessing=0 where eventId=kind3EventId_new
+
 usage:
 
 http://localhost:3000/api/dataManagement/events/processKind3Events?n=1

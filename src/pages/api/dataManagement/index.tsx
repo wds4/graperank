@@ -22,17 +22,20 @@ export default function handler(
     - if event already present in table: events, do nothing
     - if not already present, write event to sql table: events with flaggedForProcessing=1
     - in s3, move event from recentlyAddedEventsByEventId/ into processedEventsByEventId/
-
-    
-
 3. api/dataManagement/events/processKind3Events
-- select * from events where kind=3 and flaggedForProcessing=1
-- for each row:
-  - select kind3EventId from users where pubkey;
-  - get event from s3 using key: events/<kind3EventId>
-  - if timestamp is more recent, then:
-    - update users set kind3eventId, flaggedForKind3EventProcessing=1 where pubkey;
-    - update events set flaggedForProcessing=0 where kind3EventId
+  - sql1: select kind3EventId_new from events where kind=3 and flaggedForProcessing=1
+  - for each row:
+    (_new refers to the event in events being processed; _old refers to the event previously processed which may or may not be replaced)
+    - define pubkey, kind3EventId_new, created_at_new
+    - sql2: select kind3EventId_old from users where pubkey=pubkey;
+    - get event_old and event_new from s3 using keys: eventsByEventId/<kind3EventId_old> and eventsByEventId/<kind3EventId_new>
+    - extract created_at_old and created_at_new from their respective events
+    - if created_at_new > created_at_old, then:
+      - sql3: update users set kind3eventId, flaggedForKind3EventProcessing=1 where pubkey;
+    cleaning up:
+    - sql4: update events set flaggedForProcessing=0 where eventId=kind3EventId_new
+
+
 
 4. api/dataManagement/users/processKind3Events
 - select * from users where flaggedForKind3EventProcessing=1
