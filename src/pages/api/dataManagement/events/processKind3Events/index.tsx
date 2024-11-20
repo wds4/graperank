@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { validateEvent } from 'nostr-tools'
-import { NostrEvent } from "@nostr-dev-kit/ndk"
+// import { S3Client } from '@aws-sdk/client-s3'
+// import { validateEvent } from 'nostr-tools'
+// import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
 /*
@@ -24,6 +24,7 @@ https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 */
 
+/*
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -31,6 +32,7 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
+*/
 
 type ResponseData = {
   success: boolean,
@@ -61,8 +63,9 @@ export default async function handler(
     const sql1 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql1 = await connection.query(sql1);
     const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
+    const dataLogs = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
-      let created_at_old = 0
+      const created_at_old = 0
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
@@ -89,6 +92,8 @@ export default async function handler(
 
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
+
+      /*
       const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
       if (aUsers.length == 1) {
         const oUserData = aUsers[0]
@@ -122,12 +127,15 @@ export default async function handler(
       const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE kind3EventId='${kind3EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
+      */
+
+      dataLogs.push({kind3EventId_new, created_at_old, created_at_new, results_sql2})
     }
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        aEvents, results_sql1
+        dataLogs, aEvents, results_sql1
       }
     }
     res.status(200).json(response)
