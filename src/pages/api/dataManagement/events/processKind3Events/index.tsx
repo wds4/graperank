@@ -87,7 +87,7 @@ export default async function handler(
           const command_s3_get = new GetObjectCommand(params_get);
           const data_get = await client.send(command_s3_get);
           console.log(data_get)
-          debuggingLog.push(data_get)
+          // debuggingLog.push(data_get)
           /*
           const sEvent = await data_get.Body?.transformToString()
           console.log(`===== data: ${JSON.stringify(data_get)}`)
