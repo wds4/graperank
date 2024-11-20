@@ -26,4 +26,6 @@ https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?
 
 https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
+https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=1
+
 */

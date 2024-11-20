@@ -25,3 +25,16 @@ export function npubEncode(pubkey:string) {
         return 'could not calculate npub'
     }
 }
+
+export function isValidPubkey(pubkey:string) {
+    try {
+        const npub = nip19.npubEncode(pubkey)
+        if (npub) {
+            return npub
+        }
+        return false
+    } catch (e) {
+        console.log(e)
+        return false
+    }
+}

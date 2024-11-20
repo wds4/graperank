@@ -44,6 +44,10 @@ export default async function handler(
       command2 += ` kind10000EventId VARCHAR(255), `
       command2 += ` whenLastListened int, `
       command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedToUpdateNeo4jNode INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedToUpdateNeo4jFollows INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedToUpdateNeo4jMutes INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedToUpdateNeo4jReports INT NOT NULL DEFAULT 0, `
       command2 += ` PRIMARY KEY (id) `
       command2 += ` ); `
       const results2 = await connection.query(command2);

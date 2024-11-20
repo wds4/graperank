@@ -63,7 +63,6 @@ export default async function handler(
     const results_sql1 = await connection.query(sql1);
     const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
     
-    // const debuggingLog = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
       let created_at_old = 0
       const oNextEvent = aEvents[x]
