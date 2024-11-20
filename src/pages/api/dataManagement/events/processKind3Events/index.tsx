@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { validateEvent } from 'nostr-tools'
-import { NostrEvent } from "@nostr-dev-kit/ndk"
+// import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+// import { validateEvent } from 'nostr-tools'
+// import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
 /*
@@ -24,7 +24,7 @@ https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 */
 
-
+/*
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -32,6 +32,7 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
+  */
 
 type ResponseData = {
   success: boolean,
@@ -65,7 +66,7 @@ export default async function handler(
     
     const debuggingLog = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
-      let created_at_old = 0
+      const created_at_old = 0
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
@@ -80,6 +81,7 @@ export default async function handler(
         const oUserData = aUsers[0]
         const kind3EventId_old = oUserData.kind3EventId
         if (kind3EventId_old) {
+          /*
           // get event_old, then created_at_old
           const params_get = {
             Bucket: 'grapevine-nostr-cache-bucket',
@@ -96,6 +98,7 @@ export default async function handler(
               created_at_old = event_old.created_at
             }
           }
+            */
         }
       }
       /*
