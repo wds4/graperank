@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import { S3Client } from '@aws-sdk/client-s3'
-// import { validateEvent } from 'nostr-tools'
-// import { NostrEvent } from "@nostr-dev-kit/ndk"
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { validateEvent } from 'nostr-tools'
+import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
 /*
@@ -24,7 +24,7 @@ https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 */
 
-/*
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -32,7 +32,6 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-*/
 
 type ResponseData = {
   success: boolean,
@@ -66,7 +65,7 @@ export default async function handler(
     
     const debuggingLog = []
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
-      const created_at_old = 0
+      let created_at_old = 0
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
@@ -75,7 +74,8 @@ export default async function handler(
       const results_sql2 = await connection.query(sql2);
       const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
       debuggingLog.push({aUsers, results_sql2, created_at_old, created_at_new, oNextEvent})
-      /*
+      console.log(aUsers.length)
+
       if (aUsers.length == 1) {
         const oUserData = aUsers[0]
         const kind3EventId_old = oUserData.kind3EventId
@@ -98,7 +98,7 @@ export default async function handler(
           }
         }
       }
-
+      /*
       
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
