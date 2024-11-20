@@ -1,22 +1,36 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { validateEvent } from 'nostr-tools'
+import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
 /*
-- select * from events where kind=3 and flaggedForProcessing=1
+- sql1: select kind3EventId_new from events where kind=3 and flaggedForProcessing=1
 - for each row:
-  - select kind3EventId from users where pubkey;
-  - get event from s3 using key: events/<kind3EventId>
-  - if timestamp is more recent, then:
-    - update users set kind3eventId, flagForKind3EventProcessing=1 where pubkey;
-    - update events set flaggedForProcessing=0 where kind3EventId
-
+  (_new refers to the event in events being processed; _old refers to the event previously processed which may or may not be replaced)
+  - define pubkey, kind3EventId_new, created_at_new
+  - sql2: select kind3EventId_old from users where pubkey=pubkey;
+  - get event_old and event_new from s3 using keys: eventsByEventId/<kind3EventId_old> and eventsByEventId/<kind3EventId_new>
+  - extract created_at_old and created_at_new from their respective events
+  - if created_at_new > created_at_old, then:
+    - sql3: update users set kind3eventId, flagForKind3EventProcessing=1 where pubkey;
+  cleaning up:
+  - sql4: update events set flaggedForProcessing=0 where eventId=kind3EventId_new
 usage:
 
-http://localhost:3000/api/dataManagement/events/processKind3Events?n=3
+http://localhost:3000/api/dataManagement/events/processKind3Events?n=1
 
-https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=3
+https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 */
+
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
 
 type ResponseData = {
   success: boolean,
@@ -44,23 +58,76 @@ export default async function handler(
   });
 
   try {
-    const command_sql = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
-    const results_events = await connection.query(command_sql);
-    console.log(results_events);
-    const aEvents = results_events[0]
+    const sql1 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
+    const results_sql1 = await connection.query(sql1);
+    const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
+    for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
+      let created_at_old = 0
+      const oNextEvent = aEvents[x]
+      const pubkey = oNextEvent.pubkey
+      const created_at_new = oNextEvent.created_at
+      const kind3EventId_new = oNextEvent.eventId
+      /*
+      // const kind3EventId_new = oNextEvent.eventId
+      // get event_new
+      const params_get = {
+        Bucket: 'grapevine-nostr-cache-bucket',
+        Key: 'eventsByEventId/' + kind3EventId_new,
+      }
+      const command_s3_get = new GetObjectCommand(params_get);
+      const data_get = await client.send(command_s3_get);
+      const sEvent = await data_get.Body?.transformToString()
+      console.log(`===== data: ${JSON.stringify(data_get)}`)
+      if (typeof sEvent == 'string') {
+        const event_new:NostrEvent = JSON.parse(sEvent) 
+        const isEventValid = validateEvent(event_new)
+        if (isEventValid) {
+          created_at_new = event_new.created_at
+        }
+      }
+      */
 
-    const command_sql_none = ` SELECT * FROM events where kind=4 and flaggedForProcessing=1 `
-    const results_events_none = await connection.query(command_sql_none);
+      const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
+      const results_sql2 = await connection.query(sql2);
+      const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
+      if (aUsers.length == 1) {
+        const oUserData = aUsers[0]
+        const kind3EventId_old = oUserData.kind3EventId
+        // get event_old
+        const params_get = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: 'eventsByEventId/' + kind3EventId_old,
+        }
+        const command_s3_get = new GetObjectCommand(params_get);
+        const data_get = await client.send(command_s3_get);
+        const sEvent = await data_get.Body?.transformToString()
+        console.log(`===== data: ${JSON.stringify(data_get)}`)
+        if (typeof sEvent == 'string') {
+          const event_old:NostrEvent = JSON.parse(sEvent) 
+          const isEventValid = validateEvent(event_old)
+          if (isEventValid) {
+            created_at_old = event_old.created_at
+          }
+        }
+      }
 
+      if (created_at_new > created_at_old) {
+        // This triggers the next step, which is to transfer follows into the users table
+        const sql3= ` UPDATE users SET kind3eventId='${kind3EventId_new}', flagForKind3EventProcessing=1 WHERE pubkey=${pubkey} `
+        const results_sql3 = await connection.query(sql3);
+        console.log(results_sql3)
+      }
 
-
-
-
+      // cleaning up 
+      const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE kind3EventId=${kind3EventId_new} `
+      const results_sql4 = await connection.query(sql4);
+      console.log(results_sql4)
+    }
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        aEvents, results_events,results_events_none
+        aEvents, results_sql1
       }
     }
     res.status(200).json(response)
