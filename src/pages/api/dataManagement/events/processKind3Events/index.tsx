@@ -62,7 +62,7 @@ export default async function handler(
   try {
     const sql1 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql1 = await connection.query(sql1);
-    // const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
+    const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
     /*
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
       let created_at_old = 0
@@ -115,7 +115,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        results_sql1
+        aEvents, results_sql1
       }
     }
     res.status(200).json(response)
