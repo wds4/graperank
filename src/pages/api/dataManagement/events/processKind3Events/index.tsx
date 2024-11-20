@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { validateEvent } from 'nostr-tools'
-import { NostrEvent } from "@nostr-dev-kit/ndk"
+// import { S3Client } from '@aws-sdk/client-s3'
+// import { validateEvent } from 'nostr-tools'
+// import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
 /*
@@ -24,7 +24,7 @@ https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 */
 
-
+/*
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -32,7 +32,7 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-
+*/
 
 type ResponseData = {
   success: boolean,
@@ -62,32 +62,14 @@ export default async function handler(
   try {
     const sql1 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql1 = await connection.query(sql1);
-    const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
+    // const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
+    /*
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
       let created_at_old = 0
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
       const created_at_new = oNextEvent.created_at
       const kind3EventId_new = oNextEvent.eventId
-      /*
-      // const kind3EventId_new = oNextEvent.eventId
-      // get event_new
-      const params_get = {
-        Bucket: 'grapevine-nostr-cache-bucket',
-        Key: 'eventsByEventId/' + kind3EventId_new,
-      }
-      const command_s3_get = new GetObjectCommand(params_get);
-      const data_get = await client.send(command_s3_get);
-      const sEvent = await data_get.Body?.transformToString()
-      console.log(`===== data: ${JSON.stringify(data_get)}`)
-      if (typeof sEvent == 'string') {
-        const event_new:NostrEvent = JSON.parse(sEvent) 
-        const isEventValid = validateEvent(event_new)
-        if (isEventValid) {
-          created_at_new = event_new.created_at
-        }
-      }
-      */
 
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
@@ -127,14 +109,13 @@ export default async function handler(
       const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE eventId='${kind3EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
-
-      // dataLogs.push({kind3EventId_new, created_at_old, created_at_new, results_sql2})
     }
+      */
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        aEvents, results_sql1
+        results_sql1
       }
     }
     res.status(200).json(response)
