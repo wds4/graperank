@@ -13,7 +13,7 @@ import mysql from 'mysql2/promise'
   - get event_old and event_new from s3 using keys: eventsByEventId/<kind3EventId_old> and eventsByEventId/<kind3EventId_new>
   - extract created_at_old and created_at_new from their respective events
   - if created_at_new > created_at_old, then:
-    - sql3: update users set kind3eventId, flagForKind3EventProcessing=1 where pubkey;
+    - sql3: update users set kind3eventId, flaggedForKind3EventProcessing=1 where pubkey;
   cleaning up:
   - sql4: update events set flaggedForProcessing=0 where eventId=kind3EventId_new
 usage:
@@ -119,7 +119,7 @@ export default async function handler(
       
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
-        const sql3= ` UPDATE users SET kind3eventId='${kind3EventId_new}', flagForKind3EventProcessing=1 WHERE pubkey='${pubkey}' `
+        const sql3= ` UPDATE users SET kind3eventId='${kind3EventId_new}', flaggedForKind3EventProcessing=1 WHERE pubkey='${pubkey}' `
         const results_sql3 = await connection.query(sql3);
         console.log(results_sql3)
       }

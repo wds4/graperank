@@ -31,11 +31,11 @@ export default function handler(
   - select kind3EventId from users where pubkey;
   - get event from s3 using key: events/<kind3EventId>
   - if timestamp is more recent, then:
-    - update users set kind3eventId, flagForKind3EventProcessing=1 where pubkey;
+    - update users set kind3eventId, flaggedForKind3EventProcessing=1 where pubkey;
     - update events set flaggedForProcessing=0 where kind3EventId
 
 4. api/dataManagement/users/processKind3Events
-- select * from users where flagForKind3EventProcessing=1
+- select * from users where flaggedForKind3EventProcessing=1
 for each pubkey_parent:
   - fetch full event from s3 bucket using kind3eventId
   - in neo4j, remove all follows emanating from pubkey_parent
@@ -43,7 +43,7 @@ for each pubkey_parent:
     - sql: add to users table if not already present 
     - neo4j: add node if not already present
     - add follow relationship in neo4j
-  - sql: in table: users, set flagForKind3EventProcessing = 0
+  - sql: in table: users, set flaggedForKind3EventProcessing = 0
 
 api/dataManagement/events/processKind10000Events
 api/dataManagement/users/processKind10000Events

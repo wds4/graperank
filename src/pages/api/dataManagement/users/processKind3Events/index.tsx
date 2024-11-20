@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 
 /*
-- select * from users where flagForKind3EventProcessing=1
+- select * from users where flaggedForKind3EventProcessing=1
 for each pubkey_parent:
   - fetch full event from s3 bucket using kind3eventId
   - in neo4j, remove all follows emanating from pubkey_parent
@@ -10,7 +10,7 @@ for each pubkey_parent:
     - sql: add to users table if not already present 
     - neo4j: add node if not already present
     - add follow relationship in neo4j
-  - sql: in table: users, set flagForKind3EventProcessing = 0
+  - sql: in table: users, set flaggedForKind3EventProcessing = 0
 
 usage:
 
@@ -46,7 +46,7 @@ export default async function handler(
   });
 
   try {
-    const command_sql = ` SELECT * FROM users where flagForKind3EventProcessing=1 `
+    const command_sql = ` SELECT * FROM users where flaggedForKind3EventProcessing=1 `
     const results1 = await connection.query(command_sql);
     console.log(results1);
 
