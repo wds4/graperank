@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 // import { validateEvent } from 'nostr-tools'
 // import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
@@ -24,7 +24,6 @@ https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 */
 
-/*
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -32,7 +31,6 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-  */
 
 type ResponseData = {
   success: boolean,
@@ -81,7 +79,6 @@ export default async function handler(
         const oUserData = aUsers[0]
         const kind3EventId_old = oUserData.kind3EventId
         if (kind3EventId_old) {
-          /*
           // get event_old, then created_at_old
           const params_get = {
             Bucket: 'grapevine-nostr-cache-bucket',
@@ -89,6 +86,8 @@ export default async function handler(
           }
           const command_s3_get = new GetObjectCommand(params_get);
           const data_get = await client.send(command_s3_get);
+          console.log(data_get)
+          /*
           const sEvent = await data_get.Body?.transformToString()
           console.log(`===== data: ${JSON.stringify(data_get)}`)
           if (typeof sEvent == 'string') {
