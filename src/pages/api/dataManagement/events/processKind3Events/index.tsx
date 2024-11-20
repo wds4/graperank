@@ -73,9 +73,9 @@ export default async function handler(
       // const kind3EventId_new = oNextEvent.eventId
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
-      debuggingLog.push({results_sql2, created_at_old, created_at_new, oNextEvent})
-      /*
       const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
+      debuggingLog.push({aUsers, results_sql2, created_at_old, created_at_new, oNextEvent})
+      /*
       if (aUsers.length == 1) {
         const oUserData = aUsers[0]
         const kind3EventId_old = oUserData.kind3EventId
