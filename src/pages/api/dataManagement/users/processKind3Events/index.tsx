@@ -95,7 +95,8 @@ export default async function handler(
                 const pubkey_child = aTag[1]
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
-                // const sql3 = ` INSERT OR IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `
+                const sql3 = ` INSERT OR IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `
+                aPubkeysDiscovered.push(sql3)
                 // const results3 = await connection.query(sql3);
                 // console.log(results3)
               }
