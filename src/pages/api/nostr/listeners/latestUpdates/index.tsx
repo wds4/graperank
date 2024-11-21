@@ -57,7 +57,7 @@ export default async function handler(
   }
   const currentTimestamp = Math.floor(Date.now() / 1000)
   const sinceTimestamp = currentTimestamp - numSeconds
-  const startTimestamp = Date.now()
+  // const startTimestamp = Date.now()
   try {
     await ndk.connect()
     const filter:NDKFilter = { kinds: [3, 10000], since: sinceTimestamp, limit: 10 }
