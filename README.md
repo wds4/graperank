@@ -168,6 +168,8 @@ add lib/neo4j and /api/tests/neo4j/index.ts
 
 neo4j api endpoint works!! (locally)
 
+## Adding nostr
+
 locally:
 
 ```

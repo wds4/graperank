@@ -77,11 +77,15 @@ export default async function handler(
       console.log(result1)
       aCypherResults.push({cypher1, result1})
 
+      /*
       // cypher2: remove all FOLLOWS edges starting at pubkey_parent
-      const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) REMOVE f RETURN m.pubkey `
+      const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) 
+      REMOVE f 
+      RETURN m `
       const result2 = await write(cypher2, {})
       console.log(result2)
       aCypherResults.push({cypher2, result2})
+      */
 
       if (kind3EventId) {
         const params_get = {
