@@ -12,12 +12,14 @@ for each row:
   - get const pubkey_parent, const kind3EventId
   - cypher1: add node for pubkey_parent if does not already exist
   - cypher2: remove all FOLLOWS edges starting at pubkey_parent
-  - s31: get kind3Event using kind3EventId
+  - s3_1: get kind3Event using kind3EventId
   - cycle through each pubkey_child in kind3Event:
     - const pubkey_child
-    - cypher3: add edge FOLLOWS from pubkey_parent to pubkey_child
+    - cypher3: add node for pubkey_child if does not already exist
+    (TODO: need to add pubkey_child to sql table users if not already present ???)
+    - cypher4: add edge FOLLOWS from pubkey_parent to pubkey_child
   // cleaning up
-  - sql4: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
+  - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
 
 usage:
 
@@ -61,7 +63,7 @@ export default async function handler(
   });
 
   try {
-    const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 `
+    const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=0 `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
     const aPubkeysDiscovered = []
@@ -73,21 +75,17 @@ export default async function handler(
 
       // cypher1: add node pubkey_parent if not already exists
       const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
-      const result1 = await write(cypher1, {})
-      console.log(result1)
-      aCypherResults.push({cypher1, result1})
-
+      const cypher1_results = await write(cypher1, {})
+      // console.log(cypher1_results)
+      aCypherResults.push({cypher1, cypher1_results})
       
       // cypher2: remove all FOLLOWS edges starting at pubkey_parent
       const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) 
       REMOVE f 
       RETURN m `
-      aCypherResults.push({cypher2})
-      /*
-      const result2 = await write(cypher2, {})
-      console.log(result2)
-      aCypherResults.push({cypher2, result2})
-      */
+      const cypher2_results = await write(cypher2, {})
+      // console.log(cypher2_results)
+      aCypherResults.push({cypher2, cypher2_results})
 
       if (kind3EventId) {
         const params_get = {
@@ -110,11 +108,18 @@ export default async function handler(
                 const pubkey_child = aTag[1]
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
-                // cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child
-                const cypher3 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'}), (m:NostrUser {pubkey: '${pubkey_child}'}) MERGE (n)-[:FOLLOWS]->(m)`
-                // const result3 = await write(cypher3, {})
-                // console.log(result3)
-                aCypherResults.push({cypher3})
+
+                // cypher3: add node pubkey_child if not already exists
+                const cypher3 = `MERGE (n:NostrUser {pubkey: '${pubkey_child}'}) RETURN n.pubkey AS pubkey `
+                const cypher3_results = await write(cypher3, {})
+                // console.log(cypher3_results)
+                aCypherResults.push({cypher3, cypher3_results})
+
+                // cypher4: add edge FOLLOWS from pubkey_parent to pubkey_child
+                const cypher4 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'}), (m:NostrUser {pubkey: '${pubkey_child}'}) MERGE (n)-[:FOLLOWS]->(m)`
+                const cypher4_results = await write(cypher4, {})
+                // console.log(cypher4_results)
+                aCypherResults.push({cypher4, cypher4_results})
               }
             }
           }
@@ -122,9 +127,9 @@ export default async function handler(
       }
 
       // cleaning up 
-      const sql4 = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
-      const results4 = await connection.query(sql4);
-      console.log(results4)
+      const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
+      const sql2_results = await connection.query(sql2);
+      console.log(sql2_results)
     }
 
     const response:ResponseData = {
