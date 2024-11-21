@@ -4,25 +4,26 @@ import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 import { isValidPubkey } from '@/helpers/nip19'
+import { read } from '@/lib/neo4j'
 
 /*
-- sql1: select * from users where flaggedForKind3EventProcessing=1
-for each pubkey_parent:
-  - get pubkey_parent, kind3EventId
-  - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey=pubkey_parent
-  - get kind3Event from s3 using kind3EventId
+- select * from users where flaggedToUpdateNeo4jFollows=1
+for each row:
+  - get const pubkey_parent, const kind3EventId
+  - cypher1: add node for pubkey_parent if does not already exist
+  - cypher2: remove all FOLLOWS edges starting at pubkey_parent
+  - s31: get kind3Event using kind3EventId
   - cycle through each pubkey_child in kind3Event:
     - const pubkey_child
-    - sql3: INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES (pubkey_child, 1)
-      (if already present, do nothing, including no need to set flaggedToUpdateNeo4jNode=1)
+    - cypher3: add edge FOLLOWS from pubkey_parent to pubkey_child
   // cleaning up
-  - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
+  - sql4: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
 
 usage:
 
-http://localhost:3000/api/dataManagement/users/processKind3Events?n=3
+http://localhost:3000/api/dataManagement/users/updateNeo4jFollows?n=1
 
-https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=3
+https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1
 
 */
 
@@ -60,18 +61,25 @@ export default async function handler(
   });
 
   try {
-    const sql1 = ` SELECT * FROM users where flaggedForKind3EventProcessing=1 `
+    const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
     const aPubkeysDiscovered = []
+    const aCypherResults = []
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
       const pubkey_parent = oNextUser.pubkey
       const kind3EventId = oNextUser.kind3EventId
 
-      const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey='${pubkey_parent}' `
-      const results2 = await connection.query(sql2);
-      console.log(results2)
+      // cypher1: add node pubkey_parent if not already exists
+      const cypher1 = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
+      console.log(cypher1)
+      aCypherResults.push({cypher1})
+
+      // cypher2: remove all FOLLOWS edges starting at pubkey_parent
+      const cypher2 = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
+      console.log(cypher2)
+      aCypherResults.push({cypher2})
 
       if (kind3EventId) {
         const params_get = {
@@ -86,7 +94,7 @@ export default async function handler(
           const oKind3Event:NostrEvent = JSON.parse(sEvent) 
           const isEventValid = validateEvent(oKind3Event)
           if (isEventValid) {
-            // cycle through each pubkey and add to users table
+            // cycle through each pubkey_child in kind3Event and add edge FOLLOWS from pubkey_parent to pubkey_child
             const aTags = oKind3Event.tags
             for (let t=0; t < aTags.length; t++) {
               const aTag = aTags[t]
@@ -94,10 +102,10 @@ export default async function handler(
                 const pubkey_child = aTag[1]
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
-                const sql3 = ` INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `
-                // aPubkeysDiscovered.push(sql3)
-                const results3 = await connection.query(sql3);
-                console.log(results3)
+                // cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child
+                const cypher3 = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
+                console.log(cypher3)
+                aCypherResults.push({cypher3})
               }
             }
           }
@@ -105,7 +113,7 @@ export default async function handler(
       }
 
       // cleaning up 
-      const sql4 = ` UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey='${pubkey_parent}' `
+      const sql4 = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
       const results4 = await connection.query(sql4);
       console.log(results4)
     }
@@ -114,7 +122,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/processKind3Events data:`,
       data: { 
-        aUsers, aPubkeysDiscovered
+        aUsers, aCypherResults, aPubkeysDiscovered
       }
     }
     res.status(200).json(response)

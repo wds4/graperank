@@ -34,22 +34,33 @@ export default function handler(
       - sql3: update users set kind3eventId, flaggedForKind3EventProcessing=1 where pubkey;
     cleaning up:
     - sql4: update events set flaggedForProcessing=0 where eventId=kind3EventId_new
-
-
-
 4. api/dataManagement/users/processKind3Events
-- select * from users where flaggedForKind3EventProcessing=1
+- sql1: select * from users where flaggedForKind3EventProcessing=1
 for each pubkey_parent:
-  - fetch full event from s3 bucket using kind3eventId
-  - in neo4j, remove all follows emanating from pubkey_parent
-  - cycle through pubkeys in kind3Event. for each pubkey_child:
-    - sql: add to users table if not already present 
-    - neo4j: add node if not already present
-    - add follow relationship in neo4j
-  - sql: in table: users, set flaggedForKind3EventProcessing = 0
+  - get pubkey_parent, kind3EventId
+  - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey=pubkey_parent
+  - get kind3Event from s3 using kind3EventId
+  - cycle through each pubkey_child in kind3Event:
+    - const pubkey_child
+    - sql3: INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES (pubkey_child, 1)
+      (if already present, do nothing, including no need to set flaggedToUpdateNeo4jNode=1)
+  // cleaning up
+  - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
 
-api/dataManagement/events/processKind10000Events
-api/dataManagement/users/processKind10000Events
+
+
+
+
+5. api/dataManagement/users/updateNeo4jNode
+- select * from users where flaggedToUpdateNeo4jNode=1
+
+6. api/dataManagement/users/updateNeo4jFollows
+- select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 (wait until parent node is properly updated)
+
+
+
+3b. api/dataManagement/events/processKind10000Events
+4b. api/dataManagement/users/processKind10000Events
 
 api/dataManagement/users/listen = api/nostr/listeners/multipleUsers 
 */
