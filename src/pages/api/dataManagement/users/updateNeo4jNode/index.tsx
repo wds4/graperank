@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-import { read } from '@/lib/neo4j'
+import { write } from '@/lib/neo4j'
 
 /*
 - sql1: select * from users where flaggedToUpdateNeo4jNode=1
@@ -56,7 +56,7 @@ export default async function handler(
       const pubkey_parent = oNextUser.pubkey
 
       // cypher1: add node pubkey_parent if not already exists
-      const cypher1 = await read(`MERGE (hodlhodlhodl:NostrUser {pubkey: '${pubkey_parent}'}) RETURN hodlhodlhodl.pubkey AS pubkey `, {})
+      const cypher1 = await write(`MERGE (${pubkey_parent}:NostrUser {pubkey: '${pubkey_parent}'}) RETURN ${pubkey_parent}.pubkey AS pubkey `, {})
       console.log(cypher1)
       aCypherResults.push({cypher1})
 
