@@ -77,9 +77,9 @@ export default async function handler(
   if (numFocusModes == 1) {
     // WHERE clause, no need for parantheses
     sql1 = `SELECT * FROM users WHERE `
-    if (searchParams.kind0EventId) { sql1 += ` kind0EventId IS NOT NULL ` }
-    if (searchParams.kind3EventId) { sql1 += ` kind3EventId IS NOT NULL ` }
-    if (searchParams.kind10000EventId) { sql1 += ` kind10000EventId IS NOT NULL ` }
+    if (searchParams.kind0EventId) { sql1 += ` kind0EventId IS NULL ` }
+    if (searchParams.kind3EventId) { sql1 += ` kind3EventId IS NULL ` }
+    if (searchParams.kind10000EventId) { sql1 += ` kind10000EventId IS NULL ` }
   }
   if (numFocusModes > 1) {
     // WHERE clause, grouped by OR, in parentheses 
@@ -87,31 +87,22 @@ export default async function handler(
     let needOrYet = false
     if (searchParams.kind0EventId) {
       if (needOrYet) { sql1 += `OR` }
-      sql1 += ` kind0EventId IS NOT NULL `
+      sql1 += ` (kind0EventId IS NULL) `
       needOrYet = true
     }
     if (searchParams.kind3EventId) {
       if (needOrYet) { sql1 += `OR` }
-      sql1 += ` kind3EventId IS NOT NULL `
+      sql1 += ` (kind3EventId IS NULL) `
       needOrYet = true
     }
     if (searchParams.kind10000EventId) {
       if (needOrYet) { sql1 += `OR` }
-      sql1 += ` kind10000EventId IS NOT NULL `
+      sql1 += ` (kind10000EventId IS NULL) `
       needOrYet = true
     }
     sql1 += ` ) ` 
   }
   sql1 += `ORDER BY whenLastListened ASC LIMIT ${maxNumPubkeysForFilter}`
-
-  const response = {
-    success: true,
-    message: `api/tests/listeners/multipleUsers temporary stopping point. data:`,
-    data: {
-      sql1,
-    }
-  }
-  res.status(200).json(response)
 
   const aPubkeys:string[] = []
   try {
@@ -124,6 +115,15 @@ export default async function handler(
     });
     const sql1_results = await connection.query(sql1);
     console.log(`sql1_results: ${sql1_results}`)
+
+    const response = {
+      success: true,
+      message: `api/tests/listeners/multipleUsers temporary stopping point. data:`,
+      data: {
+        sql1, sql1_results
+      }
+    }
+    res.status(200).json(response)
 
     await ndk.connect()
     const filter:NDKFilter = { kinds: [3, 10000], authors: aPubkeys }
