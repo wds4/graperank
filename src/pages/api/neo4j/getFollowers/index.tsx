@@ -40,7 +40,7 @@ export default async function handler(
         const aUsers = JSON.parse(JSON.stringify(result1))
         for (let x=0; x < aUsers.length; x++) {
           const oNextUserData = aUsers[x]
-          const pk = oNextUserData.n.properties.pubkey
+          const pk = oNextUserData.m.properties.pubkey
           aPubkeys.push(pk)
         }
 
