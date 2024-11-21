@@ -83,9 +83,9 @@ export default async function handler(
       const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) 
       REMOVE f 
       RETURN m `
-      const cypher2_results = await write(cypher2, {})
+      // const cypher2_results = await write(cypher2, {})
       // console.log(cypher2_results)
-      aCypherResults.push({cypher2, cypher2_results})
+      aCypherResults.push({cypher2})
 
       if (kind3EventId) {
         const params_get = {
