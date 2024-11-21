@@ -27,9 +27,9 @@ export default async function handler(
     // cypher1: add node pubkey_parent if not already exists
     const cypher1 = `MATCH (n:NostrUser) RETURN n `
     const result1 = await read(cypher1, {})
-    console.log(result1)
+    // console.log(result1)
     const aPubkeys = []
-    const aUsers = JSON.parse(JSON.stringify(result1[0]))
+    const aUsers = JSON.parse(JSON.stringify(result1))
     for (let x=0; x < aUsers.length; x++) {
       const oNextUserData = aUsers[x]
       const pk = oNextUserData.n.properties.pubkey
