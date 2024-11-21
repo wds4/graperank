@@ -25,7 +25,12 @@ focus modes:
 - if kind0EventId=true, cycle only through users where !kind0EventId
 - if kind3EventId=true, cycle only through users where !kind3EventId
 - if kind10000EventId=true, cycle only through users where !kind10000EventId
+
 sql1: SELECT * FROM users [WHERE kind[x]EventId IS NOT NULL] ORDER BY whenLastListened ASC LIMIT ${maxNumPubkeysForFilter}
+extract const aPubkeys from sql1_results
+nostr filter = { kinds: [3, 10000], authors: aPubkeys }
+for each received event: add event to s3 under recentlyAddedEventsByEventId
+sql2: UPDATE users SET whenLastListened=currentTimestamp WHERE pubkey in aPubkeys
 
 usage:
 
@@ -106,6 +111,7 @@ export default async function handler(
   sql1 += `ORDER BY whenLastListened ASC LIMIT ${maxNumPubkeysForFilter}`
 
   const aPubkeys:string[] = []
+  const currentTimestamp = Math.floor(Date.now() / 1000)
   try {
     const connection = await mysql.createConnection({
       host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
@@ -150,11 +156,14 @@ export default async function handler(
     })
     sub1.on('eose', async () => {
       await timeout(5000)
+      const sPubkeys = JSON.stringify(aPubkeys).replace('[','(').replace(']',')')
+      const sql2 = ` UPDATE users SET whenLastListened=${currentTimestamp} WHERE pubkey IN ${sPubkeys} `
+      
       const response = {
         success: true,
         message: `api/tests/listeners/multipleUsers eose!`,
         data: {
-          sql1, aPubkeys, aReceivedEvents
+          sql1, sql2, aPubkeys, aReceivedEvents
         }
       }
       res.status(200).json(response)
