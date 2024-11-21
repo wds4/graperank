@@ -48,7 +48,7 @@ export default async function handler(
           success: true,
           message: `api/neo4j/getFollowers data:`,
           data: {
-            cypher: cypher1, numFollowers: aPubkeys.length, aPubkeys,
+            cypher: cypher1, numFollowers: aPubkeys.length, aPubkeys, aUsers, result1
           }
         }
         res.status(200).json(response)
