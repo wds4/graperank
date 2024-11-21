@@ -111,7 +111,7 @@ export default async function handler(
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
                 // cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child
-                const cypher3 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'})-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_child}'}) `
+                const cypher3 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'}), (m:NostrUser {pubkey: '${pubkey_child}'}) MERGE (n)-[:FOLLOWS]->(m)`
                 // const result3 = await write(cypher3, {})
                 // console.log(result3)
                 aCypherResults.push({cypher3})
