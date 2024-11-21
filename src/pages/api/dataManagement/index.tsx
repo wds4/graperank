@@ -46,18 +46,30 @@ for each pubkey_parent:
       (if already present, do nothing, including no need to set flaggedToUpdateNeo4jNode=1)
   // cleaning up
   - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
-
-
-
-
-
 5. api/dataManagement/users/updateNeo4jNode
-- select * from users where flaggedToUpdateNeo4jNode=1
-
+- sql1: select * from users where flaggedToUpdateNeo4jNode=1
+for each row:
+  - get const pubkey_parent
+  - cypher1: add node for pubkey_parent if not already present
+  // cleaning up
+  - sql2: UPDATE users SET flaggedToUpdateNeo4jNode = 0 WHERE pubkey=pubkey_parent
 6. api/dataManagement/users/updateNeo4jFollows
 - select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 (wait until parent node is properly updated)
+for each row:
+  - get const pubkey_parent, const kind3EventId
+  - cypher1: add node for pubkey_parent if does not already exist
+  - cypher2: remove all FOLLOWS edges starting at pubkey_parent
+  - s3_1: get kind3Event using kind3EventId
+  - cycle through each pubkey_child in kind3Event:
+    - const pubkey_child
+    - cypher3: add node for pubkey_child if does not already exist
+    (TODO: need to add pubkey_child to sql table users if not already present ???)
+    - cypher4: add edge FOLLOWS from pubkey_parent to pubkey_child
+  // cleaning up
+  - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
 
 
+  
 
 3b. api/dataManagement/events/processKind10000Events
 4b. api/dataManagement/users/processKind10000Events
