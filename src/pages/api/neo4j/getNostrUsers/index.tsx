@@ -25,7 +25,7 @@ export default async function handler(
 ) {
   try {
     // cypher1: add node pubkey_parent if not already exists
-    const cypher1 = await read(`MATCH (*:NostrUser) RETURN * `, {})
+    const cypher1 = await read(`MATCH (n:NostrUser) RETURN n `, {})
     console.log(cypher1)
 
     const response:ResponseData = {
