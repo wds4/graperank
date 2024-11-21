@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NDK, { NDKEvent, NDKFilter, NostrEvent } from '@nostr-dev-kit/ndk'
-import { verifyPubkeyValidity } from '@/helpers/nip19'
 import { validateEvent } from 'nostr-tools'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { makeEventSerializable } from '@/helpers'
@@ -123,6 +122,8 @@ export default async function handler(
       password: process.env.AWS_MYSQL_PWD,
       database: process.env.AWS_MYSQL_DB,
     });
+    const sql1_results = await connection.query(sql1);
+    console.log(`sql1_results: ${sql1_results}`)
 
     await ndk.connect()
     const filter:NDKFilter = { kinds: [3, 10000], authors: aPubkeys }
