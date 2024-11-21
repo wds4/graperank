@@ -40,7 +40,7 @@ export default async function handler(
       success: true,
       message: `api/neo4j/getNostrUsers data:`,
       data: { 
-        cypher1, numPubkeys: aPubkeys.length, aPubkeys
+        cypher1, numPubkeys: aPubkeys.length, numUsers: aUsers.length, aPubkeys, aUsers
       }
     }
     res.status(200).json(response)
