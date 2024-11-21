@@ -37,6 +37,7 @@ usage:
 http://localhost:3000/api/nostr/listeners/multipleUsers?n=5
 
 https://graperank.tech/api/nostr/listeners/multipleUsers?n=5
+https://graperank.tech/api/nostr/listeners/multipleUsers?n=5&kind0EventId=true&kind3EventId&kind10000EventId=true
 */
 
 const explicitRelayUrls = [
@@ -155,6 +156,7 @@ export default async function handler(
       }
     })
     sub1.on('eose', async () => {
+      // TODO: not sure whether timeout is needed
       await timeout(5000)
       const sPubkeys = JSON.stringify(aPubkeys).replace('[','(').replace(']',')')
       const sql2 = ` UPDATE users SET whenLastListened=${currentTimestamp} WHERE pubkey IN ${sPubkeys} `
