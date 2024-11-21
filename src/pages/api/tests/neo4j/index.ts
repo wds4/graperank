@@ -5,7 +5,7 @@ import { read } from '../../../../lib/neo4j'
 /*
 to access:
 http://localhost:3000/api/tests/neo4j
-https://interpretation-brainstorm.vercel.app/api/tests/neo4j
+https://graperank.tech/api/tests/neo4j
 */
 
 type ResponseData = {
