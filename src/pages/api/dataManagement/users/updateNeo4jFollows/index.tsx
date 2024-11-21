@@ -80,11 +80,10 @@ export default async function handler(
       aCypherResults.push({cypher1, cypher1_results})
       
       // cypher2: remove all FOLLOWS edges starting at pubkey_parent
-      const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) 
-      REMOVE f 
-      RETURN m `
-      // const cypher2_results = await write(cypher2, {})
-      // console.log(cypher2_results)
+      const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->() 
+      DELETE f `
+      const cypher2_results = await write(cypher2, {})
+      console.log(cypher2_results)
       aCypherResults.push({cypher2})
 
       if (kind3EventId) {
@@ -136,7 +135,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/updateNeo4jFollows data:`,
       data: { 
-        aUsers, aCypherResults, aPubkeysDiscovered
+        aUsers, aPubkeysDiscovered
       }
     }
     res.status(200).json(response)
