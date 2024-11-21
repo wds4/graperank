@@ -53,7 +53,7 @@ use `ssh -i "pgftGrapeRanktech.pem" ubuntu@ec2-44-201-138-209.compute-1.amazonaw
 
 in ec2:
 
-following https://dev.to/j3rry320/deploy-your-nextjs-app-like-a-pro-a-step-by-step-guide-using-nginx-pm2-certbot-and-git-on-your-linux-server-3286:
+following https://dev.to/j3rry320/deploy-your-nextjs-app-like-a-pro-a-step-by-step-guide-using-nginx-pm2-certbot-and-git-on-your-linux-server-3286
 
 ```
 sudo apt-get update

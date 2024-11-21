@@ -31,6 +31,7 @@ export default async function handler(
       command1 += ` created_at INT NOT NULL, `
       command1 += ` kind INT NOT NULL, `
       command1 += ` flaggedForProcessing INT NOT NULL DEFAULT 1, `
+      command1 += ` whenRowAdded INT NOT NULL DEFAULT 0, `
       command1 += ` PRIMARY KEY (id) `
       command1 += ` ); `
       const results1 = await connection.query(command1);
@@ -48,6 +49,7 @@ export default async function handler(
       command2 += ` flaggedToUpdateNeo4jFollows INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jMutes INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jReports INT NOT NULL DEFAULT 0, `
+      command2 += ` whenRowAdded INT NOT NULL DEFAULT 0, `
       command2 += ` PRIMARY KEY (id) `
       command2 += ` ); `
       const results2 = await connection.query(command2);
@@ -56,7 +58,7 @@ export default async function handler(
       const command3 = ` CREATE TABLE IF NOT EXISTS customers ( 
 id INT NOT NULL AUTO_INCREMENT, 
 pubkey VARCHAR(255) NOT NULL UNIQUE, 
-whenSignedUp int,
+whenSignedUp INT NOT NULL DEFAULT 0,
 PRIMARY KEY (id)
 ); `
       const results3 = await connection.query(command3);
