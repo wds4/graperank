@@ -116,11 +116,18 @@ export default async function handler(
     const sql1_results = await connection.query(sql1);
     console.log(`sql1_results: ${sql1_results}`)
 
+    const aUsers = JSON.parse(JSON.stringify(sql1_results[0]))
+    for (let x=0; x < aUsers.length; x++) {
+      const oNextUser = aUsers[x]
+      const pk = oNextUser.pubkey
+      aPubkeys.push(pk)
+    }
+
     const response = {
       success: true,
       message: `api/tests/listeners/multipleUsers temporary stopping point. data:`,
       data: {
-        sql1, sql1_results
+        sql1, aPubkeys, sql1_results
       }
     }
     res.status(200).json(response)
