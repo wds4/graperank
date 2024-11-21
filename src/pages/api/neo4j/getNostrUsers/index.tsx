@@ -31,8 +31,8 @@ export default async function handler(
     const aPubkeys = []
     const aUsers = JSON.parse(JSON.stringify(result1[0]))
     for (let x=0; x < aUsers.length; x++) {
-      const oNextUserData = aUsers[x];
-      const pk = oNextUserData.properties.pubkey
+      const oNextUserData = aUsers[x]
+      const pk = oNextUserData.n.properties.pubkey
       aPubkeys.push(pk)
     }
 
@@ -40,7 +40,7 @@ export default async function handler(
       success: true,
       message: `api/neo4j/getNostrUsers data:`,
       data: { 
-        cypher1, numPubkeys: aPubkeys.length, numUsers: aUsers.length, aPubkeys, aUsers
+        cypher1, numPubkeys: aPubkeys.length, numUsers: aUsers.length, aPubkeys, aUsers, result1
       }
     }
     res.status(200).json(response)
