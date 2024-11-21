@@ -60,19 +60,17 @@ export default async function handler(
       console.log(cypher1)
       aCypherResults.push({cypher1})
 
-      /*
       // cleaning up 
-      const sql2 = ` UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey='${pubkey_parent}' `
+      const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jNode=0 WHERE pubkey='${pubkey_parent}' `
       const results2 = await connection.query(sql2);
       console.log(results2)
-      */
     }
 
     const response:ResponseData = {
       success: true,
-      message: `api/dataManagement/users/processKind3Events data:`,
+      message: `api/dataManagement/users/updateNeo4jNode data:`,
       data: { 
-        aUsers, aCypherResults
+        numUsers: aUsers.length, aCypherResults
       }
     }
     res.status(200).json(response)
@@ -82,7 +80,7 @@ export default async function handler(
     console.log(`error: ${JSON.stringify(error)}`)
     const response:ResponseData = {
       success: false,
-      message: `api/dataManagement/users/processKind3Events error: ${error}!`,
+      message: `api/dataManagement/users/updateNeo4jNode error: ${error}!`,
     }
     res.status(500).json(response)
   } finally {

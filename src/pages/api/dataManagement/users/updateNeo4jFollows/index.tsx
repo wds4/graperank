@@ -120,7 +120,7 @@ export default async function handler(
 
     const response:ResponseData = {
       success: true,
-      message: `api/dataManagement/users/processKind3Events data:`,
+      message: `api/dataManagement/users/updateNeo4jFollows data:`,
       data: { 
         aUsers, aCypherResults, aPubkeysDiscovered
       }
@@ -132,7 +132,7 @@ export default async function handler(
     console.log(`error: ${JSON.stringify(error)}`)
     const response:ResponseData = {
       success: false,
-      message: `api/dataManagement/users/processKind3Events error: ${error}!`,
+      message: `api/dataManagement/users/updateNeo4jFollows error: ${error}!`,
     }
     res.status(500).json(response)
   } finally {
