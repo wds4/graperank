@@ -69,10 +69,14 @@ for each row:
   - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
 
 
-  
+1b. api/dataManagement/users/listen = api/nostr/listeners/multipleUsers 
+
+
+
+
 
 3b. api/dataManagement/events/processKind10000Events
 4b. api/dataManagement/users/processKind10000Events
 
-api/dataManagement/users/listen = api/nostr/listeners/multipleUsers 
+
 */
