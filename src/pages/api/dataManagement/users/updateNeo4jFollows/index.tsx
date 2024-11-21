@@ -4,7 +4,7 @@ import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 import { isValidPubkey } from '@/helpers/nip19'
-import { read } from '@/lib/neo4j'
+import { write } from '@/lib/neo4j'
 
 /*
 - select * from users where flaggedToUpdateNeo4jFollows=1
@@ -72,14 +72,16 @@ export default async function handler(
       const kind3EventId = oNextUser.kind3EventId
 
       // cypher1: add node pubkey_parent if not already exists
-      const cypher1 = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
-      console.log(cypher1)
-      aCypherResults.push({cypher1})
+      const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
+      const result1 = await write(cypher1, {})
+      console.log(result1)
+      aCypherResults.push({cypher1, result1})
 
       // cypher2: remove all FOLLOWS edges starting at pubkey_parent
-      const cypher2 = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
-      console.log(cypher2)
-      aCypherResults.push({cypher2})
+      const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) REMOVE f RETURN n, f, m `
+      const result2 = await write(cypher2, {})
+      console.log(result2)
+      aCypherResults.push({cypher2, result2})
 
       if (kind3EventId) {
         const params_get = {
@@ -103,9 +105,10 @@ export default async function handler(
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
                 // cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child
-                const cypher3 = await read(`MATCH (tom:Person {name: "Tom Hanks"}) RETURN tom`, {})
-                console.log(cypher3)
-                aCypherResults.push({cypher3})
+                const cypher3 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'})-[:FOLLOWS]->(n:NostrUser {pubkey: '${pubkey_child}'}) `
+                const result3 = await write(cypher3, {})
+                console.log(result3)
+                aCypherResults.push({cypher3, result3})
               }
             }
           }

@@ -6,6 +6,7 @@ import { read } from '@/lib/neo4j'
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/neo4j/getFollows?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
 */
 
 type ResponseData = {
@@ -39,7 +40,7 @@ export default async function handler(
 
         const response:ResponseData = {
           success: true,
-          message: `api/neo4j/getFollowers data:`,
+          message: `api/neo4j/getFollows data:`,
           data: {
             cypher1, result1
           }
@@ -48,7 +49,7 @@ export default async function handler(
       } catch (error) {
         const response = {
           success: false,
-          message: `api/neo4j/getFollowers error: ${error}`,
+          message: `api/neo4j/getFollows error: ${error}`,
           data: {
             pubkey1,
             cypher1
