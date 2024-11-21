@@ -33,16 +33,23 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m ` // cypher command 
+      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS]->(m:NostrUser) RETURN m ` // cypher command 
       try {
         const result1 = await read(cypher1, {})
         console.log(result1)
+        const aPubkeys = []
+        const aUsers = JSON.parse(JSON.stringify(result1))
+        for (let x=0; x < aUsers.length; x++) {
+          const oNextUserData = aUsers[x]
+          const pk = oNextUserData.n.properties.pubkey
+          aPubkeys.push(pk)
+        }
 
         const response:ResponseData = {
           success: true,
           message: `api/neo4j/getFollows data:`,
           data: {
-            cypher1, result1
+            cypher: cypher1, numFollows: aPubkeys.length, aPubkeys,
           }
         }
         res.status(200).json(response)
