@@ -63,7 +63,7 @@ export default async function handler(
   });
 
   try {
-    const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=0 `
+    const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
     const aPubkeysDiscovered = []
