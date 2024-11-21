@@ -28,4 +28,8 @@ https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1
 
 https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=1
 
+https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=5
+
+https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1
+
 */

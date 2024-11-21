@@ -25,14 +25,15 @@ export default async function handler(
 ) {
   try {
     // cypher1: add node pubkey_parent if not already exists
-    const cypher1 = await read(`MATCH (n:NostrUser) RETURN n `, {})
-    console.log(cypher1)
+    const cypher1 = `MATCH (n:NostrUser) RETURN n `
+    const result1 = await read(cypher1, {})
+    console.log(result1)
 
     const response:ResponseData = {
       success: true,
       message: `api/neo4j/getNostrUsers data:`,
       data: { 
-        cypher1
+        cypher1, result1
       }
     }
     res.status(200).json(response)

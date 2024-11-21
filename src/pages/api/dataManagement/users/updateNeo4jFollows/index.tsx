@@ -77,11 +77,13 @@ export default async function handler(
       console.log(result1)
       aCypherResults.push({cypher1, result1})
 
-      /*
+      
       // cypher2: remove all FOLLOWS edges starting at pubkey_parent
       const cypher2 = ` MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[f:FOLLOWS]->(m:NostrUser) 
       REMOVE f 
       RETURN m `
+      aCypherResults.push({cypher2})
+      /*
       const result2 = await write(cypher2, {})
       console.log(result2)
       aCypherResults.push({cypher2, result2})
@@ -109,7 +111,7 @@ export default async function handler(
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
                 // cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child
-                const cypher3 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'})-[:FOLLOWS]->(n:NostrUser {pubkey: '${pubkey_child}'}) `
+                const cypher3 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'})-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_child}'}) `
                 const result3 = await write(cypher3, {})
                 console.log(result3)
                 aCypherResults.push({cypher3, result3})
