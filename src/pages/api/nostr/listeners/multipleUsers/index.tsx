@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NDK, { NDKEvent, NDKFilter, NostrEvent } from '@nostr-dev-kit/ndk'
 import { validateEvent } from 'nostr-tools'
-// import { S3Client } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { makeEventSerializable, timeout } from '@/helpers'
 import mysql from 'mysql2/promise'
-/*
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -12,7 +12,7 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-*/
+
 /*
 Given n pubkeys, this endpoint listens on nostr for kinds 3 and 10000 events and:
 - inserts events into S3
@@ -147,23 +147,25 @@ export default async function handler(
           Body: await serializeEvent(event),
         }
         console.log(typeof params)
-        /*
+        
         const command_s3 = new PutObjectCommand(params);
         const data = await client.send(command_s3);
         console.log(`===== data: ${JSON.stringify(data)}`)
-        */
+        
       }
     })
     sub1.on('eose', async () => {
       await timeout(5000)
       const sPubkeys = JSON.stringify(aPubkeys).replace('[','(').replace(']',')')
       const sql2 = ` UPDATE users SET whenLastListened=${currentTimestamp} WHERE pubkey IN ${sPubkeys} `
-      
+      const sql2_results = await connection.query(sql2);
+      console.log(`sql2_results: ${sql2_results}`)
+
       const response = {
         success: true,
         message: `api/tests/listeners/multipleUsers eose!`,
         data: {
-          sql1, sql2, aPubkeys, aReceivedEvents
+          sql1, sql2, aPubkeys, aReceivedEvents, sql2_results
         }
       }
       res.status(200).json(response)
