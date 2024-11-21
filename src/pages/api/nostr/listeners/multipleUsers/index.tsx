@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NDK, { NDKEvent, NDKFilter, NostrEvent } from '@nostr-dev-kit/ndk'
 import { validateEvent } from 'nostr-tools'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { makeEventSerializable } from '@/helpers'
+// import { S3Client } from '@aws-sdk/client-s3'
+import { makeEventSerializable, timeout } from '@/helpers'
 import mysql from 'mysql2/promise'
-
+/*
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -12,6 +12,7 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
+*/
 /*
 Given n pubkeys, this endpoint listens on nostr for kinds 3 and 10000 events and:
 - inserts events into S3
@@ -123,23 +124,15 @@ export default async function handler(
       aPubkeys.push(pk)
     }
 
-    const response = {
-      success: true,
-      message: `api/tests/listeners/multipleUsers temporary stopping point. data:`,
-      data: {
-        sql1, aPubkeys, sql1_results
-      }
-    }
-    res.status(200).json(response)
-
     await ndk.connect()
     const filter:NDKFilter = { kinds: [3, 10000], authors: aPubkeys }
     const sub1 = ndk.subscribe(filter)
-    const receivedEvents:string[] = []        
+    const aReceivedEvents:object[] = []        
     sub1.on('event', async (event:NDKEvent) => {
       if (validateEvent(event)) {
         console.log(`event.id: ${event.id}`)
-        receivedEvents.push(event.id)
+        aReceivedEvents.push({ eventId: event.id, pubkey: event.pubkey })
+
         // TODO: check first to see if eventId is already stored in s3, in which case no need to store it again (although this might be too slow of a process??)
         /* PutObjectCommand */
         const params = {
@@ -147,18 +140,21 @@ export default async function handler(
           Key: 'recentlyAddedEventsByEventId/' + event.id,
           Body: await serializeEvent(event),
         }
+        console.log(typeof params)
+        /*
         const command_s3 = new PutObjectCommand(params);
         const data = await client.send(command_s3);
         console.log(`===== data: ${JSON.stringify(data)}`)
+        */
       }
     })
     sub1.on('eose', async () => {
-      // await timeout(5000)
+      await timeout(5000)
       const response = {
         success: true,
         message: `api/tests/listeners/multipleUsers eose!`,
         data: {
-          sql1,
+          sql1, aPubkeys, aReceivedEvents
         }
       }
       res.status(200).json(response)
