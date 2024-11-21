@@ -56,7 +56,7 @@ export default async function handler(
       const pubkey_parent = oNextUser.pubkey
 
       // cypher1: add node pubkey_parent if not already exists
-      const cypher1 = await write(`MERGE (${pubkey_parent}:NostrUser {pubkey: '${pubkey_parent}'}) RETURN ${pubkey_parent}.pubkey AS pubkey `, {})
+      const cypher1 = await write(`CREATE (user${pubkey_parent}:NostrUser {pubkey: '${pubkey_parent}'}) RETURN user${pubkey_parent}.pubkey AS pubkey `, {})
       console.log(cypher1)
       aCypherResults.push({cypher1})
 
