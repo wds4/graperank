@@ -118,7 +118,8 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/events/processKind3Events data:`,
       data: { 
-        numProcessedEvents: aEvents.length,
+        numEventsNeedingProcessing: aEvents.length,
+        numProcessedEvents: numEventsToProcess,
         oFirstEvent: aEvents[0],
       }
     }
