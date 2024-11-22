@@ -20,9 +20,9 @@ for each pubkey_parent:
 
 usage:
 
-http://localhost:3000/api/dataManagement/users/processKind3Events?n=3
+http://localhost:3000/api/dataManagement/users/processKind3Events?n=10
 
-https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=3
+https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10
 
 */
 
@@ -117,7 +117,9 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/processKind3Events data:`,
       data: { 
-        aUsers, aPubkeysDiscovered
+        numUsersNeedingKind3EventProcessing: aUsers.length,
+        numPubkeysDiscovered: aPubkeysDiscovered.length,
+        aPubkeysDiscovered,
       }
     }
     res.status(200).json(response)
