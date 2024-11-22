@@ -1,9 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
 
 /*
 https://grapeRank.tech/api/stats/overview
 */
+
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
+
+const params = {
+  Bucket: 'grapevine-nostr-cache-bucket',
+  Prefix: 'recentlyAddedEventsByEventId',
+};
+
+const command_s3 = new ListObjectsCommand(params);
 
 type ResponseData = {
   success: boolean,
@@ -47,10 +63,23 @@ export default async function handler(
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
+    const data_s3 = await client.send(command_s3);
+    console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
+
+    let numEvents1 = -1
+    if (data_s3.Contents) {
+      numEvents1 = data_s3.Contents.length
+    }
+
     const response:ResponseData = {
       success: true,
       message: `api/stats/overview data:`,
       data: {
+        cronJob1: {
+          numEvents: numEvents1,
+          description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
+          data_s3
+        },
         cronJob2: {
           numEventsToProcess: aEvents2.length,
           sql2,
@@ -75,7 +104,7 @@ export default async function handler(
           numUsersToProcess: aUsers6.length,
           sql6,
           description: '',
-        }
+        },
       }
     }
     res.status(200).json(response)
