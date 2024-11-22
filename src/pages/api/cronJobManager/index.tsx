@@ -2,6 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
 
+/*
+usage:
+https://www.graperank.tech/api/cronJobManager
+*/
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -84,7 +89,8 @@ export default async function handler(
 
     console.log(`url: ${url}`)
     
-    // fetch(url)
+    fetch(url)
+    
     const response:ResponseData = {
       success: true,
       message: `api/cronJobManager data:`,
