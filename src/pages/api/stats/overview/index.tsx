@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
+import { read } from '@/lib/neo4j'
 
 /*
 https://grapeRank.tech/api/stats/overview
@@ -40,6 +41,9 @@ export default async function handler(
   });
 
   try {
+    const cypher1 = `MATCH (n:NostrUser) RETURN n `
+    const cypher1_result = await read(cypher1, {})
+
     const sql_events = `SELECT * FROM events`
     const results_sql_events = await connection.query(sql_events);
     const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
@@ -105,6 +109,7 @@ export default async function handler(
           },
           users: {
             total: aUsers.length,
+            neo4jNodes: cypher1_result.length,
             withKind3Event: aUsers_yesKind3Event.length,
             withoutKind3Event: aUsers_noKind3Event.length,
             neverListenedForEvents: aUsers_neverListened.length,
