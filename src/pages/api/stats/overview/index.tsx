@@ -48,6 +48,14 @@ export default async function handler(
     const results_sql_users = await connection.query(sql_users);
     const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
 
+    const sql_users_neverListened = `SELECT * FROM users WHERE whenLastListened IS NULL`
+    const results_sql_users_neverListened = await connection.query(sql_users_neverListened);
+    const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))
+
+    const sql_users_noKind3Event = `SELECT * FROM users WHERE kind3EventId IS NULL`
+    const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
+    const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))
+
     const sql2 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
@@ -84,8 +92,10 @@ export default async function handler(
       message: `api/stats/overview data:`,
       data: {
         sqlTableStats: {
-          numUsers: aUsers.length,
           numEvents: aEvents.length,
+          numUsers: aUsers.length,
+          numUsers_neverListenedForEvents: aUsers_neverListened.length,
+          numUsers_noKind3Event: aUsers_noKind3Event.length,
         },
         cronJob1: {
           numEvents: numEvents1,
