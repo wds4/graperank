@@ -78,7 +78,6 @@ export default async function handler(
         cronJob1: {
           numEvents: numEvents1,
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
-          data_s3
         },
         cronJob2: {
           numEventsToProcess: aEvents2.length,
