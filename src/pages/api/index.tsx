@@ -63,6 +63,8 @@ pm2 start cronJob4.js --cron "3,13,23,33,43,53 * * * *"
 pm2 start cronJob5.js --cron "4,14,24,34,44,54 * * * *"
 pm2 start cronJob6.js --cron "5,15,25,35,45,55 * * * *"
 
+pm2 start cronJobManager.js --cron "* * * * *"
+
 pm2 list
 
 pm2 delete cronJob1

@@ -72,9 +72,9 @@ const fooFxn = async () => {
         if (aEvents2.length > 1000) { url = url2 }
         if (numEvents1 > 200) { url = url1 }
 
-        console.log(`url: ${url}`)
+        // console.log(`url: ${url}`)
         
-        // fetch(url)
+        fetch(url)
 
     } catch (error) {
         console.log(`error: ${error}`)
