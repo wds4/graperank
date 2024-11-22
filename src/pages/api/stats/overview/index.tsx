@@ -40,6 +40,14 @@ export default async function handler(
   });
 
   try {
+    const sql_events = `SELECT * FROM events`
+    const results_sql_events = await connection.query(sql_events);
+    const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
+
+    const sql_users = `SELECT * FROM users`
+    const results_sql_users = await connection.query(sql_users);
+    const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
+
     const sql2 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
@@ -75,6 +83,10 @@ export default async function handler(
       success: true,
       message: `api/stats/overview data:`,
       data: {
+        sqlTableStats: {
+          numUsers: aUsers.length,
+          numEvents: aEvents.length,
+        },
         cronJob1: {
           numEvents: numEvents1,
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
