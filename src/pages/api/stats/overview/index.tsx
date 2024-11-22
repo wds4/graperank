@@ -44,6 +44,10 @@ export default async function handler(
     const results_sql_events = await connection.query(sql_events);
     const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
 
+    const sql_customers = `SELECT * FROM customers`
+    const results_sql_customers = await connection.query(sql_customers);
+    const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))
+
     const sql_users = `SELECT * FROM users`
     const results_sql_users = await connection.query(sql_users);
     const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
@@ -51,6 +55,10 @@ export default async function handler(
     const sql_users_neverListened = `SELECT * FROM users WHERE whenLastListened IS NULL`
     const results_sql_users_neverListened = await connection.query(sql_users_neverListened);
     const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))
+
+    const sql_users_yesKind3Event = `SELECT * FROM users WHERE kind3EventId IS NOT NULL`
+    const results_sql_users_yesKind3Event = await connection.query(sql_users_yesKind3Event);
+    const aUsers_yesKind3Event = JSON.parse(JSON.stringify(results_sql_users_yesKind3Event[0]))
 
     const sql_users_noKind3Event = `SELECT * FROM users WHERE kind3EventId IS NULL`
     const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
@@ -92,38 +100,53 @@ export default async function handler(
       message: `api/stats/overview data:`,
       data: {
         sqlTableStats: {
-          numEvents: aEvents.length,
-          numUsers: aUsers.length,
-          numUsers_neverListenedForEvents: aUsers_neverListened.length,
-          numUsers_noKind3Event: aUsers_noKind3Event.length,
+          events: {
+            total: aEvents.length,
+          },
+          users: {
+            total: aUsers.length,
+            withKind3Event: aUsers_yesKind3Event.length,
+            withoutKind3Event: aUsers_noKind3Event.length,
+            neverListenedForEvents: aUsers_neverListened.length,
+          },
+          customers: {
+            total: aCustomers.length,
+          },
+
         },
         cronJob1: {
           numEvents: numEvents1,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200',
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
         },
         cronJob2: {
           numEventsToProcess: aEvents2.length,
           sql2,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000',
           description: '',
         },
         cronJob3: {
           numUsersToProcess: aUsers3.length,
           sql3,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10',
           description: '',
         },
         cronJob4: {
           numUsersToProcess: aUsers4.length,
           sql4,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000',
           description: '',
         },
         cronJob5: {
           numUsersToProcess: aUsers5.length,
           sql5,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1',
           description: '',
         },
         cronJob6: {
           numUsersToProcess: aUsers6.length,
           sql6,
+          endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true',
           description: '',
         },
       }
