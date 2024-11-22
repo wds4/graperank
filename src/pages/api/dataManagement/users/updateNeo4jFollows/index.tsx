@@ -138,7 +138,9 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/updateNeo4jFollows data:`,
       data: { 
-        aUsers, aPubkeysDiscovered
+        numUsers: aUsers.length, 
+        numPubkeysDiscovered: aPubkeysDiscovered.length,
+        aPubkeysDiscovered
       }
     }
     res.status(200).json(response)
