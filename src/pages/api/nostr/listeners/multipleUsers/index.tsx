@@ -163,6 +163,9 @@ export default async function handler(
       const sql2_results = await connection.query(sql2);
       console.log(`sql2_results: ${sql2_results}`)
 
+      const close_result = await connection.end()
+      console.log(`closing connection: ${close_result}`)
+      
       const response = {
         success: true,
         message: `api/tests/listeners/multipleUsers eose!`,

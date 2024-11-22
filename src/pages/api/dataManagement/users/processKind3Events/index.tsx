@@ -110,6 +110,9 @@ export default async function handler(
       console.log(results4)
     }
 
+    const close_result = await connection.end()
+    console.log(`closing connection: ${close_result}`)
+    
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/users/processKind3Events data:`,

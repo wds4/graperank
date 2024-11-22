@@ -148,6 +148,9 @@ export default async function handler(
         })
         sub1.on('eose', async () => {
           // await timeout(5000)
+          const close_result = await connection.end()
+          console.log(`closing connection: ${close_result}`)
+          
           const response = {
             success: true,
             message: `api/tests/listeners/singleUser eose!`,

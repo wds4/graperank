@@ -46,6 +46,9 @@ export default async function handler(
         const results = await connection.query(command);
         console.log(results);
 
+        const close_result = await connection.end()
+        console.log(`closing connection: ${close_result}`)
+
         const response:ResponseData = {
           success: true,
           message: `api/customers/unsubscribe data:`,

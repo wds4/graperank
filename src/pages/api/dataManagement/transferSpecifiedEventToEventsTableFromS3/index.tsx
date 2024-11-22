@@ -72,6 +72,9 @@ export default async function handler(
           const results = await connection.query(command);
           console.log(results);
           
+          const close_result = await connection.end()
+          console.log(`closing connection: ${close_result}`)
+
           const response:ResponseData = {
             success: true,
             message: `api/dataManagement/transferSingleEventToEventsTableFromS3 data:`,
@@ -83,6 +86,9 @@ export default async function handler(
           }
           res.status(200).json(response)
         } else {
+          const close_result = await connection.end()
+          console.log(`closing connection: ${close_result}`)
+
           const response:ResponseData = {
             success: false,
             message: `api/dataManagement/transferSingleEventToEventsTableFromS3 error: the stored event is not valid`,
@@ -91,6 +97,7 @@ export default async function handler(
         }
       } catch (error) {
         // error handling.
+
         console.log(`error: ${JSON.stringify(error)}`)
         const response:ResponseData = {
           success: false,

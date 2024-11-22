@@ -64,6 +64,9 @@ PRIMARY KEY (id)
       const results3 = await connection.query(command3);
       console.log(results3);
 
+      const close_result = await connection.end()
+      console.log(`closing connection: ${close_result}`)
+      
       const response:ResponseData = {
         success: true,
         message: `api/sql/initializeTables data:`,

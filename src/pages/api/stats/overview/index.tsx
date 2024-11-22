@@ -28,6 +28,9 @@ export default async function handler(
     const results_sql1 = await connection.query(sql1);
     const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
 
+    const close_result = await connection.end()
+    console.log(`closing connection: ${close_result}`)
+    
     const response:ResponseData = {
       success: true,
       message: `api/stats/overview data:`,

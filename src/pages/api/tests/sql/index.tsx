@@ -28,6 +28,10 @@ export default async function handler(
       );
       console.log(results); // results contains rows returned by server
       console.log(fields); // fields contains extra meta data about results, if available
+
+      const close_result = await connection.end()
+      console.log(`closing connection: ${close_result}`)
+      
       const response:ResponseData = {
         success: true,
         message: `api/tests/sql data:`,
