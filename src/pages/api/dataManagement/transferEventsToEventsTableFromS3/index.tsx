@@ -166,12 +166,15 @@ export default async function handler(
     
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-    
+
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,
       data: { 
-        aCommands, numEventsToProcess, aProcessedEventIds, aUnprocessedEventIds, aDuplicatedEventIds, data1, data2, aEvents,
+        numEventsToProcess,
+        numProcessedEvents: aProcessedEventIds.length,
+        numUnprocessedEvents: aUnprocessedEventIds.length,
+        numDuplicatedEvents: aDuplicatedEventIds.length,
       }
     }
     res.status(200).json(response)
