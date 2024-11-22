@@ -33,7 +33,7 @@ s3:
 cronJob2.js
 https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000
 sql: SELECT * FROM events where kind=3 and flaggedForProcessing=1;
-(super fast, should be able to do a lot at once; n=200 took under 3 seconds)
+(super fast, should be able to do a lot at once; n=200 took under 3 seconds; n=1000 took about 12 seconds)
 
 cronJob3.js
 https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10
