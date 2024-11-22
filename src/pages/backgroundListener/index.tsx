@@ -3,6 +3,12 @@ import NDK, { NDKEvent, NDKFilter, NostrEvent } from '@nostr-dev-kit/ndk'
 import { validateEvent } from 'nostr-tools'
 import { makeEventSerializable } from '@/helpers'
 
+/*
+http://localhost:3000/backgroundListener
+
+https://graperank.tech/backgroundListener
+*/
+
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
