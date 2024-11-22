@@ -24,19 +24,57 @@ export default async function handler(
   });
 
   try {
-    const sql1 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
-    const results_sql1 = await connection.query(sql1);
-    const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
+    const sql2 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
+    const results_sql2 = await connection.query(sql2);
+    const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
+
+    const sql3 = `SELECT * from users WHERE flaggedForKind3EventProcessing=1;`
+    const results_sql3 = await connection.query(sql3);
+    const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
+
+    const sql4 = `SELECT * FROM users where flaggedToUpdateNeo4jNode=1;`
+    const results_sql4 = await connection.query(sql4);
+    const aUsers4= JSON.parse(JSON.stringify(results_sql4[0]))
+
+    const sql5 = `SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
+    const results_sql5 = await connection.query(sql5);
+    const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
+
+    const sql6 = `SELECT * FROM users WHERE whenLastListened IS NULL;`
+    const results_sql6 = await connection.query(sql6);
+    const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
 
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-    
+
     const response:ResponseData = {
       success: true,
       message: `api/stats/overview data:`,
       data: {
         cronJob2: {
-          numEventsToProcess: aEvents.length 
+          numEventsToProcess: aEvents2.length,
+          sql2,
+          description: '',
+        },
+        cronJob3: {
+          numUsersToProcess: aUsers3.length,
+          sql3,
+          description: '',
+        },
+        cronJob4: {
+          numUsersToProcess: aUsers4.length,
+          sql4,
+          description: '',
+        },
+        cronJob5: {
+          numUsersToProcess: aUsers5.length,
+          sql5,
+          description: '',
+        },
+        cronJob6: {
+          numUsersToProcess: aUsers6.length,
+          sql6,
+          description: '',
         }
       }
     }
