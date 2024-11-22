@@ -56,10 +56,14 @@ SELECT * FROM users WHERE whenLastListened IS NULL;
 (fast; n=100 took 10 secs; n=900 less than 20 seconds)
 
 CRON JOBS:
-pm2 start cronJob1.js --cron "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
-pm2 start cronJob2.js --cron "0 * * * *"
-pm2 start cronJob3.js --cron "0,30,45,60 * * * *"
-pm2 start cronJob4.js --cron "* * * * *"
-pm2 start cronJob5.js --cron "* * * * *"
-pm2 start cronJob6.js --cron "* * * * *"
+pm2 start cronJob1.js --cron "0,10,20,30,40,50 * * * *"
+pm2 start cronJob2.js --cron "1,11,21,31,41,51 * * * *"
+pm2 start cronJob3.js --cron "2,12,22,32,42,52 * * * *"
+pm2 start cronJob4.js --cron "3,13,23,33,43,53 * * * *"
+pm2 start cronJob5.js --cron "4,14,24,34,44,54 * * * *"
+pm2 start cronJob6.js --cron "5,15,25,35,45,55 * * * *"
+
+pm2 list
+
+pm2 delete cronJob1
 */
