@@ -71,6 +71,7 @@ export default async function handler(
           const command = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
           const results = await connection.query(command);
           console.log(results);
+          
           const response:ResponseData = {
             success: true,
             message: `api/dataManagement/transferSingleEventToEventsTableFromS3 data:`,

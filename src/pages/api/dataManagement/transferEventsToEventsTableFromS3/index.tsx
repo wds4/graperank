@@ -164,7 +164,9 @@ export default async function handler(
       console.log(`===== data: ${JSON.stringify(data_delete)}`)
     }
     
-
+    const close_result = await connection.end()
+    console.log(`closing connection: ${close_result}`)
+    
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/transferEventsToEventsTableFromS3 data:`,

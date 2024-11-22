@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 
+/*
+https://grapeRank.tech/api/stats/overview
+*/
+
 type ResponseData = {
   success: boolean,
   message: string,
