@@ -31,9 +31,11 @@ const client = new S3Client({
   },
 })
 
+/*
 const testCsv1 = `1,pubkey1,pubkey_alice
 2,pubkey1,pubkey_bob
 3,pubkey1,pubkey_charlie`
+*/
 
 const testCsv2 = `1,c49d52a573366792b9a6e4851587c28042fb24fa5625c6d67b8c95c8751aca15,e5db8b6f4825192bf1e71239b61a7dacc934797d227c2bd373997a16cd293406
 2,c49d52a573366792b9a6e4851587c28042fb24fa5625c6d67b8c95c8751aca15,175298f424163ac83127cc91a3bd8d173ece6c53ed14a14327c018eac86e79f8
