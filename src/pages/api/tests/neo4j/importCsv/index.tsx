@@ -3,13 +3,16 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 /*
 to access:
-http://localhost:3000/api/tests/neo4j/importCsv
 https://graperank.tech/api/tests/neo4j/importCsv
+
+MATCH (n)-[:TEST]->(m) RETURN n,m
+
+MATCH (n:TestNostrUser) RETURN n
 */
 
 const cypher1 = `LOAD CSV FROM 'https://graperank.tech/api/tests/neo4j/generateCsv'
 AS row
-MERGE (n:NostrUser {pubkey: row[1]})-[:TEST]->(m:NostrUser {pubkey: row[2]})
+MERGE (n:TestNostrUser {pubkey: row[1]})-[:TEST]->(m:TestNostrUser {pubkey: row[2]})
 `
 
 type ResponseData = {
