@@ -18,8 +18,6 @@ for each pubkey_parent:
   // cleaning up
   - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
 
-usage:
-
 http://localhost:3000/api/dataManagement/users/processKind3Events?n=10
 
 https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10
