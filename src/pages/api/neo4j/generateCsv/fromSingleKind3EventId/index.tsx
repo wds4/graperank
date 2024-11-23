@@ -6,7 +6,9 @@ import { isValidPubkey } from '@/helpers/nip19'
 
 /*
 to access:
+
 https://graperank.tech/api/neo4j/generateCsv/fromSingleKind3EventId?kind3EventId=e4886fb39d2ce9014e674b8db78810e5580935253b53d67fc81945f0e8544816
+
 */
 
 const client = new S3Client({
@@ -32,7 +34,7 @@ export default async function handler(
   if (searchParams.kind3EventId && typeof searchParams.kind3EventId == 'string') {
     kind3EventId = searchParams.kind3EventId
   }
-  console.log(`numUsersToProcess: ${kind3EventId}`)
+  console.log(`kind3EventId: ${kind3EventId}`)
 
   if (kind3EventId) {
     const params_get = {

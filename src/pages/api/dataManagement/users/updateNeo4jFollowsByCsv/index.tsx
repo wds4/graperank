@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 // import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 // import { isValidPubkey } from '@/helpers/nip19'
-// import { write } from '@/lib/neo4j'
+import { write } from '@/lib/neo4j'
 
 /*
 - select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 (wait until parent node is properly updated)
@@ -61,25 +61,33 @@ export default async function handler(
     const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
-    const aPubkeysDiscovered = []
+    const aResults = []
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
-      const pubkey_parent = oNextUser.pubkey
       const kind3EventId = oNextUser.kind3EventId
       console.log(kind3EventId)
-      // TODO: finish      
+      // TODO: ? verify kind3EventId is valid
+      const cypher1 = `LOAD CSV FROM 'https://graperank.tech/api/neo4j/generateCsv/fromSingleKind3EventId?kind3EventId=${kind3EventId}'
+      AS row
+      MERGE (n:TestNostrUser {pubkey: row[1]})
+      MERGE (m:TestNostrUser {pubkey: row[2]})
+      MERGE (n)-[:TEST]->(m)
+      `
+      aResults.push({x, cypher1})
+      /*
+      const cypher1_result = await write(cypher1, {})
+      console.log(`result: ${JSON.stringify(cypher1_result)}`)
+      aResults.push({x, cypher1, cypher1_result})
+      */
+      // TODO: finish  
 
-
-
-
-
-
-
-
+      /*
       // cleaning up 
+      const pubkey_parent = oNextUser.pubkey
       const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
       const sql2_results = await connection.query(sql2);
       console.log(sql2_results)
+      */
     }
 
     const close_result = await connection.end()
@@ -89,8 +97,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/updateNeo4jFollowsByCsv data:`,
       data: { 
-        numUsers: aUsers.length, 
-        numPubkeysDiscovered: aPubkeysDiscovered.length,
+        aResults
       }
     }
     res.status(200).json(response)
