@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 // import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 // import { isValidPubkey } from '@/helpers/nip19'
-// import { write } from '@/lib/neo4j'
+import { write } from '@/lib/neo4j'
 
 /*
 - select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 (wait until parent node is properly updated)
@@ -74,11 +74,9 @@ export default async function handler(
       MERGE (n)-[:TEST]->(m)
       `
       aResults.push({x, cypher1})
-      /*
       const cypher1_result = await write(cypher1, {})
       console.log(`result: ${JSON.stringify(cypher1_result)}`)
       aResults.push({x, cypher1, cypher1_result})
-      */
       // TODO: finish  
 
       /*
