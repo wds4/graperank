@@ -16,11 +16,11 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-
+/*
 const testCsv2 = `1,c49d52a573366792b9a6e4851587c28042fb24fa5625c6d67b8c95c8751aca15,e5db8b6f4825192bf1e71239b61a7dacc934797d227c2bd373997a16cd293406
 2,c49d52a573366792b9a6e4851587c28042fb24fa5625c6d67b8c95c8751aca15,175298f424163ac83127cc91a3bd8d173ece6c53ed14a14327c018eac86e79f8
 3,c49d52a573366792b9a6e4851587c28042fb24fa5625c6d67b8c95c8751aca15,d75a0bcc4b494628d51ceab95ca1b34b9b23b1cb3a715beb1c5a8d963d161460`
-
+*/
 
 export default async function handler(
   req: NextApiRequest,
