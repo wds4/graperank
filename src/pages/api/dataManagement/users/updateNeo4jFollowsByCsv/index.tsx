@@ -1,9 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-// import { validateEvent } from 'nostr-tools'
-// import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
-// import { isValidPubkey } from '@/helpers/nip19'
 import { write } from '@/lib/neo4j'
 
 /*
@@ -11,7 +7,8 @@ import { write } from '@/lib/neo4j'
 for each row:
   - get const pubkey_parent, const kind3EventId
   - cypher1: access https://graperank.tech/api/neo4j/generateCsv/fromSingleKind3EventId?kind3EventId=... and execute via csv import
-  // TODO: finish
+
+  // TODO: anything else need doing right here ????
 
   // cleaning up
   - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
@@ -69,9 +66,9 @@ export default async function handler(
       // TODO: ? verify kind3EventId is valid
       const cypher1 = `LOAD CSV FROM 'https://graperank.tech/api/neo4j/generateCsv/fromSingleKind3EventId?kind3EventId=${kind3EventId}'
       AS row
-      MERGE (n:TestNostrUser {pubkey: row[1]})
-      MERGE (m:TestNostrUser {pubkey: row[2]})
-      MERGE (n)-[:TEST]->(m)
+      MERGE (n:NostrUser {pubkey: row[1]})
+      MERGE (m:NostrUser {pubkey: row[2]})
+      MERGE (n)-[:FOLLOWS]->(m)
       `
       aResults.push({x, cypher1})
       const cypher1_result = await write(cypher1, {})
@@ -79,13 +76,11 @@ export default async function handler(
       aResults.push({x, cypher1, cypher1_result})
       // TODO: finish  
 
-      /*
       // cleaning up 
       const pubkey_parent = oNextUser.pubkey
       const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
       const sql2_results = await connection.query(sql2);
       console.log(sql2_results)
-      */
     }
 
     const close_result = await connection.end()
