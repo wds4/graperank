@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 // import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 // import { isValidPubkey } from '@/helpers/nip19'
-import { write } from '@/lib/neo4j'
+// import { write } from '@/lib/neo4j'
 
 /*
 - select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 (wait until parent node is properly updated)
