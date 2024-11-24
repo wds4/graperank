@@ -70,6 +70,8 @@ pm2 start cronJob6.js --cron "5,15,25,35,45,55 * * * *"
 
 pm2 start cronJobManager.js --cron "* * * * *"
 
+pm2 start cronJobBackgroundListener.js --cron "* * * * *"
+
 pm2 list
 
 pm2 delete cronJob1
