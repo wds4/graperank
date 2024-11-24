@@ -26,7 +26,7 @@ const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEven
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
 const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10`
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
-const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1`
+const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
 
 type ResponseData = {
@@ -80,8 +80,8 @@ export default async function handler(
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
-    if (aUsers5.length > 1) { url = url5 }
     if (aUsers6.length > 900) { url = url6 }
+    if (aUsers5.length > 100) { url = url5 }
     if (aUsers4.length > 1000) { url = url4 }
     if (aUsers3.length > 10) { url = url3 }
     if (aEvents2.length > 1000) { url = url2 }
@@ -90,7 +90,7 @@ export default async function handler(
     console.log(`url: ${url}`)
     
     fetch(url)
-    
+
     const response:ResponseData = {
       success: true,
       message: `api/cronJobManager data:`,
@@ -122,7 +122,7 @@ export default async function handler(
         cronJob5: {
           numUsersToProcess: aUsers5.length,
           sql5,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1',
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100',
           description: '',
         },
         cronJob6: {

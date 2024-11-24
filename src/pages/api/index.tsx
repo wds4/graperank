@@ -46,9 +46,11 @@ sql: SELECT * FROM users where flaggedToUpdateNeo4jNode=1;
 (very fast; n=1000 took less than 20 seconds)
 
 cronJob5.js
-https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1
-sql: SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;
+DEPRECATED: https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1
 (ver slow; n=1 took 15 seconds; n=5 timed out at 60 seconds)
+https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100
+(fast: n=200 takes 30 seconds)
+sql: SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;
 
 Going to replace cronJob5 with this endpoint:
 https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
