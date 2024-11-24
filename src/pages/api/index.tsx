@@ -50,6 +50,9 @@ https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1
 sql: SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;
 (ver slow; n=1 took 15 seconds; n=5 timed out at 60 seconds)
 
+Going to replace cronJob5 with this endpoint:
+https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
+
 cronJob6.js
 https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true
 SELECT * FROM users WHERE whenLastListened IS NULL;

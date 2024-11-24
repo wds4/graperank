@@ -20,15 +20,7 @@ http://localhost:3000/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
 https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
 
 */
-/*
-const client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-  },
-})
-*/
+
 type ResponseData = {
   success: boolean,
   message: string,
@@ -62,7 +54,7 @@ export default async function handler(
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
       const kind3EventId = oNextUser.kind3EventId
-      console.log(kind3EventId)
+      const pubkey_parent = oNextUser.pubkey
       // TODO: ? verify kind3EventId is valid
       const cypher1 = `LOAD CSV FROM 'https://graperank.tech/api/neo4j/generateCsv/fromSingleKind3EventId?kind3EventId=${kind3EventId}'
       AS row
@@ -70,14 +62,11 @@ export default async function handler(
       MERGE (m:NostrUser {pubkey: row[2]})
       MERGE (n)-[:FOLLOWS]->(m)
       `
-      aResults.push({x, cypher1})
       const cypher1_result = await write(cypher1, {})
       console.log(`result: ${JSON.stringify(cypher1_result)}`)
-      aResults.push({x, cypher1, cypher1_result})
-      // TODO: finish  
+      aResults.push({x, pubkey_parent, kind3EventId, cypher1, cypher1_result})
 
       // cleaning up 
-      const pubkey_parent = oNextUser.pubkey
       const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
       const sql2_results = await connection.query(sql2);
       console.log(sql2_results)
@@ -89,8 +78,9 @@ export default async function handler(
     const response:ResponseData = {
       success: true,
       message: `api/dataManagement/users/updateNeo4jFollowsByCsv data:`,
-      data: { 
-        aResults
+      data: {
+        numUsersToProcess,
+        aResults,
       }
     }
     res.status(200).json(response)
