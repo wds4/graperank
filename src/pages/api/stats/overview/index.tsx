@@ -145,7 +145,7 @@ export default async function handler(
         cronJob5: {
           numUsersToProcess: aUsers5.length,
           sql5,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollows?n=1',
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100',
           description: '',
         },
         cronJob6: {
