@@ -24,9 +24,12 @@ const command_s3 = new ListObjectsCommand(params);
 
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
+const url2b = `https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000`
 const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10`
+const url3b = `https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10`
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
 const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100`
+const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
 
 type ResponseData = {
@@ -61,9 +64,17 @@ export default async function handler(
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
 
+    const sql2b = ` SELECT * FROM events where kind=10000 and flaggedForProcessing=1 `
+    const results_sql2b = await connection.query(sql2b);
+    const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))
+
     const sql3 = `SELECT * from users WHERE flaggedForKind3EventProcessing=1;`
     const results_sql3 = await connection.query(sql3);
     const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
+
+    const sql3b = `SELECT * from users WHERE flaggedForKind10000EventProcessing=1;`
+    const results_sql3b = await connection.query(sql3b);
+    const aUsers3b= JSON.parse(JSON.stringify(results_sql3b[0]))
 
     const sql4 = `SELECT * FROM users where flaggedToUpdateNeo4jNode=1;`
     const results_sql4 = await connection.query(sql4);
@@ -72,6 +83,10 @@ export default async function handler(
     const sql5 = `SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5 = await connection.query(sql5);
     const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
+
+    const sql5b = `SELECT * FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
+    const results_sql5b = await connection.query(sql5b);
+    const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
 
     const sql6 = `SELECT * FROM users WHERE whenLastListened IS NULL;`
     const results_sql6 = await connection.query(sql6);
@@ -82,9 +97,12 @@ export default async function handler(
 
     if (aUsers6.length > 900) { url = url6 }
     if (aUsers5.length > 100) { url = url5 }
+    if (aUsers5b.length > 100) { url = url5b }
     if (aUsers4.length > 1000) { url = url4 }
     if (aUsers3.length > 10) { url = url3 }
+    if (aUsers3b.length > 10) { url = url3b }
     if (aEvents2.length > 1000) { url = url2 }
+    if (aEvents2b.length > 1000) { url = url2b }
     if (numEvents1 > 200) { url = url1 }
 
     console.log(`url: ${url}`)
@@ -107,10 +125,22 @@ export default async function handler(
           endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000',
           description: '',
         },
+        cronJob2b: {
+          numEventsToProcess: aEvents2b.length,
+          sql2b,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000',
+          description: '',
+        },
         cronJob3: {
           numUsersToProcess: aUsers3.length,
           sql3,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10',
+          description: '',
+        },
+        cronJob3b: {
+          numUsersToProcess: aUsers3b.length,
+          sql3b,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10',
           description: '',
         },
         cronJob4: {
@@ -123,6 +153,12 @@ export default async function handler(
           numUsersToProcess: aUsers5.length,
           sql5,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100',
+          description: '',
+        },
+        cronJob5b: {
+          numUsersToProcess: aUsers5b.length,
+          sql5b,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100',
           description: '',
         },
         cronJob6: {
