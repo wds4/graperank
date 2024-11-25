@@ -35,20 +35,21 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1) && typeof pubkey2 == 'string' && verifyPubkeyValidity(pubkey2)) {
       const cypher1 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
 WHERE n.pubkey='${pubkey1}' AND m.pubkey='${pubkey2}'
-RETURN length(p) as numHops, p AS result` 
+RETURN length(p) as numHops` 
       try {
         const result_cypher1 = await read(cypher1, {})
         console.log(result_cypher1)
 
         const aResults = JSON.parse(JSON.stringify(result_cypher1))
-
-        const numHops = aResults[0].fields.numHops
+        
+        // does not work:
+        // const numHops = aResults[0].fields.numHops
 
         const response:ResponseData = {
           success: true,
           message: `api/neo4j/getShortestPath data:`,
           data: {
-            pubkey1, pubkey2, numHops, aResults, cypher: cypher1, result: result_cypher1
+            pubkey1, pubkey2, aResults, cypher: cypher1, result: result_cypher1
           }
         }
         res.status(200).json(response)
