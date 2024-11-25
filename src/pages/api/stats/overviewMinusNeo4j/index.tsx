@@ -3,7 +3,7 @@ import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
 
 /*
-https://grapeRank.tech/api/stats/overview
+https://grapeRank.tech/api/stats/overviewMinusNeo4j
 */
 
 const client = new S3Client({
