@@ -60,6 +60,10 @@ https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true
 SELECT * FROM users WHERE whenLastListened IS NULL;
 (fast; n=100 took 10 secs; n=900 less than 20 seconds)
 
+Going to change cronJob6 to:
+SELECT * FROM users WHERE whenLastListened IS NULL OR kind3EventId IS NULL ORDER BY ASC whenLastListened
+(might need to switch whenLastListened default to 0 instead of null?)
+
 CRON JOBS:
 pm2 start cronJob1.js --cron "0,10,20,30,40,50 * * * *"
 pm2 start cronJob2.js --cron "1,11,21,31,41,51 * * * *"
@@ -83,15 +87,15 @@ When restarting the server, make sure to:
 1. restart graperank (do this from folder: graperank)
 pm2 start npm --name "graperank" -- start
 
-2. restart (do this from /home/ubuntu/graperank/src/cronJobs)
+2. restart cronJobManager (do this from /home/ubuntu/graperank/src/cronJobs)
 pm2 start cronJobManager.js --cron "* * * * *"
 
-3. restart backgroundListener (do this from /home/ubuntu/graperank/src/cronJobs)
+3. restart cronJobBackgroundListener (do this from /home/ubuntu/graperank/src/cronJobs)
 pm2 start cronJobBackgroundListener.js
-I want this to keep the connection open, but if it does not, then put it as a cron job:
-pm2 start cronJobBackgroundListener.js --cron "0 * * * *"
+I want this to keep the connection open, but if it does not, then put it as a cron job, something like this (q 30 minutes):
+pm2 start cronJobBackgroundListener.js --cron "15, 45 * * * *"
 
-restart neo4j USING SUDO (otherwise brainstorm database will not be available)
+4. restart neo4j USING SUDO (otherwise brainstorm database will not be available)
 sudo start neo4j
 
 */
