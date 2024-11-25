@@ -30,7 +30,8 @@ const url3b = `https://www.graperank.tech/api/dataManagement/users/processKind10
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
 const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100`
 const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100`
-const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
+// const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
+const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true`
 
 type ResponseData = {
   success: boolean,
@@ -88,7 +89,7 @@ export default async function handler(
     const results_sql5b = await connection.query(sql5b);
     const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
 
-    const sql6 = `SELECT * FROM users WHERE whenLastListened IS NULL;`
+    const sql6 = `SELECT * FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
 
@@ -116,55 +117,55 @@ export default async function handler(
         url,
         cronJob1: {
           numEvents: numEvents1,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200',
+          endpoint: url1,
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
         },
         cronJob2: {
           numEventsToProcess: aEvents2.length,
           sql2,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000',
+          endpoint: url2,
           description: '',
         },
         cronJob2b: {
           numEventsToProcess: aEvents2b.length,
           sql2b,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000',
+          endpoint: url2b,
           description: '',
         },
         cronJob3: {
           numUsersToProcess: aUsers3.length,
           sql3,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10',
+          endpoint: url3,
           description: '',
         },
         cronJob3b: {
           numUsersToProcess: aUsers3b.length,
           sql3b,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10',
+          endpoint: url3b,
           description: '',
         },
         cronJob4: {
           numUsersToProcess: aUsers4.length,
           sql4,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000',
+          endpoint: url4,
           description: '',
         },
         cronJob5: {
           numUsersToProcess: aUsers5.length,
           sql5,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100',
+          endpoint: url5,
           description: '',
         },
         cronJob5b: {
           numUsersToProcess: aUsers5b.length,
           sql5b,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100',
+          endpoint: url5b,
           description: '',
         },
         cronJob6: {
           numUsersToProcess: aUsers6.length,
           sql6,
-          endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true',
+          endpoint: url6,
           description: '',
         },
       }

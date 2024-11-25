@@ -56,13 +56,10 @@ Going to replace cronJob5 with this endpoint:
 https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
 
 cronJob6.js
-https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true
-SELECT * FROM users WHERE whenLastListened IS NULL;
+// OLD: https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true
+https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true
+SELECT * FROM users [WHERE (kind0EventId IS NULL) OR (kind3EventId IS NULL) OR (kind10000EventId IS NULL)] ORDER BY whenLastListened ASC LIMIT ;
 (fast; n=100 took 10 secs; n=900 less than 20 seconds)
-
-Going to change cronJob6 to:
-SELECT * FROM users WHERE whenLastListened IS NULL OR kind3EventId IS NULL ORDER BY ASC whenLastListened
-(might need to switch whenLastListened default to 0 instead of null?)
 
 CRON JOBS:
 pm2 start cronJob1.js --cron "0,10,20,30,40,50 * * * *"

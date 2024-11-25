@@ -108,7 +108,7 @@ export default async function handler(
     const results_sql5b = await connection.query(sql5b);
     const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
 
-    const sql6 = `SELECT * FROM users WHERE whenLastListened IS NULL;`
+    const sql6 = `SELECT * FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
 
@@ -196,7 +196,7 @@ export default async function handler(
         cronJob6: {
           numUsersToProcess: aUsers6.length,
           sql6,
-          endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true',
+          endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true',
           description: '',
         },
       }
