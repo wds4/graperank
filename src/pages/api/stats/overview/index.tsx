@@ -104,6 +104,10 @@ export default async function handler(
     const results_sql5 = await connection.query(sql5);
     const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
 
+    const sql5b = `SELECT * FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
+    const results_sql5b = await connection.query(sql5b);
+    const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
+
     const sql6 = `SELECT * FROM users WHERE whenLastListened IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
@@ -181,6 +185,12 @@ export default async function handler(
           numUsersToProcess: aUsers5.length,
           sql5,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100',
+          description: '',
+        },
+        cronJob5b: {
+          numUsersToProcess: aUsers5b.length,
+          sql5,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100',
           description: '',
         },
         cronJob6: {
