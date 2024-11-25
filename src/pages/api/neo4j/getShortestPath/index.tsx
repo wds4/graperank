@@ -6,7 +6,8 @@ import { read } from '@/lib/neo4j'
 usage:
 pubkey1: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 pubkey2: ad46db12ee250a108756ab4f0f3007b04d7e699f45eac3ab696077296219d207
-https://www.graperank.tech/api/neo4j/getShortestPath?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&pubkey2=ad46db12ee250a108756ab4f0f3007b04d7e699f45eac3ab696077296219d207
+pubkey2: 5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31 // 5 hops away
+https://www.graperank.tech/api/neo4j/getShortestPath?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&pubkey2=5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31
 
 */
 
@@ -32,9 +33,9 @@ export default async function handler(
     const pubkey1 = searchParams.pubkey1
     const pubkey2 = searchParams.pubkey2
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1) && typeof pubkey2 == 'string' && verifyPubkeyValidity(pubkey2)) {
-      const cypher1 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]-+(m:NostrUser)
+      const cypher1 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
 WHERE n.pubkey='${pubkey1}' AND m.pubkey='${pubkey2}'
-RETURN length(p) AS result` 
+RETURN p, length(p) AS result` 
       try {
         const result_cypher1 = await read(cypher1, {})
         console.log(result_cypher1)
