@@ -41,6 +41,7 @@ RETURN length(p) as numHops`
         console.log(result_cypher1)
 
         const aResults = JSON.parse(JSON.stringify(result_cypher1))
+        const numHops = aResults[0].numHops.low
         
         // does not work:
         // const numHops = aResults[0].fields.numHops
@@ -49,7 +50,7 @@ RETURN length(p) as numHops`
           success: true,
           message: `api/neo4j/getShortestPath data:`,
           data: {
-            pubkey1, pubkey2, aResults, cypher: cypher1, result: result_cypher1
+            pubkey1, pubkey2, numHops, cypher: cypher1
           }
         }
         res.status(200).json(response)
