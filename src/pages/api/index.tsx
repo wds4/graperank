@@ -77,4 +77,21 @@ pm2 list
 pm2 delete cronJob1
 
 https://www.graperank.tech/api/neo4j/getNostrUsers
+
+When restarting the server, make sure to:
+
+1. restart graperank (do this from folder: graperank)
+pm2 start npm --name "graperank" -- start
+
+2. restart (do this from /home/ubuntu/graperank/src/cronJobs)
+pm2 start cronJobManager.js --cron "* * * * *"
+
+3. restart backgroundListener (do this from /home/ubuntu/graperank/src/cronJobs)
+pm2 start cronJobBackgroundListener.js
+I want this to keep the connection open, but if it does not, then put it as a cron job:
+pm2 start cronJobBackgroundListener.js --cron "0 * * * *"
+
+restart neo4j USING SUDO (otherwise brainstorm database will not be available)
+sudo start neo4j
+
 */
