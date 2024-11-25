@@ -25,8 +25,8 @@ const command_s3 = new ListObjectsCommand(params);
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
 const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10`
-const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
-const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100`
+// const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
+// const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
 
 type ResponseData = {
