@@ -48,6 +48,14 @@ export default async function handler(
     const results_sql_events = await connection.query(sql_events);
     const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
 
+    const sql_events_3 = `SELECT * FROM events WHERE kind = 3`
+    const results_sql_events_3 = await connection.query(sql_events_3);
+    const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))
+
+    const sql_events_10000 = `SELECT * FROM events WHERE kind = 10000`
+    const results_sql_events_10000 = await connection.query(sql_events_10000);
+    const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))
+
     const sql_customers = `SELECT * FROM customers`
     const results_sql_customers = await connection.query(sql_customers);
     const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))
@@ -67,6 +75,10 @@ export default async function handler(
     const sql_users_noKind3Event = `SELECT * FROM users WHERE kind3EventId IS NULL`
     const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
     const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))
+
+    const sql_users_noKind10000Event = `SELECT * FROM users WHERE kind10000EventId IS NULL`
+    const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
+    const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))
 
     const sql2 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
@@ -106,12 +118,15 @@ export default async function handler(
         sqlTableStats: {
           events: {
             total: aEvents.length,
+            kind3: aEvents_3.length,
+            kind10000: aEvents_10000.length,
           },
           users: {
             total: aUsers.length,
             neo4jNodes: cypher1_result.length,
             withKind3Event: aUsers_yesKind3Event.length,
             withoutKind3Event: aUsers_noKind3Event.length,
+            withoutKind10000Event: aUsers_noKind10000Event.length,
             neverListenedForEvents: aUsers_neverListened.length,
           },
           customers: {
