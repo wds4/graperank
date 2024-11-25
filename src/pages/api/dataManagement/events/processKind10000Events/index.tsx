@@ -63,11 +63,11 @@ export default async function handler(
     const aEvents = JSON.parse(JSON.stringify(results_sql1[0]))
     
     for (let x=0; x < Math.min(numEventsToProcess, aEvents.length); x++) {
-      // let created_at_old = 0
+      let created_at_old = 0
       const oNextEvent = aEvents[x]
       const pubkey = oNextEvent.pubkey
-      // const created_at_new = oNextEvent.created_at
-      // const kind10000EventId_new = oNextEvent.eventId
+      const created_at_new = oNextEvent.created_at
+      const kind10000EventId_new = oNextEvent.eventId
       const sql2= ` SELECT * FROM users where pubkey='${pubkey}' `
       const results_sql2 = await connection.query(sql2);
       const aUsers = JSON.parse(JSON.stringify(results_sql2[0]))
@@ -77,7 +77,6 @@ export default async function handler(
         const oUserData = aUsers[0]
         const kind10000EventId_old = oUserData.kind10000EventId
         if (kind10000EventId_old) {
-          // get event_old, then created_at_old
           const params_get = {
             Bucket: 'grapevine-nostr-cache-bucket',
             Key: 'eventsByEventId/' + kind10000EventId_old,
@@ -91,13 +90,12 @@ export default async function handler(
             const event_old:NostrEvent = JSON.parse(sEvent) 
             const isEventValid = validateEvent(event_old)
             if (isEventValid) {
-              // created_at_old = event_old.created_at
+              created_at_old = event_old.created_at
             }
           }
         }
       }
 
-      /*
       if (created_at_new > created_at_old) {
         // This triggers the next step, which is to transfer follows into the users table
         const sql3= ` UPDATE users SET kind10000eventId='${kind10000EventId_new}', flaggedForKind10000EventProcessing=1 WHERE pubkey='${pubkey}' `
@@ -109,7 +107,6 @@ export default async function handler(
       const sql4= ` UPDATE events SET flaggedForProcessing=0 WHERE eventId='${kind10000EventId_new}' `
       const results_sql4 = await connection.query(sql4);
       console.log(results_sql4)
-      */
     }
 
     const close_result = await connection.end()
