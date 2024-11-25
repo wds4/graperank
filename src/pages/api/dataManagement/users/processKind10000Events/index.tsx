@@ -64,7 +64,7 @@ export default async function handler(
     const aPubkeysDiscovered = []
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
-      // const pubkey_parent = oNextUser.pubkey
+      const pubkey_parent = oNextUser.pubkey
       const kind10000EventId = oNextUser.kind10000EventId
 
       if (kind10000EventId) {
@@ -87,23 +87,19 @@ export default async function handler(
                 const pubkey_child = aTag[1]
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
-                /*
                 const sql3 = ` INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `
                 const results3 = await connection.query(sql3);
                 console.log(results3)
-                */
               }
             }
           }
         }
       }
 
-      /*
       // cleaning up 
       const sql4 = ` UPDATE users SET flaggedToUpdateNeo4jMutes=1, flaggedForKind10000EventProcessing = 0 WHERE pubkey='${pubkey_parent}' `
       const results4 = await connection.query(sql4);
       console.log(results4)
-      */
     }
 
     const close_result = await connection.end()
