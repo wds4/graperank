@@ -97,7 +97,7 @@ export default async function handler(
       }
 
       if (created_at_new > created_at_old) {
-        // This triggers the next step, which is to transfer follows into the users table
+        // This triggers the next step, which is to transfer mutes into the users table
         const sql3= ` UPDATE users SET kind10000eventId='${kind10000EventId_new}', flaggedForKind10000EventProcessing=1 WHERE pubkey='${pubkey}' `
         const results_sql3 = await connection.query(sql3);
         console.log(results_sql3)
