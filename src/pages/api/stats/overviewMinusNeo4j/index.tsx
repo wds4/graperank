@@ -69,9 +69,17 @@ export default async function handler(
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
 
+    const sql2b = ` SELECT * FROM events where kind=10000 and flaggedForProcessing=1 `
+    const results_sql2b = await connection.query(sql2b);
+    const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))
+
     const sql3 = `SELECT * from users WHERE flaggedForKind3EventProcessing=1;`
     const results_sql3 = await connection.query(sql3);
     const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
+
+    const sql3b = `SELECT * from users WHERE flaggedForKind10000EventProcessing=1;`
+    const results_sql3b = await connection.query(sql3b);
+    const aUsers10000= JSON.parse(JSON.stringify(results_sql3b[0]))
 
     const sql4 = `SELECT * FROM users where flaggedToUpdateNeo4jNode=1;`
     const results_sql4 = await connection.query(sql4);
@@ -126,10 +134,22 @@ export default async function handler(
           endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000',
           description: '',
         },
+        cronJob2b: {
+          numEventsToProcess: aEvents2b.length,
+          sql2b,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000',
+          description: '',
+        },
         cronJob3: {
           numUsersToProcess: aUsers3.length,
           sql3,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10',
+          description: '',
+        },
+        cronJob3b: {
+          numUsersToProcess: aUsers10000.length,
+          sql3b,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10',
           description: '',
         },
         cronJob4: {

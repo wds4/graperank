@@ -45,6 +45,7 @@ export default async function handler(
       command2 += ` kind10000EventId VARCHAR(255), `
       command2 += ` whenLastListened int, `
       command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedForKind10000EventProcessing INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jNode INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jFollows INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jMutes INT NOT NULL DEFAULT 0, `
@@ -84,3 +85,7 @@ PRIMARY KEY (id)
       res.status(500).json(response)
     }
 }
+
+/*
+ALTER TABLE users ADD flaggedForKind10000EventProcessing INT NOT NULL DEFAULT 0;
+*/
