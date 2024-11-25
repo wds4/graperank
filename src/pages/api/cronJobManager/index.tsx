@@ -81,8 +81,8 @@ export default async function handler(
     console.log(`closing connection: ${close_result}`)
 
     if (aUsers6.length > 900) { url = url6 }
-    if (aUsers5.length > 100) { url = url5 }
-    if (aUsers4.length > 1000) { url = url4 }
+    // if (aUsers5.length > 100) { url = url5 }
+    // if (aUsers4.length > 1000) { url = url4 }
     if (aUsers3.length > 10) { url = url3 }
     if (aEvents2.length > 1000) { url = url2 }
     if (numEvents1 > 200) { url = url1 }
