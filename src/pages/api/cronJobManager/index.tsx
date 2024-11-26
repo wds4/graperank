@@ -101,7 +101,7 @@ export default async function handler(
     if (aUsers5b.length > 100) { url = url5b }
     if (aUsers4.length > 1000) { url = url4 }
     if (aUsers3.length > 10) { url = url3 }
-    if (aUsers3b.length > 10) { url = url3b }
+    // if (aUsers3b.length > 10) { url = url3b }
     if (aEvents2.length > 1000) { url = url2 }
     if (aEvents2b.length > 1000) { url = url2b }
     if (numEvents1 > 200) { url = url1 }
