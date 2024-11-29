@@ -280,6 +280,17 @@ via browser:
 
 `CREATE CONSTRAINT FOR (n:NostrUser) REQUIRE (n.pubkey) IS UNIQUE`
 
+## neo4j graph data science
+
+follow instructions https://neo4j.com/docs/graph-data-science/current/installation/neo4j-server/
+
+download `neo4j-graph-data-science-2.12.0.jar` from https://neo4j.com/deployment-center/#gds-tab and move to `/var/lib/neo4j/plugins/`
+
+`sudo nano /etc/neo4j/neo4j.conf`
+add `dbms.security.procedures.unrestricted=gds.*`
+and `dbms.security.procedures.allowlist=gds.*`
+then restarted neo4j `sudo neo4j restart`
+
 ## 
 
 ## TODO:

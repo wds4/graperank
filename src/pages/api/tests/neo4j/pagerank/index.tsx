@@ -4,14 +4,37 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 /*
 to access:
 https://graperank.tech/api/tests/neo4j/pagerank
+
+
+// define graph
+MATCH (source:NostrUser)-[r:FOLLOWS]->(target:NostrUser)
+RETURN gds.graph.project(
+  'nostrPagerank',
+  source,
+  target
+)
+
+// estimate how much memory is required
+CALL gds.pageRank.write.estimate('nostrPagerank', {
+  writeProperty: 'pageRank',
+  maxIterations: 20,
+  dampingFactor: 0.85
+})
+YIELD nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
+
+// stream output
+CALL gds.pageRank.stream('nostrPagerank')
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).pubkey AS pubkey, score
+ORDER BY score DESC, pubkey ASC
+// took about 14 seconds
 */
 
 const cypher1 = `MATCH (source:NostrUser)-[r:FOLLOWS]->(target:NostrUser)
 RETURN gds.graph.project(
-  'myGraph',
+  'nostrPagerank',
   source,
-  target,
-  { relationshipProperties: r { .weight } }
+  target
 )
 `
 
