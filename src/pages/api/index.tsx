@@ -88,11 +88,11 @@ pm2 start npm --name "graperank" -- start
 pm2 start cronJobManager.js --cron "* * * * *"
 
 3. restart cronJobBackgroundListener (do this from /home/ubuntu/graperank/src/cronJobs)
-pm2 start cronJobBackgroundListener.js
+// pm2 start cronJobBackgroundListener.js
 I want this to keep the connection open, but if it does not, then put it as a cron job, something like this (q 30 minutes):
-pm2 start cronJobBackgroundListener.js --cron "15, 45 * * * *"
+pm2 start cronJobBackgroundListener.js --cron "15,45 * * * *"
 
 4. restart neo4j USING SUDO (otherwise brainstorm database will not be available)
-sudo start neo4j
+sudo neo4j start
 
 */

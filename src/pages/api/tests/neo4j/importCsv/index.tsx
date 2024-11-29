@@ -56,7 +56,7 @@ export default async function handler(
 
   const response:ResponseData = {
     success: true,
-    message: 'api/tests/neo4j Hello from Next.js!',
+    message: 'api/tests/neo4j/importCsv Hello from Next.js!',
     data: {
       cypher1,
       cypher1_result,

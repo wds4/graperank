@@ -280,10 +280,10 @@ via browser:
 
 `CREATE CONSTRAINT FOR (n:NostrUser) REQUIRE (n.pubkey) IS UNIQUE`
 
+## 
+
 ## TODO:
 - maybe get rid of nginx landing page (44.215.170.113) (delete /etc/nginx/sites-available/default?)
-- add s3 bucket functionality
-- add mysql functionality 
 
 
 
