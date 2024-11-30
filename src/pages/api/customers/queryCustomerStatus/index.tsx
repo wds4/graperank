@@ -6,6 +6,7 @@ import mysql from 'mysql2/promise'
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/customers/queryCustomerStatus?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
 */
 
 type ResponseData = {
@@ -57,7 +58,7 @@ export default async function handler(
             results
           }
         }
-        res.status(200).json(response)
+        res.status(200).send(response)
       } catch (error) {
         const response = {
           success: false,
