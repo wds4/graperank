@@ -50,7 +50,7 @@ export default async function handler(
         console.log(results);
         const aCustomers = JSON.parse(JSON.stringify(results[0]))
         let exists = false
-        if (aCustomers.length = 1) {
+        if (aCustomers.length == 1) {
           exists = true
         }   
 
@@ -60,11 +60,7 @@ export default async function handler(
         const response:ResponseData = {
           success: true,
           exists,
-          message: `api/customers/queryCustomerStatus data:`,
-          data: {
-            command,
-            results
-          }
+          message: `api/customers/queryCustomerStatus`,
         }
         res.status(200).json(response)
       } catch (error) {
