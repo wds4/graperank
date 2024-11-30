@@ -10,6 +10,7 @@ https://www.graperank.tech/api/customers/queryCustomerStatus?pubkey=e5272de914bd
 */
 
 type ResponseData = {
+  response?: object,
   success: boolean,
   message: string,
   data?: object,
@@ -51,6 +52,7 @@ export default async function handler(
         console.log(`closing connection: ${close_result}`)
 
         const response:ResponseData = {
+          response: { foo: 'bar' },
           success: true,
           message: `api/customers/queryCustomerStatus data:`,
           data: {
