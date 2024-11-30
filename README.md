@@ -291,7 +291,42 @@ add `dbms.security.procedures.unrestricted=gds.*`
 and `dbms.security.procedures.allowlist=gds.*`
 then restarted neo4j `sudo neo4j restart`
 
-## 
+## CORS
+
+`sudo nano /etc/nginx/sites-available/graperank.tech`
+
+and change this:
+
+```
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+```
+
+to:
+
+```
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
+    }
+```
+
+then: `sudo systemctl restart nginx`
+
+with plan later to change to:
+
+```
+add_header 'Access-Control-Allow-Origin' 'https://grapevine-brainstorm.vercel.app/' always;
+```
 
 ## TODO:
 - maybe get rid of nginx landing page (44.215.170.113) (delete /etc/nginx/sites-available/default?)

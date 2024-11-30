@@ -58,7 +58,7 @@ export default async function handler(
             results
           }
         }
-        res.status(200).send(response)
+        res.status(200).json(response)
       } catch (error) {
         const response = {
           success: false,
