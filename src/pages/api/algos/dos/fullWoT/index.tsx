@@ -37,8 +37,8 @@ export default async function handler(
   if (searchParams.pubkey1) {
     const pubkey1 = searchParams.pubkey1
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[n:FOLLOWS*]->(:NostrUser))
-WHERE r <> n 
+      const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS*]->(n:NostrUser))
+WHERE r.pubkey <> n.pubkey 
 RETURN n, p, length(p) as numHops LIMIT 10`
       try {
         const result_cypher1 = await read(cypher1, {})
