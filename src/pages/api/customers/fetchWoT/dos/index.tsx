@@ -34,7 +34,7 @@ export default async function handler(
     }
     res.status(500).json(response)
   }
-  if (searchParams.pubkey1) {
+  if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string') {
       try {
