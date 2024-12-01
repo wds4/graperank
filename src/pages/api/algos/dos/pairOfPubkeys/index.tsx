@@ -8,7 +8,7 @@ pubkey1: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 pubkey2: ad46db12ee250a108756ab4f0f3007b04d7e699f45eac3ab696077296219d207 // 2 hops away
 pubkey2: 5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31 // 5 hops away
 pubkey2: 1dda43d37807decafe62882615d82c22d674d5c8333a9eb314c73b6771b9224c // 9 hops away
-https://www.graperank.tech/api/neo4j/getShortestPath?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&pubkey2=5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31
+https://www.graperank.tech/api/algos/dos/pairOfPubkeys?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&pubkey2=5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31
 
 */
 
@@ -26,7 +26,7 @@ export default async function handler(
   if ((!searchParams.pubkey1) || (!searchParams.pubkey2)) {
     const response:ResponseData = {
       success: false,
-      message: `api/neo4j/getShortestPath: pubkey1 and/or pubkey2 were not provided`
+      message: `api/algos/dos/pairOfPubkeys: pubkey1 and/or pubkey2 were not provided`
     }
     res.status(500).json(response)
   }
@@ -36,7 +36,7 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1) && typeof pubkey2 == 'string' && verifyPubkeyValidity(pubkey2)) {
       const cypher1 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
 WHERE n.pubkey='${pubkey1}' AND m.pubkey='${pubkey2}'
-RETURN p, length(p) as numHops` 
+RETURN length(p) as numHops` 
       try {
         const result_cypher1 = await read(cypher1, {})
         console.log(result_cypher1)
@@ -49,7 +49,7 @@ RETURN p, length(p) as numHops`
 
         const response:ResponseData = {
           success: true,
-          message: `api/neo4j/getShortestPath data:`,
+          message: `api/algos/dos/pairOfPubkeys data:`,
           data: {
             pubkey1, pubkey2, numHops, cypher: cypher1
           }
@@ -58,7 +58,7 @@ RETURN p, length(p) as numHops`
       } catch (error) {
         const response = {
           success: false,
-          message: `api/neo4j/getShortestPath error: ${error}`,
+          message: `api/algos/dos/pairOfPubkeys error: ${error}`,
           data: {
             pubkey1,
             cypher1
@@ -69,7 +69,7 @@ RETURN p, length(p) as numHops`
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/neo4j/getShortestPath: one or both of the provided pubkeys is invalid`,
+        message: `api/algos/dos/pairOfPubkeys: one or both of the provided pubkeys is invalid`,
         data: {
           pubkey1
         }
@@ -79,7 +79,7 @@ RETURN p, length(p) as numHops`
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/neo4j/getShortestPath: pubkey1 and/or pubkey2 were not provided`
+      message: `api/algos/dos/pairOfPubkeys: pubkey1 and/or pubkey2 were not provided`
     }
     res.status(500).json(response)
   }
