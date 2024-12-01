@@ -59,19 +59,22 @@ RETURN n, length(p) as numHops`
 
         type oCnt = {[key:string]: number}
         const oCounts:oCnt = {}
+        let numPubkeysTotal = 0
         for (let x=0; x <= maxNumHops; x++) {
           const foo = 'numHops_' + x.toString()
           oCounts[foo] = aDoSWoT[x].length
+          numPubkeysTotal += aDoSWoT[x].length
         }
 
         const response:ResponseData = {
           success: true,
           message: `api/algos/dos/fullWoT data:`,
           data: {
-            pubkey1, 
+            referencePubkey: pubkey1, 
             cypher: cypher1,
             maxNumHops,
-            oCounts,
+            numPubkeysTotal,
+            numPubkeysByDoS: oCounts,
           }
         }
         res.status(200).json(response)
