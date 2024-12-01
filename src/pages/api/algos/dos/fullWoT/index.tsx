@@ -45,8 +45,16 @@ RETURN n, length(p) as numHops LIMIT 100`
         console.log(result_cypher1)
 
         const aResults = JSON.parse(JSON.stringify(result_cypher1))
-        const numHops = aResults[0].numHops.low
-        
+
+        const aDoSWoT:string[][] = []
+        for (let x=0; x < aResults.length; x++) {
+          const numHops = aResults[x].numHops.low
+          if (!aDoSWoT[numHops]) {
+            aDoSWoT[numHops] = []
+          }
+          const pk = aResults[x].n.properties.pubkey
+          aDoSWoT[numHops].push(pk)
+        }
         // does not work:
         // const numHops = aResults[0].fields.numHops
 
@@ -54,7 +62,7 @@ RETURN n, length(p) as numHops LIMIT 100`
           success: true,
           message: `api/algos/dos/fullWoT data:`,
           data: {
-            pubkey1, numHops, cypher: cypher1, cypherQueryResult: result_cypher1
+            pubkey1, cypher: cypher1, aDoSWoT, cypherQueryResult: result_cypher1
           }
         }
         res.status(200).json(response)
