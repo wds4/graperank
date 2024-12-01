@@ -36,7 +36,7 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS*]->(n:NostrUser))
 WHERE r.pubkey <> n.pubkey 
-RETURN n, length(p) as numHops LIMIT 600`
+RETURN n, length(p) as numHops LIMIT 5000`
       try {
         const result_cypher1 = await read(cypher1, {})
         console.log(result_cypher1)
@@ -45,9 +45,8 @@ RETURN n, length(p) as numHops LIMIT 600`
 
         const aDoSWoT:string[][] = []
         aDoSWoT[0] = []
-        aDoSWoT[1] = []
-        aDoSWoT[2] = []
-        aDoSWoT[3] = []
+        aDoSWoT[0].push(pubkey1)
+        let maxNumHops = 0
         for (let x=0; x < aResults.length; x++) {
           const numHops = aResults[x].numHops.low
           if (!aDoSWoT[numHops]) {
@@ -55,9 +54,13 @@ RETURN n, length(p) as numHops LIMIT 600`
           }
           const pk = aResults[x].n.properties.pubkey
           aDoSWoT[numHops].push(pk)
+          maxNumHops = Math.max(maxNumHops, numHops)
         }
-        // does not work:
-        // const numHops = aResults[0].fields.numHops
+
+        const aCounts = []
+        for (let x=0; x < maxNumHops; x++) {
+          aCounts[x] = aDoSWoT[x].length
+        }
 
         const response:ResponseData = {
           success: true,
@@ -65,12 +68,8 @@ RETURN n, length(p) as numHops LIMIT 600`
           data: {
             pubkey1, 
             cypher: cypher1,
-            counts: {
-              dos_0: aDoSWoT[0].length,
-              dos_1: aDoSWoT[1].length,
-              dos_2: aDoSWoT[2].length,
-              dos_3: aDoSWoT[3].length,
-            },
+            maxNumHops,
+            aCounts,
             aDoSWoT, 
             cypherQueryResult: result_cypher1
           }
