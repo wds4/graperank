@@ -36,7 +36,7 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS*]->(n:NostrUser))
 WHERE r.pubkey <> n.pubkey 
-RETURN n, length(p) as numHops LIMIT 40000`
+RETURN n, length(p) as numHops`
       try {
         const result_cypher1 = await read(cypher1, {})
         console.log(result_cypher1)
@@ -72,7 +72,6 @@ RETURN n, length(p) as numHops LIMIT 40000`
             cypher: cypher1,
             maxNumHops,
             oCounts,
-            aDoSWoT,
           }
         }
         res.status(200).json(response)
