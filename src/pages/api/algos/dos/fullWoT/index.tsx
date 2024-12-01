@@ -57,9 +57,11 @@ RETURN n, length(p) as numHops LIMIT 5000`
           maxNumHops = Math.max(maxNumHops, numHops)
         }
 
-        const aCounts = []
+        type oCnt = {[key:string]: number}
+        const oCounts:oCnt = {}
         for (let x=0; x < maxNumHops; x++) {
-          aCounts[x] = aDoSWoT[x].length
+          const foo = 'numHops_' + x.toString()
+          oCounts[foo] = aDoSWoT[x].length
         }
 
         const response:ResponseData = {
@@ -69,7 +71,7 @@ RETURN n, length(p) as numHops LIMIT 5000`
             pubkey1, 
             cypher: cypher1,
             maxNumHops,
-            aCounts,
+            oCounts,
             aDoSWoT, 
             cypherQueryResult: result_cypher1
           }
