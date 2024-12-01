@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { validateEvent } from 'nostr-tools'
 
 /*
 usage:
@@ -52,14 +51,11 @@ export default async function handler(
           oDos = JSON.parse(sDos) 
         }
 
-        const isEventValid = validateEvent(oDos)
-
         const response:ResponseData = {
           success: true,
           message: `api/customers/fetchWoT/dos data:`,
           data: { 
             pubkey1,
-            isEventValid,
             dos: oDos
           }
         }
