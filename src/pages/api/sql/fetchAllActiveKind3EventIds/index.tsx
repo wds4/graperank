@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 
 /*
-https://www.graperank.tech/api/sql/fetchAllActiveKind3Ids
+https://www.graperank.tech/api/sql/fetchAllActiveKind3EventIds
 */
 
 type ResponseData = {
@@ -23,7 +23,7 @@ export default async function handler(
         password: process.env.AWS_MYSQL_PWD,
         database: process.env.AWS_MYSQL_DB,
       });
-      const command1 = `SELECT eventId FROM users; `
+      const command1 = `SELECT kind3EventId FROM users; `
       const results1 = await connection.query(command1);
       console.log(results1);
 
