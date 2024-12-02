@@ -330,6 +330,8 @@ add_header 'Access-Control-Allow-Origin' 'https://grapevine-brainstorm.vercel.ap
 
 ## TODO:
 - maybe get rid of nginx landing page (44.215.170.113) (delete /etc/nginx/sites-available/default?)
+- https://www.graperank.tech/api/neo4j/getAllFollowsAndMutes
+- https://www.graperank.tech/api/algos/personalizedPageRank
 
 
 

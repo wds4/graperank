@@ -55,6 +55,14 @@ YIELD nodeId, score
 RETURN gds.util.asNode(nodeId).pubkey AS pubkey, score
 ORDER BY score DESC, pubkey ASC
 // about 13 sec
+
+CALL gds.graph.list() YIELD graphName
+
+CALL gds.graph.drop('personalizedPageRank_e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f') YIELD graphName
+
+TODO:
+drop project if already exists
+OR just drop it after using it
 */
 
 type ResponseData = {
