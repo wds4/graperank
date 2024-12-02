@@ -23,7 +23,7 @@ export default async function handler(
         password: process.env.AWS_MYSQL_PWD,
         database: process.env.AWS_MYSQL_DB,
       });
-      const command1 = `SELECT kind3EventId FROM users; `
+      const command1 = `SELECT kind3EventId FROM users WHERE kind3EventId IS NOT NULL; `
       const results1 = await connection.query(command1);
       console.log(results1);
 
@@ -34,6 +34,7 @@ export default async function handler(
         success: true,
         message: `api/sql/fetchAllActiveKind3Ids data:`,
         data: {
+          numEvents: results1.length,
           results1,
         }
       }
