@@ -25,7 +25,7 @@ export default async function handler(
       });
       const command1 = `SELECT kind3EventId FROM users WHERE kind3EventId IS NOT NULL; `
       const results1 = await connection.query(command1);
-      console.log(results1);
+      const aResults1 = JSON.parse(JSON.stringify(results1[0]))
 
       const close_result = await connection.end()
       console.log(`closing connection: ${close_result}`)
@@ -34,7 +34,7 @@ export default async function handler(
         success: true,
         message: `api/sql/fetchAllActiveKind3Ids data:`,
         data: {
-          numEvents: results1.length,
+          numEvents: aResults1.length,
           results1,
         }
       }
