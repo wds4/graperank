@@ -161,10 +161,9 @@ ORDER BY score DESC, pubkey ASC`
           exists: true,
           message: `api/algos/personalizedPageRank/fullWoT data:`,
           data: {
-            oPersonalizedPageRank,
             result_cypher1,
-            result_cypher2,
             result_cypher3,
+            oPersonalizedPageRank,
           }
         }
         res.status(200).json(response)
