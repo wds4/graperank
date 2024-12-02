@@ -94,7 +94,7 @@ YIELD nodeId, score
 RETURN gds.util.asNode(nodeId).pubkey AS pubkey, score
 ORDER BY score DESC, pubkey ASC`
       try {
-        const result_cypher1 = await write(cypher1, {})
+        // const result_cypher1 = await write(cypher1, {})
         // console.log(result_cypher1)
         // const aResults1 = JSON.parse(JSON.stringify(result_cypher1))
 
@@ -109,7 +109,7 @@ ORDER BY score DESC, pubkey ASC`
             referencePubkey: pubkey1, 
             cypher1,
             cypher2,
-            result_cypher1,
+            // result_cypher1,
             result_cypher2,
           }
         }
