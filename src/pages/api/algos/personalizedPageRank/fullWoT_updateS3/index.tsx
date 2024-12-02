@@ -1,13 +1,24 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { write } from '@/lib/neo4j'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
 
 /*
-calculate personalized pagerank for all pubkeys relative to the reference pubkey
+calculate personalized pagerank for all pubkeys relative to the reference pubkey and save to S3
+
+endpoint indended to be used for customers
 
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/algos/personalizedPageRank/fullWoT?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/algos/personalizedPageRank/fullWoT_updateS3?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 takes about 19 seconds
 
@@ -100,7 +111,7 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/personalizedPageRank/fullWoT: pubkey was not provided`
+      message: `api/algos/personalizedPageRank/fullWoT_updateS3: pubkey was not provided`
     }
     res.status(500).json(response)
   }
@@ -154,13 +165,29 @@ ORDER BY score DESC, pubkey ASC`
           },
         }
 
+        /* PutObjectCommand */
+        const fooFxn = async (oPersonalizedPageRank:PPR) => {
+          const sOutput = JSON.stringify(oPersonalizedPageRank)
+          return sOutput
+        }
+
+        const params_put = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: `customerData/${pubkey1}/personalizedPageRank`,
+          Body: await fooFxn(oPersonalizedPageRank)
+        }
+
+        const command_put = new PutObjectCommand(params_put);
+        const response_put = await client.send(command_put);
+
         const response:ResponseData = {
           success: true,
           exists: true,
-          message: `api/algos/personalizedPageRank/fullWoT data:`,
+          message: `api/algos/personalizedPageRank/fullWoT_updateS3 data:`,
           data: {
             result_cypher1,
             result_cypher3,
+            response_put,
             oPersonalizedPageRank,
           }
         }
@@ -168,7 +195,7 @@ ORDER BY score DESC, pubkey ASC`
       } catch (error) {
         const response = {
           success: false,
-          message: `api/algos/personalizedPageRank/fullWoT error: ${error}`,
+          message: `api/algos/personalizedPageRank/fullWoT_updateS3 error: ${error}`,
           data: {
             pubkey1,
             cypher1
@@ -179,7 +206,7 @@ ORDER BY score DESC, pubkey ASC`
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/algos/personalizedPageRank/fullWoT: the provided pubkey is invalid`,
+        message: `api/algos/personalizedPageRank/fullWoT_updateS3: the provided pubkey is invalid`,
         data: {
           pubkey1
         }
@@ -189,7 +216,7 @@ ORDER BY score DESC, pubkey ASC`
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/personalizedPageRank/fullWoT: pubkey was not provided`
+      message: `api/algos/personalizedPageRank/fullWoT_updateS3: pubkey was not provided`
     }
     res.status(500).json(response)
   }

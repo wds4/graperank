@@ -4,11 +4,9 @@ import { read } from '@/lib/neo4j'
 
 /*
 calculate DoS for all pubkeys relative to the reference pubkey, provided as pubkey1
+
 usage:
 pubkey1: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-pubkey2: ad46db12ee250a108756ab4f0f3007b04d7e699f45eac3ab696077296219d207 // 2 hops away
-pubkey2: 5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31 // 5 hops away
-pubkey2: 1dda43d37807decafe62882615d82c22d674d5c8333a9eb314c73b6771b9224c // 9 hops away
 https://www.graperank.tech/api/algos/dos/fullWoT?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */

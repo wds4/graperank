@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 
-
 /*
 calculate DoS for all pubkeys relative to the reference pubkey, provided as pubkey1
 
