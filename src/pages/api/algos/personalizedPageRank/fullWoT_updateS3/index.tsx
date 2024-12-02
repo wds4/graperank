@@ -2,6 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { write } from '@/lib/neo4j'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { PPR, PprScores } from '@/types'
 
 const client = new S3Client({
   region: process.env.AWS_REGION,
@@ -81,26 +82,6 @@ type ResponseData = {
   exists?: boolean,
   message: string,
   data?: object,
-}
-
-type PprScores = []
-
-type PprMetaData = {
-  whenLastUpdated: number,
-  referencePubkey: string,
-  cypher1: string,
-  cypher2: string,
-  cypher3: string,
-}
-
-type PprData = {
-  numPubkeysTotal: number,
-  scores?:PprScores, // PprScores
-}
-
-type PPR = {
-  metaData: PprMetaData,
-  data: PprData
 }
 
 export default async function handler(

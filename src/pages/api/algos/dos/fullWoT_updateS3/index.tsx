@@ -2,6 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { Dos, NumPubkeysByDoS, PubkeysByDoS, ResponseData } from '@/types'
 
 /*
 calculate DoS for all pubkeys relative to the reference pubkey, provided as pubkey1
@@ -23,33 +24,7 @@ const client = new S3Client({
   },
 })
 
-type ResponseData = {
-  success: boolean,
-  exists?: boolean,
-  message: string,
-  data?: object,
-}
 
-type DosMetaData = {
-  whenLastUpdated: number,
-  referencePubkey: string,
-  cypher: string,
-}
-
-type NumPubkeysByDoS = {[key:string]: number}
-type PubkeysByDoS = string[][]
-
-type DosData = {
-  maxNumHops: number,
-  numPubkeysTotal: number,
-  numPubkeysByDoS: NumPubkeysByDoS,
-  pubkeysByDoS:PubkeysByDoS,
-}
-
-type Dos = {
-  metaData: DosMetaData,
-  data: DosData
-}
  
 export default async function handler(
   req: NextApiRequest,
