@@ -26,6 +26,7 @@ const client = new S3Client({
 
 type ResponseData = {
   success: boolean,
+  exists?: boolean,
   message: string,
   data?: object,
 }
@@ -130,6 +131,7 @@ RETURN n, length(p) as numHops`
 
         const response:ResponseData = {
           success: true,
+          exists: true,
           message: `api/algos/dos/fullWoT_updateS3 data:`,
           data: {
             response_put, oDos,
