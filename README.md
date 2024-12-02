@@ -330,8 +330,14 @@ add_header 'Access-Control-Allow-Origin' 'https://grapevine-brainstorm.vercel.ap
 
 ## TODO:
 - maybe get rid of nginx landing page (44.215.170.113) (delete /etc/nginx/sites-available/default?)
-- https://www.graperank.tech/api/neo4j/getAllFollowsAndMutes
+- https://www.graperank.tech/api/neo4j/getAllFollowsAndMutes (need to do this from LMDB instead of neo4j ???)
 - https://www.graperank.tech/api/algos/personalizedPageRank
+    - write pPR results to S3 bucket
+- include dos and pPR activation from grapevine-brainstorm.vercel.app
+- figure out best way to export all kind3 events 
+- then start on grapeRank calculation
+- get all dos=N pubkeys
+- get one random pubkey dos=N
 
 
 

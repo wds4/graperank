@@ -12,10 +12,7 @@ customerData/<pk_customer>/dos
 
 usage:
 pubkey1: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-pubkey2: ad46db12ee250a108756ab4f0f3007b04d7e699f45eac3ab696077296219d207 // 2 hops away
-pubkey2: 5c624c471f52d737a1e9a74f598f681d41c43703741c260aa620fcbdb8995e31 // 5 hops away
-pubkey2: 1dda43d37807decafe62882615d82c22d674d5c8333a9eb314c73b6771b9224c // 9 hops away
-https://www.graperank.tech/api/algos/dos/fullWoT_updateS3?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/algos/dos/fullWoT_updateS3?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
 
@@ -59,15 +56,15 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  if (!searchParams.pubkey1) {
+  if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/dos/fullWoT_updateS3: pubkey1 was not provided`
+      message: `api/algos/dos/fullWoT_updateS3: pubkey was not provided`
     }
     res.status(500).json(response)
   }
-  if (searchParams.pubkey1) {
-    const pubkey1 = searchParams.pubkey1
+  if (searchParams.pubkey) {
+    const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS*]->(n:NostrUser))
 WHERE r.pubkey <> n.pubkey 
@@ -163,7 +160,7 @@ RETURN n, length(p) as numHops`
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/dos/fullWoT_updateS3: pubkey1 was not provided`
+      message: `api/algos/dos/fullWoT_updateS3: pubkey was not provided`
     }
     res.status(500).json(response)
   }
