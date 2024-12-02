@@ -101,14 +101,21 @@ CALL gds.pageRank.stream('personalizedPageRank_${pubkey1}', {
 YIELD nodeId, score
 RETURN gds.util.asNode(nodeId).pubkey AS pubkey, score
 ORDER BY score DESC, pubkey ASC`
+
+      const cypher3 = `CALL gds.graph.drop('personalizedPageRank_${pubkey1}') YIELD graphName
+`
       try {
-        // const result_cypher1 = await write(cypher1, {})
+        const result_cypher1 = await write(cypher1, {})
         // console.log(result_cypher1)
         // const aResults1 = JSON.parse(JSON.stringify(result_cypher1))
 
         const result_cypher2 = await write(cypher2, {})
         // console.log(result_cypher2)
         // const aResults2 = JSON.parse(JSON.stringify(result_cypher2))
+
+        const result_cypher3 = await write(cypher3, {})
+        // console.log(result_cypher3)
+        // const aResults3 = JSON.parse(JSON.stringify(result_cypher3))
 
         const response:ResponseData = {
           success: true,
@@ -117,8 +124,10 @@ ORDER BY score DESC, pubkey ASC`
             referencePubkey: pubkey1, 
             cypher1,
             cypher2,
-            // result_cypher1,
+            cypher3,
+            result_cypher1,
             result_cypher2,
+            result_cypher3,
           }
         }
         res.status(200).json(response)

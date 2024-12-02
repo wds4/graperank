@@ -16,24 +16,19 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-    const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser) RETURN n.pubkey, m.pubkey LIMIT 1000` // cypher command 
+    const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser) RETURN n.pubkey, m.pubkey LIMIT 1000`
+    const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser) RETURN n.pubkey, m.pubkey LIMIT 1000`
     try {
-      const result1 = await read(cypher1, {})
-      /*
-      const aPubkeys = []
-      const aUsers = JSON.parse(JSON.stringify(result1))
-      for (let x=0; x < aUsers.length; x++) {
-        const oNextUserData = aUsers[x]
-        const pk = oNextUserData.m.properties.pubkey
-        aPubkeys.push(pk)
-      }
-      */
+      const result_follow = await read(cypher1, {})
+      const result_mute = await read(cypher2, {})
+
+      // const aResult_follow = JSON.parse(JSON.stringify(result_follow))
 
       const response:ResponseData = {
         success: true,
         message: `api/neo4j/getAllFollowsAndMutes data:`,
         data: {
-          cypher: cypher1,result1
+          cypher1, cypher2, result_follow, result_mute
         }
       }
       res.status(200).json(response)
