@@ -85,7 +85,7 @@ RETURN gds.graph.project(
   target
 )`
       const cypher2 = `MATCH (refUser:NostrUser {pubkey: '${pubkey1}'})
-CALL gds.pageRank.stream('personalizedPageRank_', {
+CALL gds.pageRank.stream('personalizedPageRank_${pubkey1}', {
   maxIterations: 20,
   dampingFactor: 0.85,
   sourceNodes: [refUser]
