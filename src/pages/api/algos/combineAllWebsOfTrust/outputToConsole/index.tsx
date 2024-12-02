@@ -1,12 +1,12 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { Dos, ResponseData } from '@/types'
+import { Dos, PPR, PprScores, ResponseData } from '@/types'
 
 /*
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/algos/synthesizeWebs/outputToConsole?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/algos/combineAllWebsOfTrust/outputToConsole?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 
 */
@@ -50,7 +50,7 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/synthesizeWebs/outputToConsole: pubkey was not provided`
+      message: `api/algos/combineAllWebsOfTrust/outputToConsole: pubkey was not provided`
     }
     res.status(500).json(response)
   }
@@ -79,10 +79,10 @@ export default async function handler(
 
         if (typeof sDos == 'string' && typeof sPPR == 'string') {
           const oDos:Dos = JSON.parse(sDos)
-          const oPPR:Dos = JSON.parse(sPPR)
+          const oPPR:PPR = JSON.parse(sPPR)
 
           const aPubkeysByHop = Object.keys(oDos.data.pubkeysByDoS)
-          const aPPR = Object.keys(oPPR.data)
+          const aPPR:PprScores = oPPR.data.scores
 
           const oPwotScores:PwotScores = {}
           for (let x=0; x < aPubkeysByHop.length; x++) {
@@ -91,7 +91,11 @@ export default async function handler(
             oPwotScores.foo = [x, numPubkeysThisHop]
           }
           for (let x=0; x < aPPR.length; x++) {
-            
+            const oFoo = aPPR[x]
+            const pk = oFoo.pubkey
+            console.log(typeof pk)
+            const score = oFoo.score
+            oPwotScores.bar = [score]
           }
           /*
           // go through oDos and oPPR to create the output object
@@ -138,7 +142,7 @@ export default async function handler(
           const response:ResponseData = {
             success: true,
             exists: true,
-            message: `api/algos/synthesizeWebs/outputToConsole data:`,
+            message: `api/algos/combineAllWebsOfTrust/outputToConsole data:`,
             data: {
               oPersonalizedWebsOfTrust,
             }
@@ -148,7 +152,7 @@ export default async function handler(
           // error 
           const response = {
             success: false,
-            message: `api/algos/synthesizeWebs/outputToConsole: data not available or not properly formatted`,
+            message: `api/algos/combineAllWebsOfTrust/outputToConsole: data not available or not properly formatted`,
             data: {
               pubkey1,
             }
@@ -159,7 +163,7 @@ export default async function handler(
       } catch (error) {
         const response = {
           success: false,
-          message: `api/algos/synthesizeWebs/outputToConsole error: ${error}`,
+          message: `api/algos/combineAllWebsOfTrust/outputToConsole error: ${error}`,
           data: {
             pubkey1,
           }
@@ -169,7 +173,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/algos/synthesizeWebs/outputToConsole: the provided pubkey is invalid`,
+        message: `api/algos/combineAllWebsOfTrust/outputToConsole: the provided pubkey is invalid`,
         data: {
           pubkey1
         }
@@ -179,7 +183,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/synthesizeWebs/outputToConsole: pubkey was not provided`
+      message: `api/algos/combineAllWebsOfTrust/outputToConsole: pubkey was not provided`
     }
     res.status(500).json(response)
   }

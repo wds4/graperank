@@ -31,7 +31,11 @@ export type Dos = {
 
 // personalized pageRank
 
-export type PprScores = []
+type PprScore = {
+  pubkey: string,
+  score: number,
+}
+export type PprScores = PprScore[]
 
 type PprMetaData = {
   whenLastUpdated: number,
@@ -43,7 +47,7 @@ type PprMetaData = {
 
 type PprData = {
   numPubkeysTotal: number,
-  scores?:PprScores, // PprScores
+  scores:PprScores, // PprScores
 }
 
 export type PPR = {
