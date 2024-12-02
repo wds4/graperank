@@ -8,8 +8,8 @@ calculate DoS for all pubkeys relative to the reference pubkey, provided as pubk
 set hops property for nodes in graph (Not intended for general usage; only for internal use)
 
 usage:
-pubkey1: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/algos/dos/fullWoT_updateGraph?pubkey1=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/algos/personalizedPageRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
 
@@ -24,20 +24,17 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  if (!searchParams.pubkey1) {
+  if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/dos/fullWoT_updateGraph: pubkey1 was not provided`
+      message: `api/algos/personalizedPageRank: pubkey1 was not provided`
     }
     res.status(500).json(response)
   }
-  if (searchParams.pubkey1) {
-    const pubkey1 = searchParams.pubkey1
+  if (searchParams.pubkey) {
+    const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS*]->(n:NostrUser))
-WHERE r.pubkey <> n.pubkey 
-SET n.hops = length(p)
-RETURN n, length(p) as numHops`
+      const cypher1 = ``
       try {
         const result_cypher1 = await write(cypher1, {})
         console.log(result_cypher1)
@@ -69,7 +66,7 @@ RETURN n, length(p) as numHops`
 
         const response:ResponseData = {
           success: true,
-          message: `api/algos/dos/fullWoT_updateGraph data:`,
+          message: `api/algos/personalizedPageRank data:`,
           data: {
             referencePubkey: pubkey1, 
             cypher: cypher1,
@@ -82,7 +79,7 @@ RETURN n, length(p) as numHops`
       } catch (error) {
         const response = {
           success: false,
-          message: `api/algos/dos/fullWoT_updateGraph error: ${error}`,
+          message: `api/algos/personalizedPageRank error: ${error}`,
           data: {
             pubkey1,
             cypher1
@@ -93,7 +90,7 @@ RETURN n, length(p) as numHops`
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/algos/dos/fullWoT_updateGraph: one or both of the provided pubkeys is invalid`,
+        message: `api/algos/personalizedPageRank: one or both of the provided pubkeys is invalid`,
         data: {
           pubkey1
         }
@@ -103,7 +100,7 @@ RETURN n, length(p) as numHops`
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/dos/fullWoT_updateGraph: pubkey1 was not provided`
+      message: `api/algos/personalizedPageRank: pubkey1 was not provided`
     }
     res.status(500).json(response)
   }
