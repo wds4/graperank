@@ -1,12 +1,12 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import { Dos, PPR, PprScore, PprScores, ResponseData } from '@/types'
 
 /*
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/algos/combineAllWebsOfTrust/outputToConsole?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/algos/combineAllWebsOfTrust/outputToS3?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
 
@@ -49,7 +49,7 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/combineAllWebsOfTrust/outputToConsole: pubkey was not provided`
+      message: `api/algos/combineAllWebsOfTrust/outputToS3: pubkey was not provided`
     }
     res.status(500).json(response)
   }
@@ -144,7 +144,7 @@ export default async function handler(
               referencePubkey: pubkey1, 
             },
             data: {
-              numPubkeysTotal: 0,
+              numPubkeysTotal: aFoo.length,
               scores: oPwotScores,
             },
           }
@@ -160,15 +160,15 @@ export default async function handler(
             Body: await fooFxn(oPersonalizedWebsOfTrust)
           }
 
-          console.log(typeof params_put)
+          const command_put = new PutObjectCommand(params_put);
+          const response_put = await client.send(command_put);
 
-          // const command_put = new PutObjectCommand(params_put);
-          // const response_put = await client.send(command_put);
+          console.log(typeof response_put)
 
           const response:ResponseData = {
             success: true,
             exists: true,
-            message: `api/algos/combineAllWebsOfTrust/outputToConsole data:`,
+            message: `api/algos/combineAllWebsOfTrust/outputToS3 data:`,
             data: {
               oPersonalizedWebsOfTrust,
             }
@@ -178,7 +178,7 @@ export default async function handler(
           // error 
           const response = {
             success: false,
-            message: `api/algos/combineAllWebsOfTrust/outputToConsole: data not available or not properly formatted`,
+            message: `api/algos/combineAllWebsOfTrust/outputToS3: data not available or not properly formatted`,
             data: {
               pubkey1,
             }
@@ -189,7 +189,7 @@ export default async function handler(
       } catch (error) {
         const response = {
           success: false,
-          message: `api/algos/combineAllWebsOfTrust/outputToConsole error: ${error}`,
+          message: `api/algos/combineAllWebsOfTrust/outputToS3 error: ${error}`,
           data: {
             pubkey1,
           }
@@ -199,7 +199,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/algos/combineAllWebsOfTrust/outputToConsole: the provided pubkey is invalid`,
+        message: `api/algos/combineAllWebsOfTrust/outputToS3: the provided pubkey is invalid`,
         data: {
           pubkey1
         }
@@ -209,7 +209,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/combineAllWebsOfTrust/outputToConsole: pubkey was not provided`
+      message: `api/algos/combineAllWebsOfTrust/outputToS3: pubkey was not provided`
     }
     res.status(500).json(response)
   }
