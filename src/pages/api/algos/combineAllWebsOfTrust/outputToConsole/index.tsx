@@ -119,7 +119,8 @@ export default async function handler(
 
           for (let x=0; x < Object.keys(oFoo).length; x++) {
             const pk = Object.keys(oFoo)[x]
-            oPwotScores[pk] = [oFoo[pk].dos, oFoo[pk].personalPageRank, oFoo[pk].grapeRank_average, oFoo[pk].grapeRank_confidence]
+            console.log(typeof pk)
+            // oPwotScores[pk] = [oFoo[pk].dos, oFoo[pk].personalPageRank, oFoo[pk].grapeRank_average, oFoo[pk].grapeRank_confidence]
           }
 
           /*
