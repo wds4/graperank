@@ -3,11 +3,12 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 // import { read } from '@/lib/neo4j'
 // import { S3Client } from '@aws-sdk/client-s3'
 import { ResponseData } from '@/types'
+import { Pubkey } from '@/types/ratingsApi'
 
 /*
 usage:
 rators: [e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f]
-https://www.graperank.tech/api/ratings?rators=[e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f]&ratingKind=3
+https://www.graperank.tech/api/ratings?rators=[e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f]&ratingKind=3&dos=0&networkKind=3
 
 */
 
@@ -26,32 +27,42 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  let rators = ''
-  let ratingKind = ''
-  const dos = 1
-  const networkKind = -1
-
-  if (typeof searchParams.rators == 'string' ) {
-    rators = searchParams.rators
-  } else {
-    const response:ResponseData = {
-      success: false,
-      message: `api/ratings: rators was not provided`
-    }
-    res.status(500).json(response)
-  }
-  
-  if (typeof searchParams.ratingKind == 'string') {
-    ratingKind = searchParams.ratingKind    
-  } else {
-    const response:ResponseData = {
-      success: false,
-      message: `api/ratings: ratingKind was not provided`
-    }
-    res.status(500).json(response)
-  }
+  let rators:Pubkey[] = ['unknown']
+  let ratingKind = -1
+  let dos = 1
+  let networkKind = -1
 
   try {
+    if (typeof searchParams.rators == 'string' ) {
+      rators = JSON.parse(searchParams.rators)
+    } else {
+      const response:ResponseData = {
+        success: false,
+        message: `api/ratings: rators was not provided`
+      }
+      res.status(500).json(response)
+    }
+    
+    if (typeof searchParams.ratingKind == 'string') {
+      ratingKind = Number(searchParams.ratingKind)
+    } else {
+      const response:ResponseData = {
+        success: false,
+        message: `api/ratings: ratingKind was not provided`
+      }
+      res.status(500).json(response)
+    }
+
+    if (typeof searchParams.dos == 'string') {
+      dos = Number(searchParams.dos)
+    }
+
+    if (typeof searchParams.networkKind == 'string') {
+      networkKind = Number(searchParams.networkKind)
+    } else {
+      networkKind = ratingKind
+    }
+
     const response:ResponseData = {
       success: true,
       exists: true,
