@@ -24,8 +24,6 @@ const client = new S3Client({
   },
 })
 
-
- 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
