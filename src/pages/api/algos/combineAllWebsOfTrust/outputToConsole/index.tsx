@@ -85,7 +85,7 @@ export default async function handler(
 
           const oPwotScores:PwotScores = {}
           for (let hop=0; hop < aPubkeysByHop.length; hop++) {
-            const aPubkeys = aPubkeysByHop[x]
+            const aPubkeys = aPubkeysByHop[hop]
             for (let z=0; z < aPubkeys.length; z++) {
               const pk = aPubkeys[z]
               oPwotScores[pk] = [hop, 0, 0, 0]
@@ -144,7 +144,6 @@ export default async function handler(
             exists: true,
             message: `api/algos/combineAllWebsOfTrust/outputToConsole data:`,
             data: {
-              oPubkeysByHop,
               oPersonalizedWebsOfTrust,
             }
           }
