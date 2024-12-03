@@ -156,7 +156,7 @@ export default async function handler(
 
           const params_put = {
             Bucket: 'grapevine-nostr-cache-bucket',
-            Key: `customerData/${pubkey1}/personalizedPageRank`,
+            Key: `customerData/${pubkey1}/combinedWebsOfTrust`,
             Body: await fooFxn(oPersonalizedWebsOfTrust)
           }
 
