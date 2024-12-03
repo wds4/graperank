@@ -90,7 +90,7 @@ export default async function handler(
             const aPubkeys = aPubkeysByHop[hop]
             for (let z=0; z < aPubkeys.length; z++) {
               const pk = aPubkeys[z]
-              oPwotScores[pk] = [hop, 0, 0, 0]
+              // oPwotScores[pk] = [hop, 0, 0, 0]
               oFoo[pk] = {
                 dos: hop,
                 personalPageRank: -1,
@@ -117,6 +117,12 @@ export default async function handler(
           }
 
           // TODO: add grapeRank scores
+
+          const aFoo = Object.keys(oFoo)
+          for (let a=0; a < aFoo.length; a++) {
+            const pk = aFoo[a]
+            oPwotScores[pk] = [ oFoo[pk].dos, oFoo[pk].personalPageRank, oFoo[pk].grapeRank_average, oFoo[pk].grapeRank_confidence ]
+          }
 
           /*
           for (let x=0; x < Object.keys(oFoo).length; x++) {
@@ -172,7 +178,6 @@ export default async function handler(
             exists: true,
             message: `api/algos/combineAllWebsOfTrust/outputToConsole data:`,
             data: {
-              oFoo,
               oPersonalizedWebsOfTrust,
             }
           }
