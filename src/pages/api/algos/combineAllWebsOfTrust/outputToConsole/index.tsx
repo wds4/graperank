@@ -85,6 +85,7 @@ export default async function handler(
 
           const oPwotScores:PwotScores = {}
           const oFoo:{[key:string]: { dos: number, personalPageRank: number, grapeRank_average: number, grapeRank_confidence: number }} = {}
+          
           for (let hop=0; hop < aPubkeysByHop.length; hop++) {
             const aPubkeys = aPubkeysByHop[hop]
             for (let z=0; z < aPubkeys.length; z++) {
@@ -98,11 +99,11 @@ export default async function handler(
               }
             }
           }
+
           for (let x=0; x < aPPR.length; x++) {
             const oBar:PprScore = aPPR[x]
             const pk = oBar.pubkey
             const score = oBar.score
-            console.log(typeof pk)
             if (oFoo[pk]) {
               oFoo[pk].personalPageRank = score
             } else {
@@ -171,6 +172,7 @@ export default async function handler(
             exists: true,
             message: `api/algos/combineAllWebsOfTrust/outputToConsole data:`,
             data: {
+              oFoo,
               oPersonalizedWebsOfTrust,
             }
           }
