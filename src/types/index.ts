@@ -31,7 +31,7 @@ export type Dos = {
 
 // personalized pageRank
 
-type PprScore = {
+export type PprScore = {
   pubkey: string,
   score: number,
 }

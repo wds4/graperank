@@ -1,7 +1,7 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { Dos, PPR, PprScores, ResponseData } from '@/types'
+import { Dos, PPR, PprScore, PprScores, ResponseData } from '@/types'
 
 /*
 usage:
@@ -85,16 +85,19 @@ export default async function handler(
 
           const oPwotScores:PwotScores = {}
           for (let x=0; x < aPubkeysByHop.length; x++) {
-            const aPubkeys = aPubkeysByHop[x]
-            const numPubkeysThisHop = aPubkeys.length
+            const aHops = aPubkeysByHop[x]
+            const numPubkeysThisHop = aHops.length
             oPwotScores.foo = [x, numPubkeysThisHop]
-            for (let dos=0; dos < aPubkeys.length; dos++) {
-              const pk = aPubkeys[dos]
-              oPwotScores[pk] = [dos, 0, 0, 0]
+            for (let hop=0; hop < aHops.length; hop++) {
+              const aPubkeys = aHops[hop]
+              for (let z=0; z < aPubkeys.length; z++) {
+                const pk = aPubkeys[z]
+                oPwotScores[pk] = [hop, 0, 0, 0]
+              }
             }
           }
           for (let x=0; x < aPPR.length; x++) {
-            const oFoo = aPPR[x]
+            const oFoo:PprScore = aPPR[x]
             const pk = oFoo.pubkey
             console.log(typeof pk)
             const score = oFoo.score
