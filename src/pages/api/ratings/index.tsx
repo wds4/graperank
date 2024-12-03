@@ -53,20 +53,10 @@ export default async function handler(
       res.status(500).json(response)
     }
 
-    if (typeof searchParams.dos == 'string') {
-      dos = Number(searchParams.dos)
-    }
-
-    if (typeof searchParams.networkKind == 'string') {
-      networkKind = Number(searchParams.networkKind)
-    } else {
-      networkKind = ratingKind
-    }
-
     const response:ResponseData = {
       success: true,
       exists: true,
-      message: `api/algos/dos/fullWoT_updateS3 data:`,
+      message: `api/ratings data:`,
       data: {
         rators, ratingKind, dos, networkKind
       }
@@ -75,7 +65,7 @@ export default async function handler(
   } catch (error) {
     const response = {
       success: false,
-      message: `api/algos/dos/fullWoT_updateS3 error: ${error}`,
+      message: `api/ratings error: ${error}`,
     }
     res.status(500).json(response)
   }
