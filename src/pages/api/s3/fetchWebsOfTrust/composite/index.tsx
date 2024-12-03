@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { verifyPubkeyValidity } from '@/helpers/nip19'
+import { ResponseData } from '@/types'
 
 /*
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://graperank.tech/api/s3/fetchWebsOftrust/composite?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-
+https://graperank.tech/api/s3/fetchWebsOfTrust/composite?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 */
 
 const client = new S3Client({
@@ -16,12 +16,6 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
  
 export default async function handler(
   req: NextApiRequest,
@@ -53,6 +47,7 @@ export default async function handler(
 
       const response:ResponseData = {
         success: true,
+        exists: true,
         message: `api/s3/fetchWebsOfTrust/composite data:`,
         data: { 
           referencePubkey: pubkey1,

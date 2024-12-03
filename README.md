@@ -338,6 +338,7 @@ add_header 'Access-Control-Allow-Origin' 'https://grapevine-brainstorm.vercel.ap
 - then start on grapeRank calculation
 - get all dos=N pubkeys
 - get one random pubkey dos=N
+- show compositeWoT as table for graperank app
 
 
 
