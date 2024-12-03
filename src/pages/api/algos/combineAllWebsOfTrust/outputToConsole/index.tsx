@@ -136,8 +136,8 @@ export default async function handler(
             metaData: {
               whenLastUpdated: {
                 synthesis: currentTimestamp,
-                dos: oDos.metaData.whenLastUpdated,
-                personalizedPageRank: oPPR.metaData.whenLastUpdated,
+                dos: -1, // oDos.metaData.whenLastUpdated
+                personalizedPageRank: -1, // oPPR.metaData.whenLastUpdated,
               },
               referencePubkey: pubkey1, 
             },
