@@ -8,7 +8,7 @@ import { Pubkey } from '@/types/ratingsApi'
 /*
 usage:
 rators: [e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f]
-https://www.graperank.tech/api/ratings?rators=[e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f]&ratingKind=3&dos=0&networkKind=3
+https://www.graperank.tech/api/ratings?rators=["e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f"]&ratingKind=3&dos=0&networkKind=3
 
 */
 
@@ -51,6 +51,16 @@ export default async function handler(
         message: `api/ratings: ratingKind was not provided`
       }
       res.status(500).json(response)
+    }
+
+    if (typeof searchParams.dos == 'string') {
+      dos = Number(searchParams.dos)
+    }
+
+    if (typeof searchParams.networkKind == 'string') {
+      networkKind = Number(searchParams.networkKind)
+    } else {
+      networkKind = ratingKind
     }
 
     const response:ResponseData = {
