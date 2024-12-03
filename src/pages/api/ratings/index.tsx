@@ -65,7 +65,7 @@ export default async function handler(
 
     if (networkKind == 3) {
       if (ratingKind == 3) {
-        const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'})-[:FOLLOWS*]->(n:NostrUser))
+        const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'})-[:FOLLOWS*2]->(n:NostrUser))
         WHERE r.pubkey <> n.pubkey 
         RETURN n, length(p) as numHops`
 
