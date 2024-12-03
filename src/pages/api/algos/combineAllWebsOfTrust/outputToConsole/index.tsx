@@ -80,6 +80,7 @@ export default async function handler(
           const oDos:Dos = JSON.parse(sDos)
           const oPPR:PPR = JSON.parse(sPPR)
 
+          const oPubkeysByHop = oDos.data.pubkeysByDoS
           const aPubkeysByHop = Object.keys(oDos.data.pubkeysByDoS)
           const aPPR:PprScores = oPPR.data.scores
 
@@ -100,8 +101,8 @@ export default async function handler(
             const oFoo:PprScore = aPPR[x]
             const pk = oFoo.pubkey
             console.log(typeof pk)
-            const score = oFoo.score
-            oPwotScores[pk] = [0, score, 0, 0]
+            // const score = oFoo.score
+            // oPwotScores[pk] = [0, score, 0, 0]
           }
           /*
           // go through oDos and oPPR to create the output object
@@ -149,6 +150,7 @@ export default async function handler(
             exists: true,
             message: `api/algos/combineAllWebsOfTrust/outputToConsole data:`,
             data: {
+              oPubkeysByHop,
               oPersonalizedWebsOfTrust,
             }
           }
