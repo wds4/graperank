@@ -1,7 +1,7 @@
 // import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 // import { read } from '@/lib/neo4j'
-import { S3Client } from '@aws-sdk/client-s3'
+// import { S3Client } from '@aws-sdk/client-s3'
 import { ResponseData } from '@/types'
 import { Pubkey } from '@/types/ratingsApi'
 
@@ -12,6 +12,7 @@ https://www.graperank.tech/api/ratings?rators=[e5272de914bd301755c439b88e6959a43
 
 */
 
+/*
 const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -19,6 +20,7 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
+  */
 
 export default async function handler(
   req: NextApiRequest,
