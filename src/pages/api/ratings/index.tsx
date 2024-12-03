@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 // import { read } from '@/lib/neo4j'
 // import { S3Client } from '@aws-sdk/client-s3'
 import { ResponseData } from '@/types'
-import { Pubkey } from '@/types/ratingsApi'
 
 /*
 usage:
