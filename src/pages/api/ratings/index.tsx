@@ -1,6 +1,6 @@
 // import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
-// import { read } from '@/lib/neo4j'
+import { read } from '@/lib/neo4j'
 // import { S3Client } from '@aws-sdk/client-s3'
 import { ResponseData } from '@/types'
 import { Pubkey } from '@/types/ratingsApi'
@@ -61,6 +61,30 @@ export default async function handler(
       networkKind = Number(searchParams.networkKind)
     } else {
       networkKind = ratingKind
+    }
+
+    if (networkKind == 3) {
+      if (ratingKind == 3) {
+        const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'})-[:FOLLOWS*]->(n:NostrUser))
+        WHERE r.pubkey <> n.pubkey 
+        AND length(p) < ${dos}
+        RETURN n, length(p) as numHops`
+
+        const result_cypher1 = await read(cypher1, {})
+        console.log(result_cypher1)
+
+        const aResults = JSON.parse(JSON.stringify(result_cypher1))
+
+        const response:ResponseData = {
+          success: true,
+          exists: true,
+          message: `api/ratings data:`,
+          data: {
+            rators, ratingKind, dos, networkKind, aResults
+          }
+        }
+        res.status(200).json(response)
+      }
     }
 
     const response:ResponseData = {
