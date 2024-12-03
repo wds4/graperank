@@ -63,26 +63,26 @@ export default async function handler(
       networkKind = ratingKind
     }
 
-    if (networkKind == 3) {
-      if (ratingKind == 3) {
-        const cypher1 = `MATCH (r:NostrUser {pubkey: 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'})-[:FOLLOWS*1..3]->(n:NostrUser)
-        RETURN n`
+    if ((networkKind == 3) && (ratingKind == 3) && (rators.length == 1)) {
+      const pubkey1 = rators[0]
+      const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS*]->(n:NostrUser))
+WHERE r.pubkey <> n.pubkey 
+RETURN n, length(p) as numHops`
 
-        const result_cypher1 = await read(cypher1, {})
-        console.log(result_cypher1)
+      const result_cypher1 = await read(cypher1, {})
+      console.log(result_cypher1)
 
-        const aResults = JSON.parse(JSON.stringify(result_cypher1))
+      const aResults = JSON.parse(JSON.stringify(result_cypher1))
 
-        const response:ResponseData = {
-          success: true,
-          exists: true,
-          message: `api/ratings data:`,
-          data: {
-            rators, ratingKind, dos, networkKind, aResults
-          }
+      const response:ResponseData = {
+        success: true,
+        exists: true,
+        message: `api/ratings data:`,
+        data: {
+          rators, ratingKind, dos, networkKind, aResults
         }
-        res.status(200).json(response)
       }
+      res.status(200).json(response)
     }
 
     const response:ResponseData = {
