@@ -84,25 +84,49 @@ export default async function handler(
           const aPPR:PprScores = oPPR.data.scores
 
           const oPwotScores:PwotScores = {}
+          const oFoo:{[key:string]: { dos: number, personalPageRank: number, grapeRank_average: number, grapeRank_confidence: number }} = {}
           for (let hop=0; hop < aPubkeysByHop.length; hop++) {
             const aPubkeys = aPubkeysByHop[hop]
             for (let z=0; z < aPubkeys.length; z++) {
               const pk = aPubkeys[z]
               oPwotScores[pk] = [hop, 0, 0, 0]
+              oFoo[pk] = {
+                dos: hop,
+                personalPageRank: -1,
+                grapeRank_average: -1,
+                grapeRank_confidence: -1,
+              }
             }
           }
           for (let x=0; x < aPPR.length; x++) {
-            const oFoo:PprScore = aPPR[x]
-            const pk = oFoo.pubkey
+            const oBar:PprScore = aPPR[x]
+            const pk = oBar.pubkey
+            const score = oBar.score
             console.log(typeof pk)
-            // const score = oFoo.score
-            // oPwotScores[pk] = [0, score, 0, 0]
+            if (oFoo[pk]) {
+              oFoo[pk].personalPageRank = score
+            } else {
+              oFoo[pk] = {
+                dos: 999,
+                personalPageRank: score,
+                grapeRank_average: -1,
+                grapeRank_confidence: -1,
+              }
+            }
           }
+
+          // TODO: add grapeRank scores
+
+          for (let x=0; x < Object.keys(oFoo).length; x++) {
+            const pk = Object.keys(oFoo)[x]
+            oPwotScores[pk] = [oFoo[pk].dos, oFoo[pk].personalPageRank, oFoo[pk].grapeRank_average, oFoo[pk].grapeRank_confidence]
+          }
+
           /*
           // go through oDos and oPPR to create the output object
           {
-            pk1: [dos, pPR, grapeRank_average, grapeRank_confidence],
-            pk2 [dos, pPR, grapeRank_average, grapeRank_confidence],
+            pk1: [dos, personalPageRank, grapeRank_average, grapeRank_confidence],
+            pk2 [dos, personalPageRank, grapeRank_average, grapeRank_confidence],
           }
           */
 
@@ -112,8 +136,8 @@ export default async function handler(
             metaData: {
               whenLastUpdated: {
                 synthesis: currentTimestamp,
-                dos: 0,
-                personalizedPageRank: 0,
+                dos: oDos.metaData.whenLastUpdated,
+                personalizedPageRank: oPPR.metaData.whenLastUpdated,
               },
               referencePubkey: pubkey1, 
             },
