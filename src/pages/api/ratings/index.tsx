@@ -67,7 +67,6 @@ export default async function handler(
       if (ratingKind == 3) {
         const cypher1 = `MATCH p = shortestPath((r:NostrUser {pubkey: 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'})-[:FOLLOWS*]->(n:NostrUser))
         WHERE r.pubkey <> n.pubkey 
-        AND length(p) < ${dos}
         RETURN n, length(p) as numHops`
 
         const result_cypher1 = await read(cypher1, {})
