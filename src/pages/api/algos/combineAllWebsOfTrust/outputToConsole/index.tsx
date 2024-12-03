@@ -8,7 +8,6 @@ usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/combineAllWebsOfTrust/outputToConsole?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
-
 */
 
 const client = new S3Client({
@@ -89,13 +88,17 @@ export default async function handler(
             const aPubkeys = aPubkeysByHop[x]
             const numPubkeysThisHop = aPubkeys.length
             oPwotScores.foo = [x, numPubkeysThisHop]
+            for (let dos=0; dos < aPubkeys.length; dos++) {
+              const pk = aPubkeys[dos]
+              oPwotScores[pk] = [dos, 0, 0, 0]
+            }
           }
           for (let x=0; x < aPPR.length; x++) {
             const oFoo = aPPR[x]
             const pk = oFoo.pubkey
             console.log(typeof pk)
             const score = oFoo.score
-            oPwotScores.bar = [score]
+            oPwotScores[pk] = [0, score, 0, 0]
           }
           /*
           // go through oDos and oPPR to create the output object
@@ -104,7 +107,6 @@ export default async function handler(
             pk2 [dos, pPR, grapeRank_average, grapeRank_confidence],
           }
           */
-          
 
           /* PutObjectCommand */
           const currentTimestamp = Math.floor(Date.now() / 1000)
