@@ -29,8 +29,8 @@ export default async function handler(
   const searchParams = req.query
   let rators:Pubkey[] = ['unknown']
   let ratingKind = -1
-  let dos = 1
-  let networkKind = -1
+  const dos = 1
+  const networkKind = -1
 
   if (typeof searchParams.rators == 'object' ) {
     rators = searchParams.rators
