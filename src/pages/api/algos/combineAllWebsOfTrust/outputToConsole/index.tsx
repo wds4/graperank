@@ -70,7 +70,6 @@ export default async function handler(
         const command_get1 = new GetObjectCommand(params_get1);
         const response_get1 = await client.send(command_get1);
         const sDos = await response_get1.Body?.transformToString()
-
         
         const command_get2 = new GetObjectCommand(params_get2);
         const response_get2 = await client.send(command_get2);
@@ -80,21 +79,16 @@ export default async function handler(
           const oDos:Dos = JSON.parse(sDos)
           const oPPR:PPR = JSON.parse(sPPR)
 
-          const oPubkeysByHop = oDos.data.pubkeysByDoS
-          const aPubkeysByHop = Object.keys(oDos.data.pubkeysByDoS)
+          const aPubkeysByHop = oDos.data.pubkeysByDoS
+          // const aPubkeysByHop = Object.keys(oDos.data.pubkeysByDoS)
           const aPPR:PprScores = oPPR.data.scores
 
           const oPwotScores:PwotScores = {}
-          for (let x=0; x < aPubkeysByHop.length; x++) {
-            const aHops = aPubkeysByHop[x]
-            const numPubkeysThisHop = aHops.length
-            oPwotScores.foo = [x, numPubkeysThisHop]
-            for (let hop=0; hop < aHops.length; hop++) {
-              const aPubkeys = aHops[hop]
-              for (let z=0; z < aPubkeys.length; z++) {
-                const pk = aPubkeys[z]
-                oPwotScores[pk] = [hop, 0, 0, 0]
-              }
+          for (let hop=0; hop < aPubkeysByHop.length; hop++) {
+            const aPubkeys = aPubkeysByHop[x]
+            for (let z=0; z < aPubkeys.length; z++) {
+              const pk = aPubkeys[z]
+              oPwotScores[pk] = [hop, 0, 0, 0]
             }
           }
           for (let x=0; x < aPPR.length; x++) {
