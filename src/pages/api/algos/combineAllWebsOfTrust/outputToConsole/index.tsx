@@ -117,11 +117,13 @@ export default async function handler(
 
           // TODO: add grapeRank scores
 
+          /*
           for (let x=0; x < Object.keys(oFoo).length; x++) {
             const pk = Object.keys(oFoo)[x]
             console.log(typeof pk)
             // oPwotScores[pk] = [oFoo[pk].dos, oFoo[pk].personalPageRank, oFoo[pk].grapeRank_average, oFoo[pk].grapeRank_confidence]
           }
+          */
 
           /*
           // go through oDos and oPPR to create the output object
@@ -137,8 +139,8 @@ export default async function handler(
             metaData: {
               whenLastUpdated: {
                 synthesis: currentTimestamp,
-                dos: -1, // oDos.metaData.whenLastUpdated
-                personalizedPageRank: -1, // oPPR.metaData.whenLastUpdated,
+                dos: oDos.metaData.whenLastUpdated,
+                personalizedPageRank: oPPR.metaData.whenLastUpdated,
               },
               referencePubkey: pubkey1, 
             },
