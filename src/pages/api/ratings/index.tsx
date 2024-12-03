@@ -20,19 +20,19 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-  */
+*/
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  let rators:Pubkey[] = ['unknown']
-  let ratingKind = -1
+  let rators = ''
+  let ratingKind = ''
   const dos = 1
   const networkKind = -1
 
-  if (typeof searchParams.rators == 'object' ) {
+  if (typeof searchParams.rators == 'string' ) {
     rators = searchParams.rators
   } else {
     const response:ResponseData = {
@@ -42,7 +42,7 @@ export default async function handler(
     res.status(500).json(response)
   }
   
-  if (typeof searchParams.ratingKind == 'number') {
+  if (typeof searchParams.ratingKind == 'string') {
     ratingKind = searchParams.ratingKind    
   } else {
     const response:ResponseData = {
