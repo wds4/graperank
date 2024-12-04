@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { validateEvent } from 'nostr-tools'
+// import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 
@@ -83,8 +83,8 @@ export default async function handler(
       const sKind10000Event = await data_get2.Body?.transformToString()
 
       if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string')) {
-        const oKind3Event = JSON.parse(sKind3Event)
-        const oKind10000Event = JSON.parse(sKind10000Event)
+        const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
+        const oKind10000Event:NostrEvent = JSON.parse(sKind10000Event)
         aOutput.push(oKind3Event)
         aOutput.push(oKind10000Event)
         // TODO: finish
