@@ -130,7 +130,7 @@ export default async function handler(
           },
           naiveScorecard: {
             context: 'notSpam', observer, observee,
-            average, confidence,
+            average, confidence, weights,
           },
         },
         data: {
