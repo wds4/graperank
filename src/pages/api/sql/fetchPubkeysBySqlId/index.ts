@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-// import { arrayToObject } from '@/helpers';
+import { arrayToObject } from '@/helpers';
 
 /*
 usage:
@@ -36,15 +36,16 @@ export default async function handler(
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
-    // const observerObjectDataById = arrayToObject(aResults1.rows, 'id')
-    // const resultUsersChars = JSON.stringify(aResults1).length
-    // const megabyteSize = resultUsersChars / 1048576
+    const observerObjectDataById = arrayToObject(aResults1.rows, 'id')
+    const resultUsersChars = JSON.stringify(aResults1).length
+    const megabyteSize = resultUsersChars / 1048576
 
     const response: ResponseData = {
       success: true,
       message: 'Results of your usersPubkeyById query:',
       data: {
-        aResults1
+        megabyteSize,
+        observerObjectDataById
       }
     }
     res.status(200).json(response)
