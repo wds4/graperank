@@ -7,7 +7,6 @@ type confidence = number // [0, 1]; can be de novo (rating) or calculated from i
 // type weights = number // sum of weights; used as running score during calculations
 // type products = number // sum of products
 
-
 export type rater = pubkey | number
 export type ratee = pubkey | number
 export type observer = pubkey | number
