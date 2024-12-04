@@ -1,11 +1,11 @@
 type context = string
 type pubkey = string
 type score = number // can refer to a rating as a primary data point or to an average of ratings, so may be referred to as rating, average, or averageScore. min, max depend on the use case (0-1 for notSpam; 0-5 for 5stars or products; may be negative in some use cases). 
-type input = number // nonzero, no upper bound
+// type input = number // nonzero, no upper bound
 type confidence = number // [0, 1]; can be de novo (rating) or calculated from input (scorecard)
-type influence = number // score * confidence; useful if observee can play the role of a rater or observer at a future step; may be defined differently for other use cases (e.g. 5 star ratings)
-type weights = number // sum of weights; used as running score during calculations
-type products = number // sum of products
+// type influence = number // score * confidence; useful if observee can play the role of a rater or observer at a future step; may be defined differently for other use cases (e.g. 5 star ratings)
+// type weights = number // sum of weights; used as running score during calculations
+// type products = number // sum of products
 
 
 export type rater = pubkey | number
