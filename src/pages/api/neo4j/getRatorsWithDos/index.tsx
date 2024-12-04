@@ -41,9 +41,18 @@ export default async function handler(
   const observer = searchParams.observer
   const observee = searchParams.observee  
   if (typeof observer == 'string' && verifyPubkeyValidity(observer) && typeof observee == 'string' && verifyPubkeyValidity(observee)) {
+    const cypher0 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
+    WHERE n.pubkey='${observer}' AND m.pubkey='${observee}'
+    RETURN p, length(p) as numHops` 
+
     const cypher1 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m `
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) RETURN m `
     try {
+      const result_cypher0 = await read(cypher0, {})
+
+      const aResults = JSON.parse(JSON.stringify(result_cypher0))
+      const numHops = aResults[0].numHops.low
+
       const result1 = await read(cypher1, {})
       const aFollowerPubkeys = []
       const aFollowers = JSON.parse(JSON.stringify(result1))
@@ -66,6 +75,11 @@ export default async function handler(
         success: true,
         message: `api/neo4j/getRatorsWithDos data:`,
         data: {
+          ratee: observee, dos: numHops, 
+          ratings: {
+            3: [],
+            10000: [],
+          },
           cypher1, cypher2, numMuters: aMuterPubkeys.length, aMuterPubkeys, numFollowers: aFollowerPubkeys.length, aFollowerPubkeys,
         }
       }
