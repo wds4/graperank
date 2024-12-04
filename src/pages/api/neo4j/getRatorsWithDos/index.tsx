@@ -2,6 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
 import { ResponseData } from '@/types'
+import { convertInputToConfidence } from '@/helpers/grapevine' 
 
 /*
 usage:
@@ -43,6 +44,10 @@ export default async function handler(
     const cypher1 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m `
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) RETURN m `
     try {
+      const attenuationFactor = 0.8
+      let weights = 0
+      let products = 0
+
       const result_cypher0 = await read(cypher0, {})
       const aResults = JSON.parse(JSON.stringify(result_cypher0))
       const numHops = aResults[0].numHops.low
@@ -61,6 +66,13 @@ export default async function handler(
         const numHops = aResults[0].numHops.low
         const oRating = {rator: pk, dos: numHops, timestamp: 0}
         aFollowerPubkeys.push(oRating)
+        // GrapeRank calcs
+        const score = 1
+        const raterInfluence = 0.05 / (numHops + 1)
+        const weight = attenuationFactor * raterInfluence
+        const product = weight
+        weights += weight
+        products += product
       }
 
       const result2 = await read(cypher2, {})
@@ -79,6 +91,9 @@ export default async function handler(
         aMuterPubkeys.push(oRating)
       }
 
+      const average = products / weights 
+      const confidence = convertInputToConfidence(weights)
+
       const response:ResponseData = {
         success: true,
         exists: true,
@@ -86,6 +101,7 @@ export default async function handler(
         metaData: {
           numMuters: aMuterPubkeys.length,
           numFollowers: aFollowerPubkeys.length,
+          average, confidence,
         },
         data: {
           ratee: observee, dos: numHops, 
