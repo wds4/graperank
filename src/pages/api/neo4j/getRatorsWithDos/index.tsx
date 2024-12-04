@@ -47,6 +47,12 @@ export default async function handler(
       const attenuationFactor = 0.8
       const followConfidence = 0.05
       const muteConfidence = 0.1
+      const defaultRaterInfluence_0 = 0.05 / (0 + 1)
+      const defaultRaterInfluence_1 = 0.05 / (1 + 1)
+      const defaultRaterInfluence_2 = 0.05 / (2 + 1)
+      const defaultRaterInfluence_3 = 0.05 / (3 + 1)
+      const defaultRaterInfluence_4 = 0.05 / (4 + 1)
+      const defaultRaterInfluence_5 = 0.05 / (5 + 1)
       const rigor = 0.25
       let weights = 0
       let products = 0
@@ -112,9 +118,18 @@ export default async function handler(
           numMuters: aMuterPubkeys.length,
           numFollowers: aFollowerPubkeys.length,
           interpretation: {
-            attenuationFactor, rigor, followConfidence, muteConfidence
+            attenuationFactor, rigor, followConfidence, muteConfidence,
+            defaultRaterInfluence: {
+              0: defaultRaterInfluence_0,
+              1: defaultRaterInfluence_1,
+              2: defaultRaterInfluence_2,
+              3: defaultRaterInfluence_3,
+              4: defaultRaterInfluence_4,
+              5: defaultRaterInfluence_5,
+            },
           },
-          results: {
+          naiveScorecard: {
+            context: 'notSpam', observer, observee,
             average, confidence,
           },
         },
