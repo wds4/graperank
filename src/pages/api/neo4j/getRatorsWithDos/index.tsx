@@ -49,7 +49,6 @@ export default async function handler(
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) RETURN m `
     try {
       const result_cypher0 = await read(cypher0, {})
-
       const aResults = JSON.parse(JSON.stringify(result_cypher0))
       const numHops = aResults[0].numHops.low
 
@@ -59,7 +58,13 @@ export default async function handler(
       for (let x=0; x < aFollowers.length; x++) {
         const oNextUserData = aFollowers[x]
         const pk = oNextUserData.m.properties.pubkey
-        const oRating = {rator: pk, dos: 0, timestamp: 0}
+        const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
+        WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
+        RETURN p, length(p) as numHops` 
+        const result_cypherDos = await read(cypherDos, {})
+        const aResults = JSON.parse(JSON.stringify(result_cypherDos))
+        const numHops = aResults[0].numHops.low
+        const oRating = {rator: pk, dos: numHops, timestamp: 0}
         aFollowerPubkeys.push(oRating)
       }
 
