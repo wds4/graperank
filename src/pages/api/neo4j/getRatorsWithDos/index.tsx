@@ -5,7 +5,8 @@ import { read } from '@/lib/neo4j'
 /*
 usage:
 observer: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/neo4j/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+observee: d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d // 3 hops away
+https://www.graperank.tech/api/neo4j/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
 
 */
 
@@ -39,7 +40,7 @@ export default async function handler(
   }
   const observer = searchParams.observer
   const observee = searchParams.observee  
-  if (typeof observer == 'string' && verifyPubkeyValidity(observer) && observee == 'string' && verifyPubkeyValidity(observee)) {
+  if (typeof observer == 'string' && verifyPubkeyValidity(observer) && typeof observee == 'string' && verifyPubkeyValidity(observee)) {
     const cypher1 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m `
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) RETURN m `
     try {
@@ -85,7 +86,7 @@ export default async function handler(
       success: false,
       message: `api/neo4j/getRatorsWithDos: the provided observer and / or observee pubkey is invalid`,
       data: {
-        observer
+        observer, observee
       }
     }
     res.status(500).json(response)
