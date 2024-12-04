@@ -54,3 +54,7 @@ export type PPR = {
   metaData: PprMetaData,
   data: PprData
 }
+
+export type PubkeysBySqlId = {[key: number]: string}
+
+export type SqlIdsByPubkey = {[key: string]: number}

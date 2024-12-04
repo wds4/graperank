@@ -1,16 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { ResponseData, SqlIdsByPubkey } from '@/types';
 // import { arrayToObject } from '@/helpers';
 
 /*
 usage:
-https://www.graperank.tech/api/sql/fetchSqlIdsByPubkey
+https://www.graperank.tech/api/sql/addSqlIdsByPubkeyLookupToS3
 
 returns an object used to fetch a user pubkey given the userID from the table: users
 
 Useful since several tables, including ratingsTables and scorecardsTables, use userID rather than pubkey to refer to users 
 */
+
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
 
 export default async function handler(
   req: NextApiRequest,
@@ -41,9 +50,26 @@ export default async function handler(
     const resultUsersChars = JSON.stringify(aResults1).length
     const megabyteSize = resultUsersChars / 1048576
 
+    /* PutObjectCommand */
+    const fooFxn = async (oSqlIdsByPubkey:SqlIdsByPubkey) => {
+      const sOutput = JSON.stringify(oSqlIdsByPubkey)
+      return sOutput
+    }
+
+    const params_put = {
+      Bucket: 'grapevine-nostr-cache-bucket',
+      Key: `dataManagement/lookupSqlIdsByPubkey`,
+      Body: await fooFxn(oSqlIdsByPubkey)
+    }
+
+    const command_put = new PutObjectCommand(params_put);
+    const response_put = await client.send(command_put);
+
+    console.log(response_put)
+
     const response: ResponseData = {
       success: true,
-      message: 'Results of your fetchSqlIdsByPubkey query:',
+      message: 'Results of your addSqlIdsByPubkeyLookupToS3 query:',
       data: {
         numRows: aResults1.length,
         megabyteSize,

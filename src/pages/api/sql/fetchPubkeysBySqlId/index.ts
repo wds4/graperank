@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
+import { PubkeysBySqlId, ResponseData } from '@/types';
 // import { arrayToObject } from '@/helpers';
 
 /*
@@ -10,12 +11,6 @@ returns an object used to fetch a user pubkey given the userID from the table: u
 
 Useful since several tables, including ratingsTables and scorecardsTables, use userID rather than pubkey to refer to users 
 */
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,7 +30,7 @@ export default async function handler(
   
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-    const oPubkeysBySqlId:{[key: number]: string} = {}
+    const oPubkeysBySqlId:PubkeysBySqlId = {}
     for (let x=0; x < aResults1.length; x++) {
       const oNextUser = aResults1[x]
       const id = oNextUser.id

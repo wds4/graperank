@@ -1,16 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-import { ResponseData, SqlIdsByPubkey } from '@/types';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { PubkeysBySqlId, ResponseData } from '@/types'
 // import { arrayToObject } from '@/helpers';
 
 /*
 usage:
-https://www.graperank.tech/api/sql/fetchSqlIdsByPubkey
+https://www.graperank.tech/api/sql/addPubkeysBySqlIdLookupToS3
 
 returns an object used to fetch a user pubkey given the userID from the table: users
 
 Useful since several tables, including ratingsTables and scorecardsTables, use userID rather than pubkey to refer to users 
 */
+
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,24 +39,42 @@ export default async function handler(
   
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-    const oSqlIdsByPubkey:SqlIdsByPubkey = {}
+    const oPubkeysBySqlId:PubkeysBySqlId = {}
+    // TODO: initialize oPubkeysBySqlId with preexisting file, if present, and only query table for recent users
     for (let x=0; x < aResults1.length; x++) {
       const oNextUser = aResults1[x]
       const id = oNextUser.id
       const pk = oNextUser.pubkey
-      oSqlIdsByPubkey[pk] = id
+      oPubkeysBySqlId[id] = pk
     }
 
     const resultUsersChars = JSON.stringify(aResults1).length
     const megabyteSize = resultUsersChars / 1048576
 
+    /* PutObjectCommand */
+    const fooFxn = async (oPubkeysBySqlId:PubkeysBySqlId) => {
+      const sOutput = JSON.stringify(oPubkeysBySqlId)
+      return sOutput
+    }
+
+    const params_put = {
+      Bucket: 'grapevine-nostr-cache-bucket',
+      Key: `dataManagement/lookupPubkeysBySqlId`,
+      Body: await fooFxn(oPubkeysBySqlId)
+    }
+
+    const command_put = new PutObjectCommand(params_put);
+    const response_put = await client.send(command_put);
+
+    console.log(response_put)
+
     const response: ResponseData = {
       success: true,
-      message: 'Results of your fetchSqlIdsByPubkey query:',
+      message: 'Results of your addPubkeysBySqlIdLookupToS3 query:',
       data: {
         numRows: aResults1.length,
         megabyteSize,
-        oSqlIdsByPubkey,
+        oPubkeysBySqlId
       }
     }
     res.status(200).json(response)
