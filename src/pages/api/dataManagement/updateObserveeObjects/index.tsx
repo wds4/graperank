@@ -3,6 +3,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 // import { validateEvent } from 'nostr-tools'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
+import { isValidPubkey } from '@/helpers/nip19'
 
 /*
 - sql1: SELECT id, pubkey, kind3EventId, kind10000EventId FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL))
@@ -88,10 +89,22 @@ export default async function handler(
         aOutput.push(oKind3Event)
         aOutput.push(oKind10000Event)
         // TODO: finish
-
-
-
+        const aKind3Tags = oKind3Event.tags
+        // const aKind310000Tags = oKind10000Event.tags
         const oObserveeObject = {}
+        for (let x=0; x < aKind3Tags.length; x++) {
+          const aTag = aKind3Tags[x]
+          if (aTag[0] == 'p') {
+            const pk = aTag[1]
+            if (isValidPubkey(pk)) {
+
+            }
+          }
+        }
+
+
+
+        
         const sObserveeObject = JSON.stringify(oObserveeObject)
         // cleaning up 
         const sql2= ` UPDATE users SET observeeObject='${sObserveeObject}', flaggedToUpdateObserveeObject=0 WHERE pubkey='${pk}' `
