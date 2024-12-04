@@ -43,7 +43,7 @@ export default async function handler(
       command2 += ` kind0EventId VARCHAR(255), `
       command2 += ` kind3EventId VARCHAR(255), `
       command2 += ` kind10000EventId VARCHAR(255), `
-      command2 += ` observeeObject TEXT, `
+      command2 += ` observeeObject TEXT DEFAULT NULL, `
       command2 += ` whenLastListened int, `
       command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedForKind10000EventProcessing INT NOT NULL DEFAULT 0, `
@@ -57,6 +57,9 @@ export default async function handler(
       command2 += ` ); `
       const results2 = await connection.query(command2);
       console.log(results2);
+
+// ALTER TABLE users ADD observeeObject TEXT DEFAULT NULL;
+// ALTER TABLE users ADD flaggedToUpdateObserveeObject INT NOT NULL DEFAULT 0;
 
       const command3 = ` CREATE TABLE IF NOT EXISTS customers ( 
 id INT NOT NULL AUTO_INCREMENT, 

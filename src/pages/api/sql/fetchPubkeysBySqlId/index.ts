@@ -29,7 +29,7 @@ export default async function handler(
       password: process.env.AWS_MYSQL_PWD,
       database: process.env.AWS_MYSQL_DB,
     });
-    const command1 = `SELECT id, pubkey FROM users; `
+    const command1 = `SELECT id, pubkey FROM events WHERE id < 1000; `
     const results1 = await connection.query(command1);
     const aResults1 = JSON.parse(JSON.stringify(results1[0]))
   
@@ -51,6 +51,7 @@ export default async function handler(
       success: true,
       message: 'Results of your usersPubkeyById query:',
       data: {
+        numRows: aResults1.length,
         megabyteSize,
         observerObjectDataById
       }

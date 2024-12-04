@@ -8,8 +8,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  res.status(200).json({ message: `api/data
-    Management Hello from Next.js!` })
+  res.status(200).json({ message: `api/dataManagement Hello from Next.js!` })
 }
 
 /*
