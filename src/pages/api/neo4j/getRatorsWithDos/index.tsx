@@ -45,6 +45,9 @@ export default async function handler(
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) RETURN m `
     try {
       const attenuationFactor = 0.8
+      const followConfidence = 0.05
+      const muteConfidence = 0.1
+      const rigor = 0.25
       let weights = 0
       let products = 0
 
@@ -69,7 +72,7 @@ export default async function handler(
         // GrapeRank calcs
         const score = 1
         const raterInfluence = 0.05 / (numHops + 1)
-        const weight = attenuationFactor * raterInfluence
+        const weight = attenuationFactor * raterInfluence * followConfidence
         const product = weight * score
         weights += weight
         products += product
@@ -92,14 +95,14 @@ export default async function handler(
         // GrapeRank calcs
         const score = 0
         const raterInfluence = 0.05 / (numHops + 1)
-        const weight = attenuationFactor * raterInfluence
+        const weight = attenuationFactor * raterInfluence + muteConfidence
         const product = weight * score
         weights += weight
         products += product
       }
 
       const average = products / weights 
-      const confidence = convertInputToConfidence(weights)
+      const confidence = convertInputToConfidence(weights, rigor)
 
       const response:ResponseData = {
         success: true,
@@ -108,7 +111,12 @@ export default async function handler(
         metaData: {
           numMuters: aMuterPubkeys.length,
           numFollowers: aFollowerPubkeys.length,
-          average, confidence,
+          interpretation: {
+            attenuationFactor, rigor, followConfidence, muteConfidence
+          },
+          results: {
+            average, confidence,
+          },
         },
         data: {
           ratee: observee, dos: numHops, 
