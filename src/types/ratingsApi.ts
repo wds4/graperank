@@ -17,7 +17,7 @@ type RatingData = {
 // where EVERY instance of PubkeyBreve is represented by a key (as pubkey)
 export type RatingResponse = {
     ratee : Pubkey,
-    dos : any
+    dos : number,
     ratings :  Record<kind,RatingData[]>
 }
 
@@ -28,6 +28,7 @@ export type RatingsRequest = {
 }
 
 // Example Response:
+/*
 const example : RatingResponse = {
     ratee : 'observeepubkey',
     dos: 2,
@@ -43,12 +44,11 @@ const example : RatingResponse = {
         ],
         1981: [
             {rator : '123', dos : 2, timestamp : 123, type : 'nudity'},
-            {rator : '123', dos : 2, timestamp : 123, type : 'language'}
+            {rator : '123', dos : 999, timestamp : 123, type : 'language'}
         ],    
     }
 }
-
-
+*/
 
 // export type EntireNetwork = AllPubkeysNHopsAway[]
 

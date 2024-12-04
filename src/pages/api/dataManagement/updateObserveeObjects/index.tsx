@@ -90,6 +90,7 @@ export default async function handler(
       const command_s3_get3 = new GetObjectCommand(params_get3);
       const data_get3 = await client.send(command_s3_get3);
       const sKind10000Event_ = await data_get3.Body?.transformToString()
+      console.log(typeof sKind10000Event_)
 
       if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string')) {
         const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
