@@ -59,7 +59,8 @@ export default async function handler(
       for (let x=0; x < aFollowers.length; x++) {
         const oNextUserData = aFollowers[x]
         const pk = oNextUserData.m.properties.pubkey
-        aFollowerPubkeys.push(pk)
+        const oRating = {rator: pk, dos: 0, timestamp: 0}
+        aFollowerPubkeys.push(oRating)
       }
 
       const result2 = await read(cypher2, {})
@@ -68,7 +69,8 @@ export default async function handler(
       for (let x=0; x < aMuters.length; x++) {
         const oNextUserData = aMuters[x]
         const pk = oNextUserData.m.properties.pubkey
-        aMuterPubkeys.push(pk)
+        const oRating = {rator: pk, dos: 0, timestamp: 0}
+        aMuterPubkeys.push(oRating)
       }
 
       const response:ResponseData = {
@@ -77,10 +79,10 @@ export default async function handler(
         data: {
           ratee: observee, dos: numHops, 
           ratings: {
-            3: [],
-            10000: [],
+            3: aFollowerPubkeys,
+            10000: aMuterPubkeys,
           },
-          cypher1, cypher2, numMuters: aMuterPubkeys.length, aMuterPubkeys, numFollowers: aFollowerPubkeys.length, aFollowerPubkeys,
+          cypher0, cypher1, cypher2, numMuters: aMuterPubkeys.length, numFollowers: aFollowerPubkeys.length,
         }
       }
       res.status(200).json(response)
