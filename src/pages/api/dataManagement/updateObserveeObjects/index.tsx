@@ -83,12 +83,24 @@ export default async function handler(
       const data_get2 = await client.send(command_s3_get2);
       const sKind10000Event = await data_get2.Body?.transformToString()
 
+      const params_get3 = {
+        Bucket: 'grapevine-nostr-cache-bucket',
+        Key: 'dataManagement/lookupSqlIdsByPubkey',
+      }
+      const command_s3_get3 = new GetObjectCommand(params_get3);
+      const data_get3 = await client.send(command_s3_get3);
+      const sKind10000Event_ = await data_get3.Body?.transformToString()
+
       if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string')) {
         const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
         const oKind10000Event:NostrEvent = JSON.parse(sKind10000Event)
         aOutput.push(oKind3Event)
         aOutput.push(oKind10000Event)
         // TODO: finish
+
+
+
+
         const aKind3Tags = oKind3Event.tags
         // const aKind310000Tags = oKind10000Event.tags
         const oObserveeObject = {}
@@ -101,9 +113,6 @@ export default async function handler(
             }
           }
         }
-
-
-
         
         const sObserveeObject = JSON.stringify(oObserveeObject)
         // cleaning up 

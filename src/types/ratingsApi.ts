@@ -1,28 +1,54 @@
 export type Pubkey = string
+export type kind = number
 
 // minimum 6 characrters containing the first part of a pubkey
 // full pubkey MUST be included in the containing dataset to decode PubkeyBreve
 // PubkeyBreve MAY include additional caracters from pubkey to avoid duplicates within the dataset
-type PubkeyBreve = string
+// type PubkeyBreve = string
 
 type RatingData = {
-    rator : Pubkey | PubkeyBreve, 
-    timestamp : number,
+    rator : Pubkey, 
+    dos : number,
+    timestamp? : number,
     [edgemeta : string] : string | number | undefined
 }
 
 // a normalized ratings object returned by ANY request for rattings data
 // where EVERY instance of PubkeyBreve is represented by a key (as pubkey)
-export type PubkeyRatingsMap = {
-    [ratee:Pubkey] :  RatingData[],
+export type RatingResponse = {
+    ratee : Pubkey,
+    dos : any
+    ratings :  Record<kind,RatingData[]>
 }
 
 export type RatingsRequest = {
-    ratingKind : number // 'follows' = 3, 'mutes' = 10000, 'reports' = 1984 Tells us what kind of ratings to return 
-    rators : Pubkey[],
-    dos ? : number, // 0 means full network; 1 means only the provided pubkeys; 2 means one more hop, etc; undefined means default to 1
-    networkKind ? : number, // 3 means use follows to define the network; if undefined, networkKind equals ratingKind
+    observer: Pubkey,
+    observee: Pubkey,
+    kinds : number[]
 }
+
+// Example Response:
+const example : RatingResponse = {
+    ratee : 'observeepubkey',
+    dos: 2,
+    ratings: {
+        3: [
+            {rator : '123', dos : 2, timestamp : 123,},
+            {rator : '123', dos : 2, timestamp : 123,},
+            {rator : '123', dos : 2, timestamp : 123,}
+        ],
+        10000: [
+            {rator : '123', dos : 2, timestamp : 123,},
+            {rator : '123', dos : 2, timestamp : 123,}
+        ],
+        1981: [
+            {rator : '123', dos : 2, timestamp : 123, type : 'nudity'},
+            {rator : '123', dos : 2, timestamp : 123, type : 'language'}
+        ],    
+    }
+}
+
+
 
 // export type EntireNetwork = AllPubkeysNHopsAway[]
 

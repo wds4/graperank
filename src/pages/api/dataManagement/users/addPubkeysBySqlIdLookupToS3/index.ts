@@ -68,12 +68,15 @@ export default async function handler(
 
     console.log(response_put)
 
+    const currentTimestamp = Math.floor(Date.now() / 1000)
+
     const response: ResponseData = {
       success: true,
       message: 'Results of your addPubkeysBySqlIdLookupToS3 query:',
       data: {
         numRows: aResults1.length,
         megabyteSize,
+        whenLastUpdated: currentTimestamp,
         oPubkeysBySqlId
       }
     }
