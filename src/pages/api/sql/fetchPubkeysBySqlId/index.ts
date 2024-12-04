@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-import { arrayToObject } from '@/helpers';
+// import { arrayToObject } from '@/helpers';
 
 /*
 usage:
@@ -35,9 +35,15 @@ export default async function handler(
   
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-    // for (let x=0; x<)
+    const observerObjectDataById:{[key: number]: string} = {}
+    for (let x=0; x < aResults1.length; x++) {
+      const oNextUser = aResults1[x]
+      const id = oNextUser.id
+      const pk = oNextUser.pubkey
+      observerObjectDataById[id] = pk
+    }
 
-    const observerObjectDataById = arrayToObject(aResults1, 'id')
+    // const observerObjectDataById = arrayToObject(aResults1, 'id')
     const resultUsersChars = JSON.stringify(aResults1).length
     const megabyteSize = resultUsersChars / 1048576
 
