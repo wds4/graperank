@@ -6,7 +6,7 @@ import { PubkeysBySqlId, ResponseData } from '@/types'
 
 /*
 usage:
-https://www.graperank.tech/api/sql/addPubkeysBySqlIdLookupToS3
+https://www.graperank.tech/api/dataManagement/users/addPubkeysBySqlIdLookupToS3
 
 returns an object used to fetch a user pubkey given the userID from the table: users
 
@@ -43,7 +43,7 @@ export default async function handler(
     // TODO: initialize oPubkeysBySqlId with preexisting file, if present, and only query table for recent users
     for (let x=0; x < aResults1.length; x++) {
       const oNextUser = aResults1[x]
-      const id = oNextUser.id
+      const id = Number(oNextUser.id)
       const pk = oNextUser.pubkey
       oPubkeysBySqlId[id] = pk
     }

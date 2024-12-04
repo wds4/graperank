@@ -6,7 +6,7 @@ import { ResponseData, SqlIdsByPubkey } from '@/types';
 
 /*
 usage:
-https://www.graperank.tech/api/sql/addSqlIdsByPubkeyLookupToS3
+https://www.graperank.tech/api/dataManagement/users/addSqlIdsByPubkeyLookupToS3
 
 returns an object used to fetch a user pubkey given the userID from the table: users
 
