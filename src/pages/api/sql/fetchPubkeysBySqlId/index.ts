@@ -33,7 +33,7 @@ export default async function handler(
     const oPubkeysBySqlId:PubkeysBySqlId = {}
     for (let x=0; x < aResults1.length; x++) {
       const oNextUser = aResults1[x]
-      const id = oNextUser.id
+      const id = Number(oNextUser.id)
       const pk = oNextUser.pubkey
       oPubkeysBySqlId[id] = pk
     }
