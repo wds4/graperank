@@ -8,7 +8,8 @@ Calculate PageRank scores for all pubkeys
 NOT YET COMPLETED
 
 usage:
-https://www.graperank.tech/api/algos/pageRank
+e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 */
 
 type ResponseData = {
@@ -16,7 +17,7 @@ type ResponseData = {
   message: string,
   data?: object,
 }
- 
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>

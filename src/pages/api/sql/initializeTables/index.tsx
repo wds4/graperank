@@ -43,6 +43,7 @@ export default async function handler(
       command2 += ` kind0EventId VARCHAR(255), `
       command2 += ` kind3EventId VARCHAR(255), `
       command2 += ` kind10000EventId VARCHAR(255), `
+      command2 += ` observeeObject TEXT, `
       command2 += ` whenLastListened int, `
       command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedForKind10000EventProcessing INT NOT NULL DEFAULT 0, `
@@ -50,6 +51,7 @@ export default async function handler(
       command2 += ` flaggedToUpdateNeo4jFollows INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jMutes INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jReports INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedToUpdateObserveeObject INT NOT NULL DEFAULT 0, `
       command2 += ` whenRowAdded INT NOT NULL DEFAULT 0, `
       command2 += ` PRIMARY KEY (id) `
       command2 += ` ); `

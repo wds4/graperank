@@ -14,3 +14,7 @@ return oEventOut
 }
 
 export const timeout = (ms:number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+type Foo = {[key: string | number]: string | number | object }[]
+export const arrayToObject = (array:Foo, keyField:string) => 
+    Object.fromEntries(array.map(item => [item[keyField], item]));
