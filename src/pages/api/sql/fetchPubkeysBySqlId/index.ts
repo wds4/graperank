@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-import { arrayToObject } from '@/helpers';
+// import { arrayToObject } from '@/helpers';
 
 /*
 usage:
