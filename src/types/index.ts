@@ -2,6 +2,7 @@ export type ResponseData = {
     success: boolean,
     exists?: boolean,
     message: string,
+    metaData?: object,
     data?: object,
 }
 

@@ -1,6 +1,7 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
+import { ResponseData } from '@/types'
 
 /*
 usage:
@@ -9,12 +10,6 @@ observee: d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d // 3 
 https://www.graperank.tech/api/neo4j/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
 
 */
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
  
 export default async function handler(
   req: NextApiRequest,
@@ -74,20 +69,31 @@ export default async function handler(
       for (let x=0; x < aMuters.length; x++) {
         const oNextUserData = aMuters[x]
         const pk = oNextUserData.m.properties.pubkey
-        const oRating = {rator: pk, dos: 0, timestamp: 0}
+        const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:MUTES]->+(m:NostrUser)
+        WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
+        RETURN p, length(p) as numHops` 
+        const result_cypherDos = await read(cypherDos, {})
+        const aResults = JSON.parse(JSON.stringify(result_cypherDos))
+        const numHops = aResults[0].numHops.low
+        const oRating = {rator: pk, dos: numHops, timestamp: 0}
         aMuterPubkeys.push(oRating)
       }
 
       const response:ResponseData = {
         success: true,
+        exists: true,
         message: `api/neo4j/getRatorsWithDos data:`,
+        metaData: {
+          numMuters: aMuterPubkeys.length,
+          numFollowers: aFollowerPubkeys.length,
+        },
         data: {
           ratee: observee, dos: numHops, 
           ratings: {
             3: aFollowerPubkeys,
             10000: aMuterPubkeys,
           },
-          cypher0, cypher1, cypher2, numMuters: aMuterPubkeys.length, numFollowers: aFollowerPubkeys.length,
+          cypher0, cypher1, cypher2, 
         }
       }
       res.status(200).json(response)
