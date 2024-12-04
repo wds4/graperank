@@ -35,8 +35,9 @@ export default async function handler(
   
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
+    // for (let x=0; x<)
 
-    const observerObjectDataById = arrayToObject(aResults1.rows, 'id')
+    const observerObjectDataById = arrayToObject(aResults1, 'id')
     const resultUsersChars = JSON.stringify(aResults1).length
     const megabyteSize = resultUsersChars / 1048576
 
