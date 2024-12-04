@@ -70,7 +70,7 @@ export default async function handler(
         const score = 1
         const raterInfluence = 0.05 / (numHops + 1)
         const weight = attenuationFactor * raterInfluence
-        const product = weight
+        const product = weight * score
         weights += weight
         products += product
       }
@@ -89,6 +89,13 @@ export default async function handler(
         const numHops = aResults[0].numHops.low
         const oRating = {rator: pk, dos: numHops, timestamp: 0}
         aMuterPubkeys.push(oRating)
+        // GrapeRank calcs
+        const score = 0
+        const raterInfluence = 0.05 / (numHops + 1)
+        const weight = attenuationFactor * raterInfluence
+        const product = weight * score
+        weights += weight
+        products += product
       }
 
       const average = products / weights 
