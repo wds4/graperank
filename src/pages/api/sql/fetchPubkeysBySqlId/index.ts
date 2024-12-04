@@ -29,31 +29,30 @@ export default async function handler(
       password: process.env.AWS_MYSQL_PWD,
       database: process.env.AWS_MYSQL_DB,
     });
-    const command1 = `SELECT id, pubkey FROM events WHERE id < 1000; `
+    const command1 = `SELECT id, pubkey FROM users; `
     const results1 = await connection.query(command1);
     const aResults1 = JSON.parse(JSON.stringify(results1[0]))
   
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-    const observerObjectDataById:{[key: number]: string} = {}
+    const oPubkeysBySqlId:{[key: number]: string} = {}
     for (let x=0; x < aResults1.length; x++) {
       const oNextUser = aResults1[x]
       const id = oNextUser.id
       const pk = oNextUser.pubkey
-      observerObjectDataById[id] = pk
+      oPubkeysBySqlId[id] = pk
     }
 
-    // const observerObjectDataById = arrayToObject(aResults1, 'id')
     const resultUsersChars = JSON.stringify(aResults1).length
     const megabyteSize = resultUsersChars / 1048576
 
     const response: ResponseData = {
       success: true,
-      message: 'Results of your usersPubkeyById query:',
+      message: 'Results of your fetchPubkeysBySqlId query:',
       data: {
         numRows: aResults1.length,
         megabyteSize,
-        observerObjectDataById
+        oPubkeysBySqlId
       }
     }
     res.status(200).json(response)
