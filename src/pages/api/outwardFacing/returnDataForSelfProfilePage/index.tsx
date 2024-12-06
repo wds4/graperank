@@ -2,6 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
 import { ResponseData } from '@/types'
+import { convertInputToConfidence } from '@/helpers/grapevine' 
 
 /*
 Given a pubkey, return:
@@ -38,6 +39,9 @@ export default async function handler(
     const cypher1 = `MATCH (n:NostrUser {pubkey: '${observer}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m `
     // get my follows
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observer}'})-[:FOLLOWS]->(m:NostrUser) RETURN m `
+
+    const rigor = 0.25
+
     try {
       // FOLLOWS
       const aFollowPubkeys = []
@@ -64,11 +68,21 @@ export default async function handler(
         const result_cypherDos = await read(cypherDos, {})
         const aResults = JSON.parse(JSON.stringify(result_cypherDos))
         const dos = aResults[0].numHops.low
+        // GrapeRank: set defaults to zero
+        let average = 0
+        let input = 0.05 // 
+        // estimate grapeRank by DoS
+        if (dos < 100) {
+          average = 1
+          input = 0.05 * (1 / dos + 1)
+        }
+        const confidence = convertInputToConfidence(input, rigor)
+        const influence = average * confidence
         let amIFollowing = false
         if (aFollowPubkeys.includes(pk)) {
           amIFollowing = true
         }
-        const oFollowerData = [ pk, dos, amIFollowing ]
+        const oFollowerData = [ pk, dos, amIFollowing, {influence, average, confidence, input} ]
         aFollowersWithScores.push(oFollowerData)
       }
 
