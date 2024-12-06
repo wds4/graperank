@@ -1,6 +1,8 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
+import { ResponseData } from '@/types'
+import { ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calculation'
 
 /*
 
@@ -25,12 +27,6 @@ const followScore = 1
 const muteConfidence = 0.1
 const followConfidence = 0.05
 const rigor = 0.25
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -59,7 +55,15 @@ export default async function handler(
         const sql0 = `SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
-        // TODO: finish
+        const oRatings:ObserverObjectV0Compact = {}
+        for (let x=0; x < aUsers0.length; x++) {
+          const oUserData = aUsers0[x]
+          const observeeObject:ObserveeObjectV0Compact = oUserData.observeeObject
+          const id:number = oUserData.id
+          if (id < 5) {
+            oRatings[id] = observeeObject
+          }
+        }
 
 
 
@@ -71,6 +75,7 @@ export default async function handler(
 
         const response:ResponseData = {
           success: true,
+          exists: true,
           message: `api/algos/grapeRank data:`,
           data: {
             grapeRank: {
@@ -83,6 +88,7 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
+            oRatings,
           }
         }
         res.status(200).json(response)

@@ -27,7 +27,7 @@ export type ScorecardsV0 = {
 
 // Most compact format, using two strategies:
 // use ids instead of pubkeys (where available)
-type ObserveeObjectV0Compact = {
+export type ObserveeObjectV0Compact = {
     [key: observee]: string
 }
 export type ObserverObjectV0Compact = {
