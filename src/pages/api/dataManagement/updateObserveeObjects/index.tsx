@@ -145,10 +145,10 @@ export default async function handler(
         // cleaning up 
         const sql2= ` UPDATE users SET observeeObject='${sObserveeObject}', flaggedToUpdateObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
         aOutput.push(sql2)
-        // const results_sql2 = await connection.query(sql2);
-        // console.log(typeof results_sql2)
-        // aOutput.push({results_sql2})
-        aOutput.push(oObserveeObject)
+        const results_sql2 = await connection.query(sql2);
+        console.log(typeof results_sql2)
+        aOutput.push({results_sql2})
+        // aOutput.push(oObserveeObject)
       }
     }
 
