@@ -90,7 +90,7 @@ export default async function handler(
           const pk = oNextUserData.m.properties.pubkey
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
           WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
-          RETURN p, length(p) as numHops` 
+          RETURN length(p) as numHops` 
           const result_cypherDos = await read(cypherDos, {})
           const aResults = JSON.parse(JSON.stringify(result_cypherDos))
           let numHops = 999
@@ -119,7 +119,7 @@ export default async function handler(
           const pk = oNextUserData.m.properties.pubkey
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:MUTES]->+(m:NostrUser)
           WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
-          RETURN p, length(p) as numHops` 
+          RETURN length(p) as numHops` 
           const result_cypherDos = await read(cypherDos, {})
           const aResults = JSON.parse(JSON.stringify(result_cypherDos))
           let numHops = 999
