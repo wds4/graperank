@@ -64,10 +64,10 @@ export default async function handler(
         const result_cypherDos = await read(cypherDos, {})
         const aResults = JSON.parse(JSON.stringify(result_cypherDos))
         const dos = aResults[0].numHops.low
-        const amIFollowing = false
-        // if (aFollows.contains(pk)) {
-          // amIFollowing = true
-        // }
+        let amIFollowing = false
+        if (aFollowPubkeys.contains(pk)) {
+          amIFollowing = true
+        }
         const oFollowerData = [ pk, dos, amIFollowing ]
         aFollowersWithScores.push(oFollowerData)
       }
