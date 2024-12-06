@@ -61,91 +61,94 @@ export default async function handler(
     
     const aOutput = []
 
-    for (let x=0; x < aUsers.length; x++) {
-      const oNextUser = aUsers[x]
-      // const userId = oNextUser.id
-      const pubkey_parent = oNextUser.pubkey
-      const kind3EventId = oNextUser.kind3EventId
-      const kind10000EventId = oNextUser.kind10000EventId
+    const params_get3 = {
+      Bucket: 'grapevine-nostr-cache-bucket',
+      Key: 'dataManagement/lookupSqlIdsByPubkey',
+    }
+    const command_s3_get3 = new GetObjectCommand(params_get3);
+    const data_get3 = await client.send(command_s3_get3);
+    const sLookupSqlIdsByPubkey = await data_get3.Body?.transformToString()
 
-      const params_get1 = {
-        Bucket: 'grapevine-nostr-cache-bucket',
-        Key: 'eventsByEventId/' + kind3EventId,
-      }
-      const command_s3_get1 = new GetObjectCommand(params_get1);
-      const data_get1 = await client.send(command_s3_get1);
-      const sKind3Event = await data_get1.Body?.transformToString()
-
-      const params_get2 = {
-        Bucket: 'grapevine-nostr-cache-bucket',
-        Key: 'eventsByEventId/' + kind10000EventId,
-      }
-      const command_s3_get2 = new GetObjectCommand(params_get2);
-      const data_get2 = await client.send(command_s3_get2);
-      const sKind10000Event = await data_get2.Body?.transformToString()
-
-      const params_get3 = {
-        Bucket: 'grapevine-nostr-cache-bucket',
-        Key: 'dataManagement/lookupSqlIdsByPubkey',
-      }
-      const command_s3_get3 = new GetObjectCommand(params_get3);
-      const data_get3 = await client.send(command_s3_get3);
-      const sLookupSqlIdsByPubkey = await data_get3.Body?.transformToString()
-
-      if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string') && (typeof sLookupSqlIdsByPubkey == 'string')) {
-        const oLookupSqlIdsByPubkey:SqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
-
+    if (typeof sLookupSqlIdsByPubkey == 'string') {
+      const oLookupSqlIdsByPubkey:SqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
+      for (let x=0; x < aUsers.length; x++) {
         const oObserveeObject:{[key:string | number]: string} = {}
-        
-        const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
-        const oKind10000Event:NostrEvent = JSON.parse(sKind10000Event)
-
         let numFollows = 0
         let numMutes = 0
+        const oNextUser = aUsers[x]
+        // const userId = oNextUser.id
+        const pubkey_parent = oNextUser.pubkey
+        const kind3EventId = oNextUser.kind3EventId
+        const kind10000EventId = oNextUser.kind10000EventId
 
-        // FOLLOWS
-        const aKind3Tags = oKind3Event.tags
-        for (let x=0; x < aKind3Tags.length; x++) {
-          const aTag = aKind3Tags[x]
-          if (aTag[0] == 'p') {
-            const pk = aTag[1]
-            if (isValidPubkey(pk) && (pk != pubkey_parent)) {
-              let userKey:string | number = pk
-              if (oLookupSqlIdsByPubkey[pk]) {
-                userKey = oLookupSqlIdsByPubkey[pk]
+        if (kind3EventId) {
+          const params_get1 = {
+            Bucket: 'grapevine-nostr-cache-bucket',
+            Key: 'eventsByEventId/' + kind3EventId,
+          }
+          const command_s3_get1 = new GetObjectCommand(params_get1);
+          const data_get1 = await client.send(command_s3_get1);
+          const sKind3Event = await data_get1.Body?.transformToString()
+          if (typeof sKind3Event == 'string') { 
+            const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
+            // FOLLOWS
+            const aKind3Tags = oKind3Event.tags
+            for (let x=0; x < aKind3Tags.length; x++) {
+              const aTag = aKind3Tags[x]
+              if (aTag[0] == 'p') {
+                const pk = aTag[1]
+                if (isValidPubkey(pk) && (pk != pubkey_parent)) {
+                  let userKey:string | number = pk
+                  if (oLookupSqlIdsByPubkey[pk]) {
+                    userKey = oLookupSqlIdsByPubkey[pk]
+                  }
+                  oObserveeObject[userKey] = 'f'
+                  numFollows++
+                }
               }
-              oObserveeObject[userKey] = 'f'
-              numFollows++
             }
           }
         }
-        // MUTES
-        const aKind310000Tags = oKind10000Event.tags
-        for (let x=0; x < aKind310000Tags.length; x++) {
-          const aTag = aKind310000Tags[x]
-          if (aTag[0] == 'p') {
-            const pk = aTag[1]
-            if (isValidPubkey(pk) && (pk != pubkey_parent)) {
-              let userKey:string | number = pk
-              if (oLookupSqlIdsByPubkey[pk]) {
-                userKey = oLookupSqlIdsByPubkey[pk]
+
+        if (kind10000EventId) {
+          const params_get2 = {
+            Bucket: 'grapevine-nostr-cache-bucket',
+            Key: 'eventsByEventId/' + kind10000EventId,
+          }
+          const command_s3_get2 = new GetObjectCommand(params_get2);
+          const data_get2 = await client.send(command_s3_get2);
+          const sKind10000Event = await data_get2.Body?.transformToString()
+          if (typeof sKind10000Event == 'string') { 
+            const oKind10000Event:NostrEvent = JSON.parse(sKind10000Event)
+            // MUTES
+            const aKind310000Tags = oKind10000Event.tags
+            for (let x=0; x < aKind310000Tags.length; x++) {
+              const aTag = aKind310000Tags[x]
+              if (aTag[0] == 'p') {
+                const pk = aTag[1]
+                if (isValidPubkey(pk) && (pk != pubkey_parent)) {
+                  let userKey:string | number = pk
+                  if (oLookupSqlIdsByPubkey[pk]) {
+                    userKey = oLookupSqlIdsByPubkey[pk]
+                  }
+                  oObserveeObject[userKey] = 'm'
+                  numMutes++
+                }
               }
-              oObserveeObject[userKey] = 'm'
-              numMutes++
             }
           }
         }
-        
+
         aOutput.push({ numFollows, numMutes })
 
         const sObserveeObject = JSON.stringify(oObserveeObject)
         // cleaning up 
         const sql2= ` UPDATE users SET observeeObject='${sObserveeObject}', flaggedToUpdateObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
-        // aOutput.push(sql2)
-        const results_sql2 = await connection.query(sql2);
-        console.log(typeof results_sql2)
+        aOutput.push(sql2)
+        // const results_sql2 = await connection.query(sql2);
+        // console.log(typeof results_sql2)
         // aOutput.push({results_sql2})
-        // aOutput.push(oObserveeObject)
+        aOutput.push(oObserveeObject)
       }
     }
 
