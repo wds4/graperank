@@ -97,7 +97,7 @@ export default async function handler(
       }
 
       // cleaning up 
-      const sql4 = ` UPDATE users SET flaggedToUpdateNeo4jMutes=1, flaggedForKind10000EventProcessing = 0 WHERE pubkey='${pubkey_parent}' `
+      const sql4 = ` UPDATE users SET flaggedToUpdateNeo4jMutes=1, flaggedForKind10000EventProcessing=0, flaggedToUpdateObserveeObject=1 WHERE pubkey='${pubkey_parent}' `
       const results4 = await connection.query(sql4);
       console.log(results4)
     }

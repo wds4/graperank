@@ -37,14 +37,13 @@ export default function handler(
 - sql1: select * from users where flaggedForKind3EventProcessing=1
 for each pubkey_parent:
   - get pubkey_parent, kind3EventId
-  - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey=pubkey_parent
   - get kind3Event from s3 using kind3EventId
   - cycle through each pubkey_child in kind3Event:
     - const pubkey_child
     - sql3: INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES (pubkey_child, 1)
       (if already present, do nothing, including no need to set flaggedToUpdateNeo4jNode=1)
   // cleaning up
-  - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
+  - sql4: UPDATE users SET flaggedToUpdateNeo4jFollows=1, flaggedForKind3EventProcessing=0, flaggedToUpdateObserveeObject=1 WHERE pubkey=pubkey_parent
 5. api/dataManagement/users/updateNeo4jNode
 - sql1: select * from users where flaggedToUpdateNeo4jNode=1
 for each row:
@@ -66,6 +65,13 @@ for each row:
     - cypher4: add edge FOLLOWS from pubkey_parent to pubkey_child
   // cleaning up
   - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
+7. api/dataManagement/updateObserveeObject
+- sql1: SELECT id, pubkey, kind3EventId, kind10000EventId FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL))
+- for each row:
+  - define userId, userPubkey, kind3EventId, kind10000EventId
+  - get kind3Event and kind10000Event from s3 using keys: eventsByEventId/<kind3EventId> and eventsByEventId/<kind10000EventId>
+  - create observeeObject using kind3Event and kind10000Event
+  - sql2: UPDATE users SET observeeObject=observeeObject, flaggedToUpdateObserveeObject=0 where 
 
 
 1b. api/dataManagement/users/listen = api/nostr/listeners/multipleUsers 

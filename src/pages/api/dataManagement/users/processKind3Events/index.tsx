@@ -9,7 +9,7 @@ import { isValidPubkey } from '@/helpers/nip19'
 - sql1: select * from users where flaggedForKind3EventProcessing=1
 for each pubkey_parent:
   - get pubkey_parent, kind3EventId
-  - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey=pubkey_parent
+  - 
   - get kind3Event from s3 using kind3EventId
   - cycle through each pubkey_child in kind3Event:
     - const pubkey_child
@@ -17,6 +17,7 @@ for each pubkey_parent:
       (if already present, do nothing, including no need to set flaggedToUpdateNeo4jNode=1)
   // cleaning up
   - sql4: UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey=pubkey_parent
+  - merge sql2 into sql4: UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey=pubkey_parent
 
 http://localhost:3000/api/dataManagement/users/processKind3Events?n=10
 
@@ -67,9 +68,10 @@ export default async function handler(
       const pubkey_parent = oNextUser.pubkey
       const kind3EventId = oNextUser.kind3EventId
 
-      const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey='${pubkey_parent}' `
-      const results2 = await connection.query(sql2);
-      console.log(results2)
+      // sql2 merged into sql4 (below)
+      // const sql2 = ` UPDATE users SET flaggedToUpdateNeo4jFollows=1 WHERE pubkey='${pubkey_parent}' `
+      // const results2 = await connection.query(sql2);
+      // console.log(results2)
 
       if (kind3EventId) {
         const params_get = {
@@ -103,7 +105,7 @@ export default async function handler(
       }
 
       // cleaning up 
-      const sql4 = ` UPDATE users SET flaggedForKind3EventProcessing = 0 WHERE pubkey='${pubkey_parent}' `
+      const sql4 = ` UPDATE users SET flaggedToUpdateNeo4jFollows=1, flaggedForKind3EventProcessing=0, flaggedToUpdateObserveeObject=1 WHERE pubkey='${pubkey_parent}' `
       const results4 = await connection.query(sql4);
       console.log(results4)
     }
