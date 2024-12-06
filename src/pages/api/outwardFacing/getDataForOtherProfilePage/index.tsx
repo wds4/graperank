@@ -98,8 +98,21 @@ export default async function handler(
           if (aResults[0] && aResults[0].numHops) { 
             numHops = aResults[0].numHops.low
           }
-          const oRating = {rator: pk, dos: numHops, pagerank, timestamp: 0}
-          aFollowerPubkeys.push(oRating)
+          
+          // GrapeRank: set defaults to zero
+          let average = 0
+          let input = 0.05 // 
+          // estimate grapeRank by DoS
+          if (numHops < 100) {
+            average = 1
+            input = 0.05 * (1 / numHops + 1)
+          }
+          const confidence = convertInputToConfidence(input, rigor)
+          const influence = average * confidence
+
+          const oFollowerData = {rator: pk, dos: numHops, pagerank, grapeRank_dos: {influence, confidence, average, input}}
+          aFollowerPubkeys.push(oFollowerData)
+
           // GrapeRank calcs
           const score = 1
           const raterInfluence = 0.05 / (numHops + 1)
