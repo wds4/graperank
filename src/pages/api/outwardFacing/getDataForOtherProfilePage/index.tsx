@@ -88,6 +88,7 @@ export default async function handler(
         for (let x=0; x < aFollowers.length; x++) {
           const oNextUserData = aFollowers[x]
           const pk = oNextUserData.m.properties.pubkey
+          const pagerank = oNextUserData.m.properties.pagerank
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
           WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
           RETURN length(p) as numHops` 
@@ -97,7 +98,7 @@ export default async function handler(
           if (aResults[0] && aResults[0].numHops) { 
             numHops = aResults[0].numHops.low
           }
-          const oRating = {rator: pk, dos: numHops, timestamp: 0}
+          const oRating = {rator: pk, dos: numHops, pagerank, timestamp: 0}
           aFollowerPubkeys.push(oRating)
           // GrapeRank calcs
           const score = 1
@@ -117,6 +118,7 @@ export default async function handler(
         for (let x=0; x < Math.min(aMuters.length, 5); x++) {
           const oNextUserData = aMuters[x]
           const pk = oNextUserData.m.properties.pubkey
+          const pagerank = oNextUserData.m.properties.pagerank
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:MUTES]->+(m:NostrUser)
           WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
           RETURN length(p) as numHops` 
@@ -126,7 +128,7 @@ export default async function handler(
           if (aResults[0] && aResults[0].numHops) { 
             numHops = aResults[0].numHops.low
           }
-          const oRating = {rator: pk, dos: numHops, timestamp: 0}
+          const oRating = {rator: pk, dos: numHops, pagerank, timestamp: 0}
           aMuterPubkeys.push(oRating)
           // GrapeRank calcs
           const score = 0
