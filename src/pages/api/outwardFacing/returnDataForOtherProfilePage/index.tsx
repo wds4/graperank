@@ -17,7 +17,7 @@ followers
 usage:
 observer: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 observee: d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d // 3 hops away
-https://www.graperank.tech/outwardFacing/returnDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
+https://www.graperank.tech/api/outwardFacing/returnDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
 
 TODO: revamp all of the below
 */
@@ -33,14 +33,14 @@ export default async function handler(
   if (!searchParams.observer) {
     const response:ResponseData = {
       success: false,
-      message: `outwardFacing/getRatorsWithDos: no observer was provided`
+      message: `outwardFacing/returnDataForOtherProfilePage: no observer was provided`
     }
     res.status(500).json(response)
   }
   if (!searchParams.observee) {
     const response:ResponseData = {
       success: false,
-      message: `outwardFacing/getRatorsWithDos: no observee was provided`
+      message: `outwardFacing/returnDataForOtherProfilePage: no observee was provided`
     }
     res.status(500).json(response)
   }
@@ -102,7 +102,7 @@ export default async function handler(
       const response:ResponseData = {
         success: true,
         exists: true,
-        message: `outwardFacing/getRatorsWithDos data:`,
+        message: `outwardFacing/returnDataForOtherProfilePage data:`,
         metaData: {
           numFollowers: aFollowerPubkeys.length,
           interpretation: {
@@ -133,7 +133,7 @@ export default async function handler(
     } catch (error) {
       const response = {
         success: false,
-        message: `outwardFacing/getRatorsWithDos error: ${error}`,
+        message: `outwardFacing/returnDataForOtherProfilePage error: ${error}`,
         data: {
           observer,
           cypher1
@@ -144,7 +144,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `outwardFacing/getRatorsWithDos: the provided observer and / or observee pubkey is invalid`,
+      message: `outwardFacing/returnDataForOtherProfilePage: the provided observer and / or observee pubkey is invalid`,
       data: {
         observer, observee
       }

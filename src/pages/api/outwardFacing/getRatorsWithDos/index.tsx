@@ -17,7 +17,16 @@ current behaviour: does not read kind; assumes the default that requestor wants 
 usage:
 observer: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 observee: d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d // 3 hops away
+observee: c06885ce21d132b3c29e74aea9f4c171a95b2ed56bafac58a5fbfc9bdc5fbb06 // 3 hops away
+observee: 1989034e56b8f606c724f45a12ce84a11841621aaf7182a1f6564380b9c4276b // 2 hops away
+observee: cbaa0c829ed322c1551cb6619b4c08b9a26ac97ffb4e959205eec78ee9313245 // 1 hop away
 https://www.graperank.tech/api/outwardFacing/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
+
+https://www.graperank.tech/api/outwardFacing/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=c06885ce21d132b3c29e74aea9f4c171a95b2ed56bafac58a5fbfc9bdc5fbb06
+
+https://www.graperank.tech/api/outwardFacing/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=1989034e56b8f606c724f45a12ce84a11841621aaf7182a1f6564380b9c4276b
+
+https://www.graperank.tech/api/outwardFacing/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=cbaa0c829ed322c1551cb6619b4c08b9a26ac97ffb4e959205eec78ee9313245
 
 */
  
@@ -49,7 +58,7 @@ export default async function handler(
   if (typeof observer == 'string' && verifyPubkeyValidity(observer) && typeof observee == 'string' && verifyPubkeyValidity(observee)) {
     const cypher0 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
     WHERE n.pubkey='${observer}' AND m.pubkey='${observee}'
-    RETURN p, length(p) as numHops` 
+    RETURN p, length(p) as dos` 
 
     const cypher1 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m `
     const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) RETURN m `
@@ -69,7 +78,7 @@ export default async function handler(
 
       const result_cypher0 = await read(cypher0, {})
       const aResults = JSON.parse(JSON.stringify(result_cypher0))
-      const numHops = aResults[0].numHops.low
+      const dos = aResults[0].dos.low
 
       // KIND 3: FOLLOWERS
       const aFollowerPubkeys = []
@@ -150,7 +159,7 @@ export default async function handler(
           },
         },
         data: {
-          ratee: observee, dos: numHops, 
+          ratee: observee, dos: dos, 
           ratings: {
             3: aFollowerPubkeys,
             10000: aMuterPubkeys,
@@ -165,7 +174,8 @@ export default async function handler(
         message: `api/outwardFacing/getRatorsWithDos error: ${error}`,
         data: {
           observer,
-          cypher1
+          cypher0,
+          cypher1,
         }
       }
       res.status(500).json(response)
