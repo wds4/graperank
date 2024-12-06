@@ -96,15 +96,14 @@ export default async function handler(
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
-    if (aUsers6.length > 900) { url = url6 }
-    if (aUsers5.length > 100) { url = url5 }
-    if (aUsers5b.length > 100) { url = url5b }
-    if (aUsers4.length > 1000) { url = url4 }
-    if (aUsers3.length > 10) { url = url3 }
-    // if (aUsers3b.length > 10) { url = url3b }
-    if (aEvents2.length > 1000) { url = url2 }
-    if (aEvents2b.length > 1000) { url = url2b }
-    if (numEvents1 > 200) { url = url1 }
+    // if (aUsers6.length > 900) { url = url6 } // 900
+    if (aUsers5.length > 0) { url = url5 } // 100
+    if (aUsers5b.length > 0) { url = url5b } // 100
+    if (aUsers4.length > 0) { url = url4 } // 1000
+    if (aUsers3b.length > 0) { url = url3b } // 10
+    if (aEvents2.length > 0) { url = url2 } // 1000
+    if (aEvents2b.length > 0) { url = url2b } // 1000
+    if (numEvents1 > 0) { url = url1 } // 200
 
     console.log(`url: ${url}`)
     
