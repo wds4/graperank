@@ -85,7 +85,7 @@ export default async function handler(
       if (kinds.includes(3)) {
         const result1 = await read(cypher1, {})
         const aFollowers = JSON.parse(JSON.stringify(result1))
-        for (let x=0; x < aFollowers.length; x++) {
+        for (let x=0; x < Math.min(aFollowers.length,5); x++) {
           const oNextUserData = aFollowers[x]
           const pk = oNextUserData.m.properties.pubkey
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
@@ -114,7 +114,7 @@ export default async function handler(
       if (kinds.includes(10000)) {
         const result2 = await read(cypher2, {})
         const aMuters = JSON.parse(JSON.stringify(result2))
-        for (let x=0; x < aMuters.length; x++) {
+        for (let x=0; x < Math.min(aMuters.length, 5); x++) {
           const oNextUserData = aMuters[x]
           const pk = oNextUserData.m.properties.pubkey
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:MUTES]->+(m:NostrUser)
