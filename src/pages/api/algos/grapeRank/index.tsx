@@ -16,6 +16,7 @@ NOT YET COMPLETED
 usage:
 e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
 */
 
 const attenuationFactor = 0.85
@@ -55,7 +56,7 @@ export default async function handler(
           database: process.env.AWS_MYSQL_DB,
         });
   
-        const sql0 = `SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL `
+        const sql0 = `SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
         // TODO: finish
@@ -63,7 +64,7 @@ export default async function handler(
 
 
 
-        
+
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
