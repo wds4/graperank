@@ -44,71 +44,75 @@ export default async function handler(
     const cypher1 = `MATCH (n:NostrUser) RETURN n `
     const cypher1_result = await read(cypher1, {})
 
-    const sql_events = `SELECT * FROM events`
+    const sql_users_0 = `SELECT id FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL))`
+    const results_sql_users_0 = await connection.query(sql_users_0);
+    const aUsers_0 = JSON.parse(JSON.stringify(results_sql_users_0[0]))
+
+    const sql_events = `SELECT id FROM events`
     const results_sql_events = await connection.query(sql_events);
     const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
 
-    const sql_events_3 = `SELECT * FROM events WHERE kind = 3`
+    const sql_events_3 = `SELECT id FROM events WHERE kind = 3`
     const results_sql_events_3 = await connection.query(sql_events_3);
     const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))
 
-    const sql_events_10000 = `SELECT * FROM events WHERE kind = 10000`
+    const sql_events_10000 = `SELECT id FROM events WHERE kind = 10000`
     const results_sql_events_10000 = await connection.query(sql_events_10000);
     const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))
 
-    const sql_customers = `SELECT * FROM customers`
+    const sql_customers = `SELECT id FROM customers`
     const results_sql_customers = await connection.query(sql_customers);
     const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))
 
-    const sql_users = `SELECT * FROM users`
+    const sql_users = `SELECT id FROM users`
     const results_sql_users = await connection.query(sql_users);
     const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
 
-    const sql_users_neverListened = `SELECT * FROM users WHERE whenLastListened IS NULL`
+    const sql_users_neverListened = `SELECT id FROM users WHERE whenLastListened IS NULL`
     const results_sql_users_neverListened = await connection.query(sql_users_neverListened);
     const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))
 
-    const sql_users_yesKind3Event = `SELECT * FROM users WHERE kind3EventId IS NOT NULL`
+    const sql_users_yesKind3Event = `SELECT id FROM users WHERE kind3EventId IS NOT NULL`
     const results_sql_users_yesKind3Event = await connection.query(sql_users_yesKind3Event);
     const aUsers_yesKind3Event = JSON.parse(JSON.stringify(results_sql_users_yesKind3Event[0]))
 
-    const sql_users_noKind3Event = `SELECT * FROM users WHERE kind3EventId IS NULL`
+    const sql_users_noKind3Event = `SELECT id FROM users WHERE kind3EventId IS NULL`
     const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
     const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))
 
-    const sql_users_noKind10000Event = `SELECT * FROM users WHERE kind10000EventId IS NULL`
+    const sql_users_noKind10000Event = `SELECT id FROM users WHERE kind10000EventId IS NULL`
     const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
     const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))
 
-    const sql2 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
+    const sql2 = ` SELECT id FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
     
-    const sql2b = ` SELECT * FROM events where kind=10000 and flaggedForProcessing=1 `
+    const sql2b = ` SELECT id FROM events where kind=10000 and flaggedForProcessing=1 `
     const results_sql2b = await connection.query(sql2b);
     const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))
 
-    const sql3 = `SELECT * from users WHERE flaggedForKind3EventProcessing=1;`
+    const sql3 = `SELECT id from users WHERE flaggedForKind3EventProcessing=1;`
     const results_sql3 = await connection.query(sql3);
     const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
 
-    const sql3b = `SELECT * from users WHERE flaggedForKind10000EventProcessing=1;`
+    const sql3b = `SELECT id from users WHERE flaggedForKind10000EventProcessing=1;`
     const results_sql3b = await connection.query(sql3b);
     const aUsers10000= JSON.parse(JSON.stringify(results_sql3b[0]))
 
-    const sql4 = `SELECT * FROM users where flaggedToUpdateNeo4jNode=1;`
+    const sql4 = `SELECT id FROM users where flaggedToUpdateNeo4jNode=1;`
     const results_sql4 = await connection.query(sql4);
     const aUsers4= JSON.parse(JSON.stringify(results_sql4[0]))
 
-    const sql5 = `SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
+    const sql5 = `SELECT id FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5 = await connection.query(sql5);
     const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
 
-    const sql5b = `SELECT * FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
+    const sql5b = `SELECT id FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5b = await connection.query(sql5b);
     const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
 
-    const sql6 = `SELECT * FROM users WHERE kind3EventId IS NULL;`
+    const sql6 = `SELECT id FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
 
@@ -145,6 +149,11 @@ export default async function handler(
             total: aCustomers.length,
           },
 
+        },
+        cronJob0: {
+          numEvents: aUsers_0.length,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200',
+          description: 'need to create observeeObject file',
         },
         cronJob1: {
           numEvents: numEvents1,

@@ -22,6 +22,7 @@ const params = {
 
 const command_s3 = new ListObjectsCommand(params);
 
+const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
 const url2b = `https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000`
@@ -56,40 +57,44 @@ export default async function handler(
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
 
-    let numEvents1 = -1
+    let numEvents1 = 0
     if (data_s3.Contents) {
       numEvents1 = data_s3.Contents.length
     }
 
-    const sql2 = ` SELECT * FROM events where kind=3 and flaggedForProcessing=1 `
+    const sql0 = ` SELECT id FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL)) `
+    const results_sql0 = await connection.query(sql0);
+    const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
+
+    const sql2 = ` SELECT id FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
 
-    const sql2b = ` SELECT * FROM events where kind=10000 and flaggedForProcessing=1 `
+    const sql2b = ` SELECT id FROM events where kind=10000 and flaggedForProcessing=1 `
     const results_sql2b = await connection.query(sql2b);
     const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))
 
-    const sql3 = `SELECT * from users WHERE flaggedForKind3EventProcessing=1;`
+    const sql3 = `SELECT id from users WHERE flaggedForKind3EventProcessing=1;`
     const results_sql3 = await connection.query(sql3);
     const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
 
-    const sql3b = `SELECT * from users WHERE flaggedForKind10000EventProcessing=1;`
+    const sql3b = `SELECT id from users WHERE flaggedForKind10000EventProcessing=1;`
     const results_sql3b = await connection.query(sql3b);
     const aUsers3b= JSON.parse(JSON.stringify(results_sql3b[0]))
 
-    const sql4 = `SELECT * FROM users where flaggedToUpdateNeo4jNode=1;`
+    const sql4 = `SELECT id FROM users where flaggedToUpdateNeo4jNode=1;`
     const results_sql4 = await connection.query(sql4);
     const aUsers4= JSON.parse(JSON.stringify(results_sql4[0]))
 
-    const sql5 = `SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
+    const sql5 = `SELECT id FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5 = await connection.query(sql5);
     const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
 
-    const sql5b = `SELECT * FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
+    const sql5b = `SELECT id FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5b = await connection.query(sql5b);
     const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
 
-    const sql6 = `SELECT * FROM users WHERE kind3EventId IS NULL;`
+    const sql6 = `SELECT id FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
 
@@ -104,6 +109,7 @@ export default async function handler(
     if (aEvents2.length > 0) { url = url2 } // 1000
     if (aEvents2b.length > 0) { url = url2b } // 1000
     if (numEvents1 > 0) { url = url1 } // 200
+    if (aUsers0.length > 0) { url = url0 } // 200
 
     console.log(`url: ${url}`)
     
@@ -114,6 +120,11 @@ export default async function handler(
       message: `api/cronJobManager data:`,
       data: {
         url,
+        cronJob0: {
+          numUsers: aUsers0.length,
+          endpoint: url0,
+          description: 'need to create observeeObjects',
+        },
         cronJob1: {
           numEvents: numEvents1,
           endpoint: url1,

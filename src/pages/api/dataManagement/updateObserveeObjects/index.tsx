@@ -16,9 +16,7 @@ import { SqlIdsByPubkey } from '@/types'
 
 usage:
 
-http://localhost:3000/api/dataManagement/updateObserveeObjects?n=1
-
-https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=1
+https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200
 
 */
 
