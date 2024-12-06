@@ -108,7 +108,7 @@ export default async function handler(
             input = 0.05 * (1 / numHops + 1)
           }
           const confidence = convertInputToConfidence(input, rigor)
-          const influence = average * confidence
+          const influence = Number((average * confidence).toFixed(4))
 
           const oFollowerData = {rator: pk, dos: numHops, pagerank, grapeRank_dos: {influence, confidence, average, input}}
           aFollowerPubkeys.push(oFollowerData)
