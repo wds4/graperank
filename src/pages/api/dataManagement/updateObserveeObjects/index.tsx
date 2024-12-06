@@ -93,24 +93,30 @@ export default async function handler(
       console.log(typeof sKind10000Event_)
 
       if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string')) {
+        const oObserveeObject:{[key:string | number]: string} = {}
         const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
         const oKind10000Event:NostrEvent = JSON.parse(sKind10000Event)
-        aOutput.push(oKind3Event)
-        aOutput.push(oKind10000Event)
-        // TODO: finish
-
-
-
-
+        aOutput.push({numFollows: Object.keys(oKind3Event).length})
+        aOutput.push({ numMutes: Object.keys(oKind10000Event).length })
+        // FOLLOWS
         const aKind3Tags = oKind3Event.tags
-        // const aKind310000Tags = oKind10000Event.tags
-        const oObserveeObject = {}
         for (let x=0; x < aKind3Tags.length; x++) {
           const aTag = aKind3Tags[x]
           if (aTag[0] == 'p') {
             const pk = aTag[1]
             if (isValidPubkey(pk)) {
-
+              oObserveeObject[pk] = 'f'
+            }
+          }
+        }
+        // MUTES
+        const aKind310000Tags = oKind10000Event.tags
+        for (let x=0; x < aKind310000Tags.length; x++) {
+          const aTag = aKind310000Tags[x]
+          if (aTag[0] == 'p') {
+            const pk = aTag[1]
+            if (isValidPubkey(pk)) {
+              oObserveeObject[pk] = 'm'
             }
           }
         }
@@ -121,6 +127,7 @@ export default async function handler(
         // aOutput.push(sql2)
         // const results_sql2 = await connection.query(sql2);
         console.log(sql2)
+        aOutput.push(oObserveeObject)
       }
     }
 

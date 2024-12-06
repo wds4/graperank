@@ -37,9 +37,8 @@ export default async function handler(
       try {
         const result_cypher1 = await write(cypher1, {})
         console.log(result_cypher1)
-
         const aResults = JSON.parse(JSON.stringify(result_cypher1))
-
+        /*
         const aDoSWoT:string[][] = []
         aDoSWoT[0] = []
         aDoSWoT[0].push(pubkey1)
@@ -62,6 +61,7 @@ export default async function handler(
           oCounts[foo] = aDoSWoT[x].length
           numPubkeysTotal += aDoSWoT[x].length
         }
+        */
 
         const response:ResponseData = {
           success: true,
@@ -69,9 +69,7 @@ export default async function handler(
           data: {
             referencePubkey: pubkey1, 
             cypher: cypher1,
-            maxNumHops,
-            numPubkeysTotal,
-            numPubkeysByDoS: oCounts,
+            aResults,
           }
         }
         res.status(200).json(response)
