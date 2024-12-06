@@ -1,9 +1,15 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { write } from '@/lib/neo4j'
+import mysql from 'mysql2/promise'
 
 /*
+
 Calculate PageRank scores for all pubkeys 
+- sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
+  (maybe also add: where pagerank is above some threshold?)
+- combine results of sql1 into one large raw data object oRatingsPre of format: [context][rater][ratee] = [score, confidence]
+- process oRatingsPre into oRatings which is of format: [context][ratee][rater] = [score, confidence]
+- feed oRatings into GrapeRank calculator
 
 NOT YET COMPLETED
 
@@ -11,6 +17,13 @@ usage:
 e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 */
+
+const attenuationFactor = 0.85
+const muteScore = 0
+const followScore = 1
+const muteConfidence = 0.1
+const followConfidence = 0.05
+const rigor = 0.25
 
 type ResponseData = {
   success: boolean,
@@ -26,60 +39,58 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/pageRank: pubkey was not provided`
+      message: `api/algos/grapeRank: pubkey was not provided`
     }
     res.status(500).json(response)
   }
   if (searchParams.pubkey) {
-    const pubkey1 = searchParams.pubkey
-    if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = ``
+    const observer = searchParams.pubkey
+    if (typeof observer == 'string' && verifyPubkeyValidity(observer)) {
       try {
-        const result_cypher1 = await write(cypher1, {})
-        console.log(result_cypher1)
-        const aResults = JSON.parse(JSON.stringify(result_cypher1))
-        /*
-        const aDoSWoT:string[][] = []
-        aDoSWoT[0] = []
-        aDoSWoT[0].push(pubkey1)
-        let maxNumHops = 0
-        for (let x=0; x < aResults.length; x++) {
-          const numHops = aResults[x].numHops.low
-          if (!aDoSWoT[numHops]) {
-            aDoSWoT[numHops] = []
-          }
-          const pk = aResults[x].n.properties.pubkey
-          aDoSWoT[numHops].push(pk)
-          maxNumHops = Math.max(maxNumHops, numHops)
-        }
+        const connection = await mysql.createConnection({
+          host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
+          port: 3306,
+          user: process.env.AWS_MYSQL_USER,
+          password: process.env.AWS_MYSQL_PWD,
+          database: process.env.AWS_MYSQL_DB,
+        });
+  
+        const sql0 = `SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL `
+        const results_sql0 = await connection.query(sql0);
+        const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
+        // TODO: finish
 
-        type oCnt = {[key:string]: number}
-        const oCounts:oCnt = {}
-        let numPubkeysTotal = 0
-        for (let x=0; x <= maxNumHops; x++) {
-          const foo = 'numHops_' + x.toString()
-          oCounts[foo] = aDoSWoT[x].length
-          numPubkeysTotal += aDoSWoT[x].length
-        }
-        */
+
+
+
+        
+
+        const close_result = await connection.end()
+        console.log(`closing connection: ${close_result}`)
 
         const response:ResponseData = {
           success: true,
-          message: `api/algos/pageRank data:`,
+          message: `api/algos/grapeRank data:`,
           data: {
-            referencePubkey: pubkey1, 
-            cypher: cypher1,
-            aResults,
+            grapeRank: {
+              attenuationFactor,
+              muteScore,
+              followScore,
+              muteConfidence,
+              followConfidence,
+              rigor,
+            },
+            referencePubkey: observer, 
+            numObserveeObjects: aUsers0.length,
           }
         }
         res.status(200).json(response)
       } catch (error) {
         const response = {
           success: false,
-          message: `api/algos/pageRank error: ${error}`,
+          message: `api/algos/grapeRank error: ${error}`,
           data: {
-            pubkey1,
-            cypher1
+            observer,
           }
         }
         res.status(500).json(response)
@@ -87,9 +98,9 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/algos/pageRank: one or both of the provided pubkeys is invalid`,
+        message: `api/algos/grapeRank: one or both of the provided pubkeys is invalid`,
         data: {
-          pubkey1
+          observer
         }
       }
       res.status(500).json(response)
@@ -97,7 +108,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/pageRank: pubkey was not provided`
+      message: `api/algos/grapeRank: pubkey was not provided`
     }
     res.status(500).json(response)
   }
