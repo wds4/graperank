@@ -64,7 +64,7 @@ export default async function handler(
     for (let x=0; x < aUsers.length; x++) {
       const oNextUser = aUsers[x]
       // const userId = oNextUser.id
-      const pk = oNextUser.pubkey
+      const pubkey_parent = oNextUser.pubkey
       const kind3EventId = oNextUser.kind3EventId
       const kind10000EventId = oNextUser.kind10000EventId
 
@@ -109,7 +109,7 @@ export default async function handler(
           const aTag = aKind3Tags[x]
           if (aTag[0] == 'p') {
             const pk = aTag[1]
-            if (isValidPubkey(pk)) {
+            if (isValidPubkey(pk) && (pk != pubkey_parent)) {
               let userKey:string | number = pk
               if (oLookupSqlIdsByPubkey[pk]) {
                 userKey = oLookupSqlIdsByPubkey[pk]
@@ -125,7 +125,7 @@ export default async function handler(
           const aTag = aKind310000Tags[x]
           if (aTag[0] == 'p') {
             const pk = aTag[1]
-            if (isValidPubkey(pk)) {
+            if (isValidPubkey(pk) && (pk != pubkey_parent)) {
               let userKey:string | number = pk
               if (oLookupSqlIdsByPubkey[pk]) {
                 userKey = oLookupSqlIdsByPubkey[pk]
@@ -140,7 +140,7 @@ export default async function handler(
 
         const sObserveeObject = JSON.stringify(oObserveeObject)
         // cleaning up 
-        const sql2= ` UPDATE users SET observeeObject='${sObserveeObject}', flaggedToUpdateObserveeObject=0 WHERE pubkey='${pk}' `
+        const sql2= ` UPDATE users SET observeeObject='${sObserveeObject}', flaggedToUpdateObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
         aOutput.push(sql2)
         // const results_sql2 = await connection.query(sql2);
         // aOutput.push({results_sql2})
