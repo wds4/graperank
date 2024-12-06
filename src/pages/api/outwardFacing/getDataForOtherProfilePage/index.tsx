@@ -85,7 +85,7 @@ export default async function handler(
       if (kinds.includes(3)) {
         const result1 = await read(cypher1, {})
         const aFollowers = JSON.parse(JSON.stringify(result1))
-        for (let x=0; x < Math.min(aFollowers.length,5); x++) {
+        for (let x=0; x < aFollowers.length; x++) {
           const oNextUserData = aFollowers[x]
           const pk = oNextUserData.m.properties.pubkey
           const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
