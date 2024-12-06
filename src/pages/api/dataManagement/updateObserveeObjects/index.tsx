@@ -4,6 +4,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { NostrEvent } from "@nostr-dev-kit/ndk"
 import mysql from 'mysql2/promise'
 import { isValidPubkey } from '@/helpers/nip19'
+import { SqlIdsByPubkey } from '@/types'
 
 /*
 - sql1: SELECT id, pubkey, kind3EventId, kind10000EventId FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL))
@@ -89,15 +90,19 @@ export default async function handler(
       }
       const command_s3_get3 = new GetObjectCommand(params_get3);
       const data_get3 = await client.send(command_s3_get3);
-      const sKind10000Event_ = await data_get3.Body?.transformToString()
-      console.log(typeof sKind10000Event_)
+      const sLookupSqlIdsByPubkey = await data_get3.Body?.transformToString()
 
-      if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string')) {
+      if ((typeof sKind3Event == 'string') && (typeof sKind10000Event == 'string') && (typeof sLookupSqlIdsByPubkey == 'string')) {
+        const oLookupSqlIdsByPubkey:SqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
+
         const oObserveeObject:{[key:string | number]: string} = {}
+        
         const oKind3Event:NostrEvent = JSON.parse(sKind3Event)
         const oKind10000Event:NostrEvent = JSON.parse(sKind10000Event)
-        aOutput.push({numFollows: Object.keys(oKind3Event).length})
-        aOutput.push({ numMutes: Object.keys(oKind10000Event).length })
+
+        let numFollows = 0
+        let numMutes = 0
+
         // FOLLOWS
         const aKind3Tags = oKind3Event.tags
         for (let x=0; x < aKind3Tags.length; x++) {
@@ -105,7 +110,12 @@ export default async function handler(
           if (aTag[0] == 'p') {
             const pk = aTag[1]
             if (isValidPubkey(pk)) {
-              oObserveeObject[pk] = 'f'
+              let userKey:string | number = pk
+              if (oLookupSqlIdsByPubkey[pk]) {
+                userKey = oLookupSqlIdsByPubkey[pk]
+              }
+              oObserveeObject[userKey] = 'f'
+              numFollows++
             }
           }
         }
@@ -116,11 +126,18 @@ export default async function handler(
           if (aTag[0] == 'p') {
             const pk = aTag[1]
             if (isValidPubkey(pk)) {
-              oObserveeObject[pk] = 'm'
+              let userKey:string | number = pk
+              if (oLookupSqlIdsByPubkey[pk]) {
+                userKey = oLookupSqlIdsByPubkey[pk]
+              }
+              oObserveeObject[userKey] = 'm'
+              numMutes++
             }
           }
         }
         
+        aOutput.push({ numFollows, numMutes })
+
         const sObserveeObject = JSON.stringify(oObserveeObject)
         // cleaning up 
         const sql2= ` UPDATE users SET observeeObject='${sObserveeObject}', flaggedToUpdateObserveeObject=0 WHERE pubkey='${pk}' `
