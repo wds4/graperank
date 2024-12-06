@@ -5,11 +5,21 @@ import { ResponseData } from '@/types'
 import { convertInputToConfidence } from '@/helpers/grapevine' 
 
 /*
+provides:
+- observee's followers list (verified and unverified)
+- DoS and Scorecard for the observee
+
+NOT COMPLETED
+
+(same as Endpoint as per Manime specs plus additional info:
+followers
+
 usage:
 observer: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 observee: d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d // 3 hops away
-https://www.graperank.tech/api/neo4j/getRatorsWithDos?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
+https://www.graperank.tech/api/neo4j/returnDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
 
+TODO: revamp all of the below
 */
  
 export default async function handler(
@@ -36,6 +46,7 @@ export default async function handler(
   }
   const observer = searchParams.observer
   const observee = searchParams.observee  
+  const kinds = [3, 10000] // TODO: read kinds from searchParams
   if (typeof observer == 'string' && verifyPubkeyValidity(observer) && typeof observee == 'string' && verifyPubkeyValidity(observee)) {
     const cypher0 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
     WHERE n.pubkey='${observer}' AND m.pubkey='${observee}'
@@ -61,50 +72,56 @@ export default async function handler(
       const aResults = JSON.parse(JSON.stringify(result_cypher0))
       const numHops = aResults[0].numHops.low
 
-      const result1 = await read(cypher1, {})
+      // KIND 3: FOLLOWERS
       const aFollowerPubkeys = []
-      const aFollowers = JSON.parse(JSON.stringify(result1))
-      for (let x=0; x < aFollowers.length; x++) {
-        const oNextUserData = aFollowers[x]
-        const pk = oNextUserData.m.properties.pubkey
-        const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
-        WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
-        RETURN p, length(p) as numHops` 
-        const result_cypherDos = await read(cypherDos, {})
-        const aResults = JSON.parse(JSON.stringify(result_cypherDos))
-        const numHops = aResults[0].numHops.low
-        const oRating = {rator: pk, dos: numHops, timestamp: 0}
-        aFollowerPubkeys.push(oRating)
-        // GrapeRank calcs
-        const score = 1
-        const raterInfluence = 0.05 / (numHops + 1)
-        const weight = attenuationFactor * raterInfluence * followConfidence
-        const product = weight * score
-        weights += weight
-        products += product
+      if (kinds.includes(3)) {
+        const result1 = await read(cypher1, {})
+        const aFollowers = JSON.parse(JSON.stringify(result1))
+        for (let x=0; x < aFollowers.length; x++) {
+          const oNextUserData = aFollowers[x]
+          const pk = oNextUserData.m.properties.pubkey
+          const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
+          WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
+          RETURN p, length(p) as numHops` 
+          const result_cypherDos = await read(cypherDos, {})
+          const aResults = JSON.parse(JSON.stringify(result_cypherDos))
+          const numHops = aResults[0].numHops.low
+          const oRating = {rator: pk, dos: numHops, timestamp: 0}
+          aFollowerPubkeys.push(oRating)
+          // GrapeRank calcs
+          const score = 1
+          const raterInfluence = 0.05 / (numHops + 1)
+          const weight = attenuationFactor * raterInfluence * followConfidence
+          const product = weight * score
+          weights += weight
+          products += product
+        }
       }
 
-      const result2 = await read(cypher2, {})
+      // KIND 10000: MUTES
       const aMuterPubkeys = []
-      const aMuters = JSON.parse(JSON.stringify(result2))
-      for (let x=0; x < aMuters.length; x++) {
-        const oNextUserData = aMuters[x]
-        const pk = oNextUserData.m.properties.pubkey
-        const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:MUTES]->+(m:NostrUser)
-        WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
-        RETURN p, length(p) as numHops` 
-        const result_cypherDos = await read(cypherDos, {})
-        const aResults = JSON.parse(JSON.stringify(result_cypherDos))
-        const numHops = aResults[0].numHops.low
-        const oRating = {rator: pk, dos: numHops, timestamp: 0}
-        aMuterPubkeys.push(oRating)
-        // GrapeRank calcs
-        const score = 0
-        const raterInfluence = 0.05 / (numHops + 1)
-        const weight = attenuationFactor * raterInfluence + muteConfidence
-        const product = weight * score
-        weights += weight
-        products += product
+      if (kinds.includes(10000)) {
+        const result2 = await read(cypher2, {})
+        const aMuters = JSON.parse(JSON.stringify(result2))
+        for (let x=0; x < aMuters.length; x++) {
+          const oNextUserData = aMuters[x]
+          const pk = oNextUserData.m.properties.pubkey
+          const cypherDos = `MATCH p = SHORTEST 1 (n:NostrUser)-[:MUTES]->+(m:NostrUser)
+          WHERE n.pubkey='${observer}' AND m.pubkey='${pk}'
+          RETURN p, length(p) as numHops` 
+          const result_cypherDos = await read(cypherDos, {})
+          const aResults = JSON.parse(JSON.stringify(result_cypherDos))
+          const numHops = aResults[0].numHops.low
+          const oRating = {rator: pk, dos: numHops, timestamp: 0}
+          aMuterPubkeys.push(oRating)
+          // GrapeRank calcs
+          const score = 0
+          const raterInfluence = 0.05 / (numHops + 1)
+          const weight = attenuationFactor * raterInfluence + muteConfidence
+          const product = weight * score
+          weights += weight
+          products += product
+        }
       }
 
       const average = products / weights 

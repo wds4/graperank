@@ -328,6 +328,12 @@ with plan later to change to:
 add_header 'Access-Control-Allow-Origin' 'https://grapevine-brainstorm.vercel.app/' always;
 ```
 
+## import ManiMe's code
+
+npm i https://github.com/Pretty-Good-Freedom-Tech/graperank-nodejs.git#davidDev 
+import { calculate } from 'graperank-nodejs/src/Calculator'
+produces: "graperank-nodejs": "github:Pretty-Good-Freedom-Tech/graperank-nodejs#davidDev",
+
 ## TODO:
 - maybe get rid of nginx landing page (44.215.170.113) (delete /etc/nginx/sites-available/default?)
 - https://www.graperank.tech/api/neo4j/getAllFollowsAndMutes (need to do this from LMDB instead of neo4j ???)
