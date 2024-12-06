@@ -93,9 +93,9 @@ export default async function handler(
           RETURN p, length(p) as numHops` 
           const result_cypherDos = await read(cypherDos, {})
           const aResults = JSON.parse(JSON.stringify(result_cypherDos))
-          let numHops = aResults[0].numHops.low
-          if (typeof numHops == 'undefined') {
-            numHops = 999
+          let numHops = 999
+          if (aResults[0] && aResults[0].numHops) { 
+            numHops = aResults[0].numHops.low
           }
           const oRating = {rator: pk, dos: numHops, timestamp: 0}
           aFollowerPubkeys.push(oRating)
@@ -122,9 +122,9 @@ export default async function handler(
           RETURN p, length(p) as numHops` 
           const result_cypherDos = await read(cypherDos, {})
           const aResults = JSON.parse(JSON.stringify(result_cypherDos))
-          let numHops = aResults[0].numHops.low
-          if (typeof numHops == 'undefined') {
-            numHops = 999
+          let numHops = 999
+          if (aResults[0] && aResults[0].numHops) { 
+            numHops = aResults[0].numHops.low
           }
           const oRating = {rator: pk, dos: numHops, timestamp: 0}
           aMuterPubkeys.push(oRating)
