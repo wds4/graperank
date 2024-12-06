@@ -65,7 +65,7 @@ export default async function handler(
         const aResults = JSON.parse(JSON.stringify(result_cypherDos))
         const dos = aResults[0].numHops.low
         let amIFollowing = false
-        if (aFollowPubkeys.contains(pk)) {
+        if (aFollowPubkeys.includes(pk)) {
           amIFollowing = true
         }
         const oFollowerData = [ pk, dos, amIFollowing ]
