@@ -12,7 +12,8 @@ Given a pubkey, return:
 
 usage:
 observer: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/neo4j/returnDataForSelfProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/outwardFacing/returnDataForSelfProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
 */
  
 export default async function handler(
@@ -42,6 +43,12 @@ export default async function handler(
       const aFollowPubkeys = []
       const result2 = await read(cypher2, {})
       const aFollows = JSON.parse(JSON.stringify(result2))
+
+      for (let x=0; x < aFollows.length; x++) {
+        const oNextUserData = aFollows[x]
+        const pk = oNextUserData.m.properties.pubkey
+        aFollowPubkeys.push(pk)
+      }
 
       // FOLLOWERS
       const aFollowersWithScores = []
@@ -74,7 +81,7 @@ export default async function handler(
           numFollowers: aFollowersWithScores.length,
         },
         data: {
-          aFollowersWithScores, aFollows,
+          aFollowersWithScores, aFollowPubkeys,
           cypher1, cypher2, 
         }
       }
