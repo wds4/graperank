@@ -2,7 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
-import { observee, ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calculation'
+import { ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calculation'
 
 /*
 
@@ -66,6 +66,7 @@ export default async function handler(
           const raterId:number = oUserData.id
           if (raterId < 5) {
             oRatingsForward[raterId] = oObserveeObject
+            /*
             const aRatees = Object.keys(oObserveeObject)
             for (let y=0; y < aRatees.length; y++) {
               const observee:observee = aRatees[y]
@@ -75,6 +76,7 @@ export default async function handler(
               }
               oRatingsReverse[observee][raterId] = rating
             }
+              */
           }
         }
 
@@ -109,6 +111,7 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
+            oRatingsForward,
             oRatingsReverse,
           }
         }
