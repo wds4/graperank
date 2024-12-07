@@ -83,7 +83,7 @@ export default async function handler(
             const oObserveeObject = JSON.parse(sObserveeObject)
             oRatingsForward[raterId] = oObserveeObject
             const aRatees = Object.keys(oObserveeObject)
-            for (let y=0; y < Math.min(aRatees.length,10); y++) {
+            for (let y=0; y < Math.min(aRatees.length,100); y++) {
               
               const ratee:string = aRatees[y]
               const rating:string = oObserveeObject[ratee]
@@ -160,6 +160,7 @@ export default async function handler(
             oRatingsReverseSizeInMB,
             oRatingsForwardSizeInMB,
             response_put,
+            oRatingsReverse,
           }
         }
         res.status(200).json(response)
