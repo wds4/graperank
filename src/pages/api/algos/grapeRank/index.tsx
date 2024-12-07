@@ -2,15 +2,15 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
-import { ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calculation'
+import { observee, ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calculation'
 
 /*
 
 Calculate PageRank scores for all pubkeys 
 - sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
   (maybe also add: where pagerank is above some threshold?)
-- STEP 2: combine results of sql1 into one large raw data object oRatingsPre of format: [context][rater][ratee] = [score, confidence]
-- STEP 3: process oRatingsPre into oRatings which is of format: [context][ratee][rater] = [score, confidence]
+- STEP 2: combine results of sql1 into one large raw data object oRatingsForward of format: [context][rater][ratee] = [score, confidence]
+- STEP 3: process oRatingsForward into oRatings which is of format: [context][ratee][rater] = [score, confidence]
 - feed oRatings into GrapeRank calculator
 
 NOT YET COMPLETED
@@ -57,21 +57,34 @@ export default async function handler(
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
         // STEP 2
-        const oRatings:ObserverObjectV0Compact = {}
+        const oRatingsReverse:ObserverObjectV0Compact = {}
+        const oRatingsForward:ObserverObjectV0Compact = {}
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
-          const observeeObject:ObserveeObjectV0Compact = oUserData.observeeObject
-          const id:number = oUserData.id
-          if (id < 5) {
-            oRatings[id] = observeeObject
+          const sObserveeObject:string = oUserData.observeeObject
+          const oObserveeObject:ObserveeObjectV0Compact = JSON.parse(sObserveeObject)
+          const raterId:number = oUserData.id
+          if (raterId < 5) {
+            oRatingsForward[raterId] = oObserveeObject
+            const aRatees = Object.keys(oObserveeObject)
+            for (let x=0; x < aRatees.length; x++) {
+              const observee:observee = aRatees[x]
+              const rating = oObserveeObject[observee]
+              if (!oRatingsReverse[observee]) {
+                oRatingsReverse[observee] = {}
+              }
+              oRatingsReverse[observee][raterId] = rating
+            }
           }
         }
 
+        /*
         // STEP 3
-        const aRaters = Object.keys(oRatings)
+        const aRaters = Object.keys(oRatingsReverse)
         for (let a=0; a < aRaters.length; a++) {
           // const oRaterData = aRaters[a]
         }
+          */
 
 
 
@@ -96,7 +109,7 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
-            oRatings,
+            oRatingsReverse,
           }
         }
         res.status(200).json(response)
