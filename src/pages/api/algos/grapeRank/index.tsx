@@ -87,11 +87,13 @@ export default async function handler(
               
               const ratee:string = aRaters[y]
               const rating:string = oObserveeObject[ratee]
+              console.log(rating)
+              /*
               if (!oRatingsReverse[ratee]) {
                 oRatingsReverse[ratee] = {}
               }
               oRatingsReverse[ratee][raterId] = rating 
-              console.log(rating)
+              */
               /*
               // could do this format ...
               // if (rating == 'f') {
