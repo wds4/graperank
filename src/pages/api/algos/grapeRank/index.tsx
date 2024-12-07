@@ -58,7 +58,7 @@ export default async function handler(
         const oRatings:ObserverObjectV0Compact = {}
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
-          const observeeObject:ObserveeObjectV0Compact = oUserData.observeeObject
+          const observeeObject:ObserveeObjectV0Compact = JSON.parse(oUserData.observeeObject)
           const id:number = oUserData.id
           if (id < 5) {
             oRatings[id] = observeeObject
