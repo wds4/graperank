@@ -115,6 +115,7 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
+            oRatingsFoo,
             oRatingsForward,
             oRatingsReverse,
           }
