@@ -59,29 +59,28 @@ export default async function handler(
         // STEP 2
         const oRatingsReverse:ObserverObjectV0Compact = {}
         const oRatingsForward:ObserverObjectV0Compact = {}
-        const oRatingsFoo:{[key:string|number]:string} = {}
-        for (let x=0; x < aUsers0.length; x++) {
+        const oRatingsFoo:{[key:number]:string} = {}
+        for (let x=0; x < Math.min(aUsers0.length,5); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           // const oObserveeObject:ObserveeObjectV0Compact = JSON.parse(sObserveeObject)
           const raterId:number = oUserData.id
-          if (raterId < 5) {
-            // oRatingsForward[raterId] = oObserveeObject
-            // oRatingsForward[raterId] = sObserveeObject
-            // const sRaterId = JSON.stringify(raterId)
-            oRatingsFoo[raterId] = sObserveeObject
-            /*
-            const aRatees = Object.keys(oObserveeObject)
-            for (let y=0; y < aRatees.length; y++) {
-              const observee:observee = aRatees[y]
-              const rating = oObserveeObject[observee]
-              if (!oRatingsReverse[observee]) {
-                oRatingsReverse[observee] = {}
-              }
-              oRatingsReverse[observee][raterId] = rating
+          // oRatingsForward[raterId] = oObserveeObject
+          // oRatingsForward[raterId] = sObserveeObject
+          // const sRaterId = JSON.stringify(raterId)
+          oRatingsFoo[raterId] = sObserveeObject
+          /*
+          const aRatees = Object.keys(oObserveeObject)
+          for (let y=0; y < aRatees.length; y++) {
+            const observee:observee = aRatees[y]
+            const rating = oObserveeObject[observee]
+            if (!oRatingsReverse[observee]) {
+              oRatingsReverse[observee] = {}
             }
-            */
+            oRatingsReverse[observee][raterId] = rating
           }
+          */
+
         }
 
         /*
@@ -115,6 +114,7 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
+            typeof_oRatingsFoo_1: typeof oRatingsFoo[1],
             oRatingsFoo,
             oRatingsForward,
             oRatingsReverse,
