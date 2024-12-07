@@ -82,9 +82,9 @@ export default async function handler(
           if (isValidStringifiedObject(sObserveeObject)) {
             const oObserveeObject = JSON.parse(sObserveeObject)
             oRatingsForward[raterId] = oObserveeObject
-            /*
             const aRaters = Object.keys(oObserveeObject)
             for (let y=0; y < aRaters.length; y++) {
+              /*
               const ratee:string = aRaters[y]
               const rating:string = oObserveeObject[ratee]
               oRatingsReverse[ratee] = {}
@@ -97,9 +97,9 @@ export default async function handler(
               //   oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
               // }
               // ... OR this format: (rating equals 'f' or 'm')
-              oRatingsReverse[ratee][raterId] = rating          
+              oRatingsReverse[ratee][raterId] = rating      
+              */    
             }
-            */
           }
         }
 
@@ -132,8 +132,11 @@ export default async function handler(
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
 
-        const resultUsersChars = JSON.stringify(oRatingsReverse).length
-        const megabyteSize = resultUsersChars / 1048576
+        const reverseUsersChars = JSON.stringify(oRatingsReverse).length
+        const oRatingsReverseSizeInMB = reverseUsersChars / 1048576
+
+        const forwardUsersChars = JSON.stringify(oRatingsForward).length
+        const oRatingsForwardSizeInMB = forwardUsersChars / 1048576
 
         const response:ResponseData = {
           success: true,
@@ -150,7 +153,8 @@ export default async function handler(
             },
             referencePubkey: observer,
             numObserveeObjects: aUsers0.length,
-            oRatingsReverseSize: megabyteSize,
+            oRatingsReverseSizeInMB,
+            oRatingsForwardSizeInMB,
             response_put,
           }
         }
