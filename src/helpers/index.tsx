@@ -18,3 +18,17 @@ export const timeout = (ms:number) => new Promise((resolve) => setTimeout(resolv
 type Foo = {[key: string | number]: string | number | object }[]
 export const arrayToObject = (array:Foo, keyField:string) => 
     Object.fromEntries(array.map(item => [item[keyField], item]));
+
+export const isValidStringifiedObject = (sObj:string) => {
+    try {
+        const obj = JSON.parse(sObj)
+        if (obj) {
+            return true
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}

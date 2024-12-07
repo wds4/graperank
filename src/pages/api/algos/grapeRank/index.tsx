@@ -2,6 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
+import { isValidStringifiedObject } from '@/helpers'
 
 /*
 
@@ -65,7 +66,9 @@ export default async function handler(
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           const raterId:number = oUserData.id
-          oRatingsForward[raterId] = JSON.parse(sObserveeObject)
+          if (isValidStringifiedObject(sObserveeObject)) {
+            oRatingsForward[raterId] = JSON.parse(sObserveeObject)
+          }
         }
 
 
