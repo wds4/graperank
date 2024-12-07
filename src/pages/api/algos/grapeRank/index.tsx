@@ -2,7 +2,6 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
-import { ObserverObjectV0Compact } from '@/types/calculation'
 
 /*
 
@@ -57,11 +56,12 @@ export default async function handler(
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
         // STEP 2
-        const oRatingsReverse:ObserverObjectV0Compact = {}
+        // const oRatingsReverse:ObserverObjectV0Compact = {}
         // const oRatingsForward:ObserverObjectV0Compact = {}
         // const oRatingsFoo:{[key:number]:string} = {}
         const oRatingsForward:{[key:number]:object} = {}
-        for (let x=0; x < Math.min(aUsers0.length,5); x++) {
+        const oRatingsReverse:{[key:number]:object} = {}
+        for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           const raterId:number = oUserData.id
