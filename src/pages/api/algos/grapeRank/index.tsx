@@ -9,8 +9,8 @@ import { ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calcul
 Calculate PageRank scores for all pubkeys 
 - sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
   (maybe also add: where pagerank is above some threshold?)
-- combine results of sql1 into one large raw data object oRatingsPre of format: [context][rater][ratee] = [score, confidence]
-- process oRatingsPre into oRatings which is of format: [context][ratee][rater] = [score, confidence]
+- STEP 2: combine results of sql1 into one large raw data object oRatingsPre of format: [context][rater][ratee] = [score, confidence]
+- STEP 3: process oRatingsPre into oRatings which is of format: [context][ratee][rater] = [score, confidence]
 - feed oRatings into GrapeRank calculator
 
 NOT YET COMPLETED
@@ -55,14 +55,22 @@ export default async function handler(
         const sql0 = `SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
+
+        // STEP 2
         const oRatings:ObserverObjectV0Compact = {}
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
-          const observeeObject:ObserveeObjectV0Compact = JSON.parse(oUserData.observeeObject)
+          const observeeObject:ObserveeObjectV0Compact = oUserData.observeeObject
           const id:number = oUserData.id
           if (id < 5) {
             oRatings[id] = observeeObject
           }
+        }
+
+        // STEP 3
+        const aRaters = Object.keys(oRatings)
+        for (let a=0; a < aRaters.length; a++) {
+          // const oRaterData = aRaters[a]
         }
 
 
