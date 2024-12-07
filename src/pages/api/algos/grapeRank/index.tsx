@@ -61,7 +61,7 @@ export default async function handler(
         // const oRatingsForward:ObserverObjectV0Compact = {}
         // const oRatingsFoo:{[key:number]:string} = {}
         const oRatingsForward:{[key:number]:object} = {}
-        const oRatingsReverse:{[key:string]:{[key:number]:string}} = {}
+        const oRatingsReverse:{[key:string]:{[key:number]:[number,number]}} = {}
         for (let x=0; x < Math.min(aUsers0.length,3); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
@@ -75,16 +75,24 @@ export default async function handler(
               const rating:string = oObserveeObject[ratee]
               oRatingsReverse[ratee] = {}
               console.log(rating)
-              oRatingsReverse[ratee][raterId] = rating
+              // could do this format ...
+              if (rating == 'f') {
+                oRatingsReverse[ratee][raterId] = [followScore, followConfidence]
+              }
+              if (rating == 'm') {
+                oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
+              }    
+              // ... OR this format: (rating equals 'f' or 'm')
+              // oRatingsReverse[ratee][raterId] = rating          
             }
           }
         }
 
-
-
-
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
+
+        const resultUsersChars = JSON.stringify(oRatingsReverse).length
+        const megabyteSize = resultUsersChars / 1048576
 
         const response:ResponseData = {
           success: true,
@@ -99,10 +107,10 @@ export default async function handler(
               followConfidence,
               rigor,
             },
-            referencePubkey: observer, 
+            referencePubkey: observer,
             numObserveeObjects: aUsers0.length,
+            oRatingsReverseSize: megabyteSize,
             oRatingsReverse,
-            oRatingsForward,
           }
         }
         res.status(200).json(response)
