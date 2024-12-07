@@ -58,42 +58,15 @@ export default async function handler(
 
         // STEP 2
         const oRatingsReverse:ObserverObjectV0Compact = {}
-        const oRatingsForward:ObserverObjectV0Compact = {}
-        const oRatingsFoo:{[key:number]:string} = {}
-        const oRatingsFoo2:{[key:number]:object} = {}
-        for (let x=0; x < Math.min(aUsers0.length,1); x++) {
+        // const oRatingsForward:ObserverObjectV0Compact = {}
+        // const oRatingsFoo:{[key:number]:string} = {}
+        const oRatingsForward:{[key:number]:object} = {}
+        for (let x=0; x < Math.min(aUsers0.length,5); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
-          // const oObserveeObject:ObserveeObjectV0Compact = JSON.parse(sObserveeObject)
           const raterId:number = oUserData.id
-          // oRatingsForward[raterId] = oObserveeObject
-          // oRatingsForward[raterId] = sObserveeObject
-          // const sRaterId = JSON.stringify(raterId)
-          oRatingsFoo[raterId] = sObserveeObject
-          oRatingsFoo2[raterId] = JSON.parse(sObserveeObject)
-          /*
-          const aRatees = Object.keys(oObserveeObject)
-          for (let y=0; y < aRatees.length; y++) {
-            const observee:observee = aRatees[y]
-            const rating = oObserveeObject[observee]
-            if (!oRatingsReverse[observee]) {
-              oRatingsReverse[observee] = {}
-            }
-            oRatingsReverse[observee][raterId] = rating
-          }
-          */
-
+          oRatingsForward[raterId] = JSON.parse(sObserveeObject)
         }
-
-        /*
-        // STEP 3
-        const aRaters = Object.keys(oRatingsReverse)
-        for (let a=0; a < aRaters.length; a++) {
-          // const oRaterData = aRaters[a]
-        }
-          */
-
-
 
 
 
@@ -116,10 +89,6 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
-            typeof_oRatingsFoo_1: typeof oRatingsFoo[1],
-            jsonParse_oRatingsFoo_1: JSON.parse(oRatingsFoo[1]),
-            oRatingsFoo2,
-            oRatingsFoo,
             oRatingsForward,
             oRatingsReverse,
           }
