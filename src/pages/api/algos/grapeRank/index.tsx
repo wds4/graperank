@@ -61,7 +61,7 @@ export default async function handler(
         // const oRatingsForward:ObserverObjectV0Compact = {}
         // const oRatingsFoo:{[key:number]:string} = {}
         const oRatingsForward:{[key:number]:object} = {}
-        const oRatingsReverse:{[key:string]:object} = {}
+        const oRatingsReverse:{[key:string]:{[key:number]:string}} = {}
         for (let x=0; x < Math.min(aUsers0.length,3); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
@@ -72,10 +72,10 @@ export default async function handler(
             const aRaters = Object.keys(oObserveeObject)
             for (let y=0; y < aRaters.length; y++) {
               const ratee:string = aRaters[y]
-              const rating:[number,number] = oObserveeObject[ratee]
+              const rating:string = oObserveeObject[ratee]
               oRatingsReverse[ratee] = {}
               console.log(rating)
-              // oRatingsReverse[ratee][raterId] = rating
+              oRatingsReverse[ratee][raterId] = rating
             }
           }
         }
@@ -101,8 +101,8 @@ export default async function handler(
             },
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
-            oRatingsForward,
             oRatingsReverse,
+            oRatingsForward,
           }
         }
         res.status(200).json(response)
