@@ -60,7 +60,8 @@ export default async function handler(
         const oRatingsReverse:ObserverObjectV0Compact = {}
         const oRatingsForward:ObserverObjectV0Compact = {}
         const oRatingsFoo:{[key:number]:string} = {}
-        for (let x=0; x < Math.min(aUsers0.length,5); x++) {
+        const oRatingsFoo2:{[key:number]:object} = {}
+        for (let x=0; x < Math.min(aUsers0.length,1); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           // const oObserveeObject:ObserveeObjectV0Compact = JSON.parse(sObserveeObject)
@@ -69,6 +70,7 @@ export default async function handler(
           // oRatingsForward[raterId] = sObserveeObject
           // const sRaterId = JSON.stringify(raterId)
           oRatingsFoo[raterId] = sObserveeObject
+          oRatingsFoo2[raterId] = JSON.parse(sObserveeObject)
           /*
           const aRatees = Object.keys(oObserveeObject)
           for (let y=0; y < aRatees.length; y++) {
@@ -116,6 +118,7 @@ export default async function handler(
             numObserveeObjects: aUsers0.length,
             typeof_oRatingsFoo_1: typeof oRatingsFoo[1],
             jsonParse_oRatingsFoo_1: JSON.parse(oRatingsFoo[1]),
+            oRatingsFoo2,
             oRatingsFoo,
             oRatingsForward,
             oRatingsReverse,
