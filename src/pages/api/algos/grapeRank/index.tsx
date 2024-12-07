@@ -2,7 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
-import { ObserveeObjectV0Compact, ObserverObjectV0Compact } from '@/types/calculation'
+import { ObserverObjectV0Compact } from '@/types/calculation'
 
 /*
 
