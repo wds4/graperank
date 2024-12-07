@@ -84,11 +84,15 @@ export default async function handler(
             oRatingsForward[raterId] = oObserveeObject
             const aRaters = Object.keys(oObserveeObject)
             for (let y=0; y < aRaters.length; y++) {
-              /*
+              
               const ratee:string = aRaters[y]
               const rating:string = oObserveeObject[ratee]
-              oRatingsReverse[ratee] = {}
+              if (!oRatingsReverse[ratee]) {
+                oRatingsReverse[ratee] = {}
+              }
+              oRatingsReverse[ratee][raterId] = rating 
               console.log(rating)
+              /*
               // could do this format ...
               // if (rating == 'f') {
               //   oRatingsReverse[ratee][raterId] = [followScore, followConfidence]
@@ -97,8 +101,7 @@ export default async function handler(
               //   oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
               // }
               // ... OR this format: (rating equals 'f' or 'm')
-              oRatingsReverse[ratee][raterId] = rating      
-              */    
+              */
             }
           }
         }
