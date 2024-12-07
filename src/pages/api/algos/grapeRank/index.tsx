@@ -71,7 +71,8 @@ export default async function handler(
         // const oRatingsFoo:{[key:number]:string} = {}
         // type RatingsReverse = {[key:string]:{[key:number]:[number,number]}}
         type RatingsReverse = {[key:string]:{[key:number]:string}}
-        const oRatingsForward:{[key:number]:object} = {}
+        type RatingsForward = {[key:number]:object}
+        const oRatingsForward:RatingsForward = {}
         const oRatingsReverse:RatingsReverse = {}
         // for (let x=0; x < Math.min(aUsers0.length,100); x++) {
         for (let x=0; x < aUsers0.length; x++) {
@@ -81,6 +82,7 @@ export default async function handler(
           if (isValidStringifiedObject(sObserveeObject)) {
             const oObserveeObject = JSON.parse(sObserveeObject)
             oRatingsForward[raterId] = oObserveeObject
+            /*
             const aRaters = Object.keys(oObserveeObject)
             for (let y=0; y < aRaters.length; y++) {
               const ratee:string = aRaters[y]
@@ -88,31 +90,41 @@ export default async function handler(
               oRatingsReverse[ratee] = {}
               console.log(rating)
               // could do this format ...
-              /*
-              if (rating == 'f') {
-                oRatingsReverse[ratee][raterId] = [followScore, followConfidence]
-              }
-              if (rating == 'm') {
-                oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
-              }
-              */
+              // if (rating == 'f') {
+              //   oRatingsReverse[ratee][raterId] = [followScore, followConfidence]
+              // }
+              // if (rating == 'm') {
+              //   oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
+              // }
               // ... OR this format: (rating equals 'f' or 'm')
               oRatingsReverse[ratee][raterId] = rating          
             }
+            */
           }
         }
 
         /* PutObjectCommand */
-        const fooFxn = async (oRatingsReverse:RatingsReverse) => {
+        const fooFxn = async (oRatingsReverse:RatingsForward) => {
           const sOutput = JSON.stringify(oRatingsReverse)
           return sOutput
         }
 
         const params_put = {
           Bucket: 'grapevine-nostr-cache-bucket',
-          Key: `customerData/${observer}/ratingsTable`,
-          Body: await fooFxn(oRatingsReverse)
+          Key: `customerData/${observer}/forwardRatingsTable`,
+          Body: await fooFxn(oRatingsForward)
         }
+
+        // const fooFxn = async (oRatingsReverse:RatingsReverse) => {
+        //   const sOutput = JSON.stringify(oRatingsReverse)
+        //   return sOutput
+        // }
+
+        // const params_put = {
+        //   Bucket: 'grapevine-nostr-cache-bucket',
+        //   Key: `customerData/${observer}/ratingsTable`,
+        //   Body: await fooFxn(oRatingsReverse)
+        // }
 
         const command_put = new PutObjectCommand(params_put);
         const response_put = await client.send(command_put);
