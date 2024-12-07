@@ -61,13 +61,22 @@ export default async function handler(
         // const oRatingsForward:ObserverObjectV0Compact = {}
         // const oRatingsFoo:{[key:number]:string} = {}
         const oRatingsForward:{[key:number]:object} = {}
-        const oRatingsReverse:{[key:number]:object} = {}
-        for (let x=0; x < aUsers0.length; x++) {
+        const oRatingsReverse:{[key:string]:object} = {}
+        for (let x=0; x < Math.min(aUsers0.length,3); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           const raterId:number = oUserData.id
           if (isValidStringifiedObject(sObserveeObject)) {
-            oRatingsForward[raterId] = JSON.parse(sObserveeObject)
+            const oObserveeObject = JSON.parse(sObserveeObject)
+            oRatingsForward[raterId] = oObserveeObject
+            const aRaters = Object.keys(oObserveeObject)
+            for (let y=0; y < aRaters.length; y++) {
+              const ratee:string = aRaters[y]
+              const rating:[number,number] = oObserveeObject[ratee]
+              oRatingsReverse[ratee] = {}
+              console.log(rating)
+              // oRatingsReverse[ratee][raterId] = rating
+            }
           }
         }
 
