@@ -1,6 +1,7 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { ResponseData } from '@/types'
 import { isValidStringifiedObject } from '@/helpers'
 
@@ -20,6 +21,14 @@ e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
+
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
 
 const attenuationFactor = 0.85
 const muteScore = 0
@@ -62,7 +71,7 @@ export default async function handler(
         // const oRatingsFoo:{[key:number]:string} = {}
         const oRatingsForward:{[key:number]:object} = {}
         const oRatingsReverse:{[key:string]:{[key:number]:[number,number]}} = {}
-        for (let x=0; x < Math.min(aUsers0.length,3); x++) {
+        for (let x=0; x < Math.min(aUsers0.length,100); x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           const raterId:number = oUserData.id
@@ -88,6 +97,21 @@ export default async function handler(
           }
         }
 
+        /* PutObjectCommand */
+        const fooFxn = async (oRatingsReverse:{[key:string]:{[key:number]:[number,number]}}) => {
+          const sOutput = JSON.stringify(oRatingsReverse)
+          return sOutput
+        }
+
+        const params_put = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: `customerData/${observer}/ratingsTable`,
+          Body: await fooFxn(oRatingsReverse)
+        }
+
+        const command_put = new PutObjectCommand(params_put);
+        const response_put = await client.send(command_put);
+
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
 
@@ -110,6 +134,7 @@ export default async function handler(
             referencePubkey: observer,
             numObserveeObjects: aUsers0.length,
             oRatingsReverseSize: megabyteSize,
+            response_put,
             oRatingsReverse,
           }
         }
