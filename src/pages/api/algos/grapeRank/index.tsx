@@ -82,10 +82,10 @@ export default async function handler(
           if (isValidStringifiedObject(sObserveeObject)) {
             const oObserveeObject = JSON.parse(sObserveeObject)
             oRatingsForward[raterId] = oObserveeObject
-            const aRaters = Object.keys(oObserveeObject)
-            for (let y=0; y < aRaters.length; y++) {
+            const aRatees = Object.keys(oObserveeObject)
+            for (let y=0; y < Math.min(aRatees.length,10); y++) {
               
-              const ratee:string = aRaters[y]
+              const ratee:string = aRatees[y]
               const rating:string = oObserveeObject[ratee]
               console.log(rating)
               /*
