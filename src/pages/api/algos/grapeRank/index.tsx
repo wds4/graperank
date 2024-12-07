@@ -69,8 +69,10 @@ export default async function handler(
         // const oRatingsReverse:ObserverObjectV0Compact = {}
         // const oRatingsForward:ObserverObjectV0Compact = {}
         // const oRatingsFoo:{[key:number]:string} = {}
+        // type RatingsReverse = {[key:string]:{[key:number]:[number,number]}}
+        type RatingsReverse = {[key:string]:{[key:number]:string}}
         const oRatingsForward:{[key:number]:object} = {}
-        const oRatingsReverse:{[key:string]:{[key:number]:[number,number]}} = {}
+        const oRatingsReverse:RatingsReverse = {}
         // for (let x=0; x < Math.min(aUsers0.length,100); x++) {
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
@@ -86,20 +88,22 @@ export default async function handler(
               oRatingsReverse[ratee] = {}
               console.log(rating)
               // could do this format ...
+              /*
               if (rating == 'f') {
                 oRatingsReverse[ratee][raterId] = [followScore, followConfidence]
               }
               if (rating == 'm') {
                 oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
-              }    
+              }
+              */
               // ... OR this format: (rating equals 'f' or 'm')
-              // oRatingsReverse[ratee][raterId] = rating          
+              oRatingsReverse[ratee][raterId] = rating          
             }
           }
         }
 
         /* PutObjectCommand */
-        const fooFxn = async (oRatingsReverse:{[key:string]:{[key:number]:[number,number]}}) => {
+        const fooFxn = async (oRatingsReverse:RatingsReverse) => {
           const sOutput = JSON.stringify(oRatingsReverse)
           return sOutput
         }
