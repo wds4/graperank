@@ -115,6 +115,7 @@ export default async function handler(
             referencePubkey: observer, 
             numObserveeObjects: aUsers0.length,
             typeof_oRatingsFoo_1: typeof oRatingsFoo[1],
+            jsonParse_oRatingsFoo_1: JSON.parse(oRatingsFoo[1]),
             oRatingsFoo,
             oRatingsForward,
             oRatingsReverse,
