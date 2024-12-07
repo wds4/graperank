@@ -62,7 +62,7 @@ export default async function handler(
         // const oRatingsFoo:{[key:number]:string} = {}
         const oRatingsForward:{[key:number]:object} = {}
         const oRatingsReverse:{[key:number]:object} = {}
-        for (let x=0; x < Math.min(aUsers0.length,5); x++) {
+        for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
           const sObserveeObject:string = oUserData.observeeObject
           const raterId:number = oUserData.id
