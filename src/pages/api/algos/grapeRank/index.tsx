@@ -67,8 +67,8 @@ export default async function handler(
           if (raterId < 5) {
             oRatingsForward[raterId] = oObserveeObject
             const aRatees = Object.keys(oObserveeObject)
-            for (let x=0; x < aRatees.length; x++) {
-              const observee:observee = aRatees[x]
+            for (let y=0; y < aRatees.length; y++) {
+              const observee:observee = aRatees[y]
               const rating = oObserveeObject[observee]
               if (!oRatingsReverse[observee]) {
                 oRatingsReverse[observee] = {}
