@@ -116,14 +116,14 @@ export default async function handler(
 
       // from aFutureMutes and aCurrentMutes, calculate: aMutesToRemove and aMutesToAdd (in theory, should usually be just one change)
       const aMutesToAdd:string[] = [] // in aFutureMutes but not in aCurrentMutes
-      for (let z=0; z<aFutureMutes.length; z++) {
+      for (let z=0; z < aFutureMutes.length; z++) {
         const pk = aFutureMutes[z]
         if (!aCurrentMutes.includes(pk)) {
           aMutesToAdd.push(pk)
         }
       }
       const aMutesToRemove:string[] = [] // in aCurrentMutes but not in aFutureMutes
-      for (let z=0; z<aCurrentMutes.length; z++) {
+      for (let z=0; z < aCurrentMutes.length; z++) {
         const pk = aCurrentMutes[z]
         if (!aFutureMutes.includes(pk)) {
           aMutesToRemove.push(pk)

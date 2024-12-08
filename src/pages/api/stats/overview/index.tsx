@@ -199,7 +199,7 @@ export default async function handler(
         cronJob5b: {
           numUsersToProcess: aUsers5b.length,
           sql5b,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100',
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesAndFlagToUpRevObObj?n=10',
           description: '',
         },
         cronJob6: {

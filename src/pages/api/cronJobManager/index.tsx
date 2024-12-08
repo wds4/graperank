@@ -31,13 +31,14 @@ const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Ev
 const url3b = `https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10`
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
 const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj?n=5`
-const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100`
+const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesAndFlagToUpRevObObj?n=10`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true`
 
 // DEPRECATED
 // const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
 // const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
 // const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100` 
+// const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100`
 
 type ResponseData = {
   success: boolean,
@@ -114,7 +115,7 @@ export default async function handler(
 
     // if (aUsers6.length > 900) { url = url6 } // 900
     
-    // if (aUsers5b.length > 0) { url = url5b } // 100
+   
     if (aUsers4.length > 0) { url = url4 } // 1000
     if (aUsers3b.length > 0) { url = url3b } // 10
     if (aUsers3.length > 0) { url = url3 } // 10
@@ -122,6 +123,7 @@ export default async function handler(
     if (aEvents2b.length > 1000) { url = url2b } // 1000
     if (numEvents1 > 200) { url = url1 } // 200
     if (aUsers0.length > 300) { url = url0 } // 300
+    if (aUsers5b.length > 10) { url = url5b } // 10
     if (aUsers5.length > 5) { url = url5 } // 5
 
     console.log(`url: ${url}`)
