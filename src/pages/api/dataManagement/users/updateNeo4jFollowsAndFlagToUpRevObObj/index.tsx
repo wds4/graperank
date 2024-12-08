@@ -72,8 +72,6 @@ export default async function handler(
     const sql0 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 LIMIT ${numUsersToProcess}`
     const results0 = await connection.query(sql0);
     const aUsers = JSON.parse(JSON.stringify(results0[0]))
-    const aPubkeysDiscovered = []
-    const aCypherResults = []
     for (let x=0; x < aUsers.length; x++) {
       const oNextUser = aUsers[x]
       // get const pubkey_parent, const kind3EventId
@@ -105,11 +103,11 @@ export default async function handler(
         oKind3Event = JSON.parse(sKind3Event) 
       }
 
-      const created_at_newFollows = 0
+      let created_at_newFollows = 0
       // from kind3Event, calculate aFutureFollows
       const aFutureFollows = []
       if (validateEvent(oKind3Event)) {
-        const created_at_newFollows = oKind3Event.created_at
+        created_at_newFollows = oKind3Event.created_at
         const aTags = oKind3Event.tags
         for (let t=0; t < aTags.length; t++) {
           const aTag = aTags[t]
