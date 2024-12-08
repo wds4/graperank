@@ -135,7 +135,7 @@ export default async function handler(
         }
       }
 
-      aCypherResults.push({pubkey_parent, kind3EventId, oKind3Event, aCurrentFollows, aFutureFollows, aFollowsToAdd, aFollowsToRemove})
+      aCypherResults.push({pubkey_parent, created_at_newFollows, kind3EventId, oKind3Event, aCurrentFollows, aFutureFollows, aFollowsToAdd, aFollowsToRemove})
 /*
       // cypher1: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
       const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
