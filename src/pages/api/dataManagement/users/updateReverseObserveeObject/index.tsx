@@ -45,10 +45,10 @@ export default async function handler(
     database: process.env.AWS_MYSQL_DB,
   });
 
-  type PubkeyObj = { pubkey: string }
+  type PubkeyObj = { sqluserid: string }
 
   try {
-    const sql1 = ` SELECT pubkey FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL LIMIT ${numUsersToProcess} `
+    const sql1 = ` SELECT id, pubkey FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL LIMIT ${numUsersToProcess} `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
     const aCypherResults = []
@@ -59,8 +59,8 @@ export default async function handler(
       
       aCypherResults.push(pubkey_parent)
 
-      const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey LIMIT 1000`
-      const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey LIMIT 1000`
+      const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.sqluserid AS sqluserid LIMIT 1000`
+      const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.sqluserid AS sqluserid LIMIT 1000`
   
       aCypherResults.push(cypher1)
       aCypherResults.push(cypher2)
@@ -73,13 +73,13 @@ export default async function handler(
       const oReverseObserveeObject:{[key: string]: string} = {}
       for (let f=0; f < aFollows.length; f++) {
         const oFollow:PubkeyObj = aFollows[f]
-        const pk = oFollow.pubkey
-        oReverseObserveeObject[pk]='f'
+        const sqluserid = oFollow.sqluserid
+        oReverseObserveeObject[sqluserid]='f'
       }
       for (let m=0; m < aMutes.length; m++) {
         const oMute:PubkeyObj = aMutes[m]
-        const pk = oMute.pubkey
-        oReverseObserveeObject[pk]='m'
+        const sqluserid = oMute.sqluserid
+        oReverseObserveeObject[sqluserid]='m'
       }
       aCypherResults.push(oReverseObserveeObject)
 

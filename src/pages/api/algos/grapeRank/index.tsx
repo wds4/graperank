@@ -6,6 +6,16 @@ import { ResponseData } from '@/types'
 import { isValidStringifiedObject } from '@/helpers'
 
 /*
+This endpoint is likely to be deprecated or reworked in favor of:
+1. use neo4j to create reverseObserveeObject for each user and store in sql
+2. update reverseObserveeObject for a user each time a rating is added or deleted, using flag to id user
+3. create reverseRatingsObject from every reverseObserveeObject on the fly; should take about 10 seconds
+
+Rework this endpoint: start this endpoint at step 3 above
+
+
+
+
 
 Calculate PageRank scores for all pubkeys 
 - sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
