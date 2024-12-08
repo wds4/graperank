@@ -74,8 +74,8 @@ export default async function handler(
     WHERE n.pubkey='${observer}' AND m.pubkey='${observee}'
     RETURN length(p) as dos` 
 
-    const cypher1 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:FOLLOWS]-(m:NostrUser) ORDER BY m.pagerank RETURN m `
-    const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) ORDER BY m.pagerank RETURN m `
+    const cypher1 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:FOLLOWS]-(m:NostrUser) ORDER BY m.pagerank DESC RETURN m `
+    const cypher2 = `MATCH (n:NostrUser {pubkey: '${observee}'})<-[:MUTES]-(m:NostrUser) ORDER BY m.pagerank DESC RETURN m `
     try {
       const attenuationFactor = 0.8
       const followConfidence = 0.05
@@ -99,7 +99,7 @@ export default async function handler(
       if (kinds.includes(3)) {
         const result1 = await read(cypher1, {})
         const aFollowers = JSON.parse(JSON.stringify(result1))
-        for (let x=0; x < Math.min(aFollowers.length,2000); x++) {
+        for (let x=0; x < Math.min(aFollowers.length,1000); x++) {
           const oNextUserData = aFollowers[x]
           const pk = oNextUserData.m.properties.pubkey
           const pagerank = oNextUserData.m.properties.pagerank
