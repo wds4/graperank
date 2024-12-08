@@ -24,7 +24,9 @@ export default async function handler(
   try {
     const cypher1 = `LOAD CSV FROM 'https://graperank.tech/api/neo4j/generateCsv/fromEntireUsersSqlTable'
     AS row
-    MERGE (n:NostrUser {pubkey: row[1], sqluserid: row[2]})
+    MATCH (n:NostrUser {pubkey: row[1]})
+    SET n.sqluserid = row[2]
+    RETURN n
     `
     const cypher1_result = await write(cypher1, {})
     console.log(`result: ${JSON.stringify(cypher1_result)}`)
