@@ -44,7 +44,7 @@ export default async function handler(
     const cypher1 = `MATCH (n:NostrUser) RETURN n `
     const cypher1_result = await read(cypher1, {})
 
-    const sql_users_0 = `SELECT id FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL))`
+    const sql_users_0 = `SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0 = await connection.query(sql_users_0);
     const aUsers_0 = JSON.parse(JSON.stringify(results_sql_users_0[0]))
 
@@ -152,8 +152,8 @@ export default async function handler(
         },
         cronJob0: {
           numEvents: aUsers_0.length,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200',
-          description: 'need to create observeeObject file',
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
+          description: 'need to create reverseObserveeObject file',
         },
         cronJob1: {
           numEvents: numEvents1,
