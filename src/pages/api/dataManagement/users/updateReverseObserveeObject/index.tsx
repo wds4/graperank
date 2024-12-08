@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise'
 import { read } from '@/lib/neo4j'
 
 /*
-- sql1: select * from users where flaggedToUpdateReverseObserveeObject=1 LIMIT ${numUsersToProcess}
+- sql1: select * from users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL LIMIT ${numUsersToProcess}
 for each row:
   - get const pubkey_parent
   - cypher1, cypher2: get follows and mutes of pubkey_parent
@@ -49,9 +49,9 @@ export default async function handler(
     password: process.env.AWS_MYSQL_PWD,
     database: process.env.AWS_MYSQL_DB,
   });
-  
+
   try {
-    const sql1 = ` SELECT pubkey FROM users where flaggedToUpdateReverseObserveeObject=1 LIMIT ${numUsersToProcess}`
+    const sql1 = ` SELECT pubkey FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL LIMIT ${numUsersToProcess} `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
     const aCypherResults = []
@@ -74,11 +74,17 @@ export default async function handler(
       aCypherResults.push(result_follow)
       aCypherResults.push(result_mute)
 
-      // cleaning up 
       /*
-      const sql2 = ` UPDATE users SET flaggedToUpdateReverseObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
+      const sql2 = ` UPDATE users SET reverseObserveeObject='${sReverseObserveeObject}' WHERE pubkey='${pubkey_parent}' `
       const results2 = await connection.query(sql2);
       console.log(results2)
+      */
+
+      // cleaning up 
+      /*
+      const sql3 = ` UPDATE users SET flaggedToUpdateReverseObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
+      const results3 = await connection.query(sql3);
+      console.log(results3)
       */
     }
 
