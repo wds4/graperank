@@ -60,8 +60,8 @@ export default async function handler(
       
       aCypherResults.push(pubkey_parent)
 
-      const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.sqluserid AS sqluserid LIMIT 1000`
-      const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.sqluserid AS sqluserid LIMIT 1000`
+      const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.sqluserid AS sqluserid`
+      const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.sqluserid AS sqluserid`
   
       aCypherResults.push(cypher1)
       aCypherResults.push(cypher2)
