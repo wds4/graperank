@@ -8,8 +8,11 @@ import { convertInputToConfidence } from '@/helpers/grapevine'
 Endpoint as per Manime specs
 
 Given an observer and observee, this endpoint returns:
-- the DoS from the observer to the observee
-- all rators of the observee (depending on request), i.e.: all followers and muters (and reports when available)
+- cypher0: the DoS from the observer to the observee
+- all rators of the observee (depending on request), i.e.:
+  - cypher1: all followers
+  - cypher2: muters of this profile
+  - (all reports when available)
 
 TODO: read searchParams.kind which should be an array 
 current behaviour: does not read kind; assumes the default that requestor wants kinds 3 and 10000
@@ -20,14 +23,21 @@ observee: d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d // 3 
 observee: c06885ce21d132b3c29e74aea9f4c171a95b2ed56bafac58a5fbfc9bdc5fbb06 // 3 hops away
 observee: 1989034e56b8f606c724f45a12ce84a11841621aaf7182a1f6564380b9c4276b // 2 hops away
 observee: cbaa0c829ed322c1551cb6619b4c08b9a26ac97ffb4e959205eec78ee9313245 // 1 hop away
+
+WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
 
+WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=c06885ce21d132b3c29e74aea9f4c171a95b2ed56bafac58a5fbfc9bdc5fbb06
 
+NOT WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=1989034e56b8f606c724f45a12ce84a11841621aaf7182a1f6564380b9c4276b
 
+WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=cbaa0c829ed322c1551cb6619b4c08b9a26ac97ffb4e959205eec78ee9313245
 
+NOT WORKING:
+https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245
 */
  
 export default async function handler(
@@ -54,7 +64,11 @@ export default async function handler(
   }
   const observer = searchParams.observer
   const observee = searchParams.observee  
-  const kinds = [3, 10000] // TODO: read kinds from searchParams
+  let kinds = [3, 10000] // TODO: read kinds from searchParams
+  if (typeof searchParams.kinds == 'string') {
+    const sKinds = searchParams.kinds
+    kinds = JSON.parse(sKinds)
+  }
   if (typeof observer == 'string' && verifyPubkeyValidity(observer) && typeof observee == 'string' && verifyPubkeyValidity(observee)) {
     const cypher0 = `MATCH p = SHORTEST 1 (n:NostrUser)-[:FOLLOWS]->+(m:NostrUser)
     WHERE n.pubkey='${observer}' AND m.pubkey='${observee}'
