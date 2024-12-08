@@ -22,7 +22,7 @@ const params = {
 
 const command_s3 = new ListObjectsCommand(params);
 
-// const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
+
 const url0 = `https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300`
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
@@ -32,8 +32,11 @@ const url3b = `https://www.graperank.tech/api/dataManagement/users/processKind10
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
 const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100`
 const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100`
-// const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true`
+
+// DEPRECATED
+// const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
+// const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
 
 type ResponseData = {
   success: boolean,
@@ -109,8 +112,8 @@ export default async function handler(
     console.log(`closing connection: ${close_result}`)
 
     // if (aUsers6.length > 900) { url = url6 } // 900
-    if (aUsers5.length > 0) { url = url5 } // 100
-    if (aUsers5b.length > 0) { url = url5b } // 100
+    // if (aUsers5.length > 0) { url = url5 } // 100
+    // if (aUsers5b.length > 0) { url = url5b } // 100
     if (aUsers4.length > 0) { url = url4 } // 1000
     if (aUsers3b.length > 0) { url = url3b } // 10
     if (aEvents2.length > 0) { url = url2 } // 1000
