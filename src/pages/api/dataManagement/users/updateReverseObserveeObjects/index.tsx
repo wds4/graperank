@@ -18,9 +18,7 @@ for each row:
 
 usage:
 
-http://localhost:3000/api/dataManagement/users/updateReverseObserveeObject?n=1
-
-https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObject?n=1
+https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300
 
 TODO: get kind0 note from s3 if available and add user data to neo4j node 
 

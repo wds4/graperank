@@ -22,7 +22,8 @@ const params = {
 
 const command_s3 = new ListObjectsCommand(params);
 
-const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
+// const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
+const url0 = `https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300`
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
 const url2b = `https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000`
@@ -62,7 +63,13 @@ export default async function handler(
       numEvents1 = data_s3.Contents.length
     }
 
+    /*
     const sql0 = ` SELECT id FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL)) `
+    const results_sql0 = await connection.query(sql0);
+    const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
+    */
+
+    const sql0 = ` SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
     const results_sql0 = await connection.query(sql0);
     const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
@@ -109,7 +116,7 @@ export default async function handler(
     if (aEvents2.length > 0) { url = url2 } // 1000
     if (aEvents2b.length > 0) { url = url2b } // 1000
     if (numEvents1 > 0) { url = url1 } // 200
-    if (aUsers0.length > 0) { url = url0 } // 200
+    if (aUsers0.length > 0) { url = url0 } // 300
 
     console.log(`url: ${url}`)
     
@@ -123,7 +130,7 @@ export default async function handler(
         cronJob0: {
           numUsers: aUsers0.length,
           endpoint: url0,
-          description: 'need to create observeeObjects',
+          description: 'creating reverseObserveeObjects',
         },
         cronJob1: {
           numEvents: numEvents1,

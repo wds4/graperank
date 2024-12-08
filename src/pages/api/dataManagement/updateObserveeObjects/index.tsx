@@ -7,6 +7,9 @@ import { isValidPubkey } from '@/helpers/nip19'
 import { SqlIdsByPubkey } from '@/types'
 
 /*
+This endpoint is being deprecated, bc I have figured out how to create reverseObserveeObjects using neo4j, making it unnecessary to create observeeObjects
+
+
 - sql1: SELECT id, pubkey, kind3EventId, kind10000EventId FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL))
 - for each row:
   - define userId, userPubkey, kind3EventId, kind10000EventId
