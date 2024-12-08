@@ -56,6 +56,7 @@ export default async function handler(
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
       const pubkey_parent = oNextUser.pubkey
+      const id_parent = oNextUser.id
       
       aCypherResults.push(pubkey_parent)
 
@@ -74,27 +75,25 @@ export default async function handler(
       for (let f=0; f < aFollows.length; f++) {
         const oFollow:PubkeyObj = aFollows[f]
         const sqluserid = oFollow.sqluserid
-        oReverseObserveeObject[sqluserid]='f'
+        if (id_parent != sqluserid) {
+          oReverseObserveeObject[sqluserid]='f'
+        }
       }
       for (let m=0; m < aMutes.length; m++) {
         const oMute:PubkeyObj = aMutes[m]
         const sqluserid = oMute.sqluserid
-        oReverseObserveeObject[sqluserid]='m'
+        if (id_parent != sqluserid) {
+          oReverseObserveeObject[sqluserid]='m'
+        }
       }
       aCypherResults.push(oReverseObserveeObject)
 
-
       /*
-      const sql2 = ` UPDATE users SET reverseObserveeObject='${sReverseObserveeObject}' WHERE pubkey='${pubkey_parent}' `
+      const sReverseObserveeObject = JSON.stringify(oReverseObserveeObject)
+      // update reverseObserveeObject and do cleaning up 
+      const sql2 = ` UPDATE users SET reverseObserveeObject='${sReverseObserveeObject}', flaggedToUpdateReverseObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
       const results2 = await connection.query(sql2);
       console.log(results2)
-      */
-
-      // cleaning up 
-      /*
-      const sql3 = ` UPDATE users SET flaggedToUpdateReverseObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
-      const results3 = await connection.query(sql3);
-      console.log(results3)
       */
     }
 
