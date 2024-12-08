@@ -3,7 +3,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { validateEvent } from 'nostr-tools'
 import mysql from 'mysql2/promise'
 import { isValidPubkey } from '@/helpers/nip19'
-import { read, write } from '@/lib/neo4j'
+import { read } from '@/lib/neo4j'
 
 /*
 - sql0: select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 LIMIT ${numUsersToProcess}
@@ -14,20 +14,20 @@ for each row:
   - s3_1: get kind3Event using kind3EventId
   - from kind3Event, calculate aFutureFollows
   - from aFutureFollows and aCurrentFollows, calculate: aFollowsToRemove and aFollowsToAdd (in theory, should usually be just one change)
-  - cypher1: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
+  -* cypher1: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
   - for each pk in aFollowsToAdd:
     - get const pubkey_child
-    - cypher1: add node for pubkey_child if does not already exist
-    - cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child; include timestamp!
+    -* cypher1: add node for pubkey_child if does not already exist
+    -* cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child; include timestamp!
     - ???? sql1a_pre: INSERT IGNORE pubkey='${pubkey_child}' (TODO: need to add pubkey_child to sql table users if not already present ???) (maybe avoid since this will trigger AUTO_INCREMENT and row ought to be present already??)
-    - sql1a: UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}'
+    -* sql1a: UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}'
   - for each pk in aFollowsToRemove:
     - get const pubkey_child
-    - cypher3: remove edge FOLLOWS from pubkey_parent to pubkey_child
-    - sql1b: UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}'
+    -* cypher3: remove edge FOLLOWS from pubkey_parent to pubkey_child
+    -* sql1b: UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}'
 
   // cleaning up
-  - sqlc: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
+  -* sqlc: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
 
 usage:
 
@@ -72,6 +72,7 @@ export default async function handler(
     const sql0 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 LIMIT ${numUsersToProcess}`
     const results0 = await connection.query(sql0);
     const aUsers = JSON.parse(JSON.stringify(results0[0]))
+    const aCypherResults = []
     for (let x=0; x < aUsers.length; x++) {
       const oNextUser = aUsers[x]
       // get const pubkey_parent, const kind3EventId
@@ -119,14 +120,14 @@ export default async function handler(
       }
 
       // from aFutureFollows and aCurrentFollows, calculate: aFollowsToRemove and aFollowsToAdd (in theory, should usually be just one change)
-      const aFollowsToAdd = [] // in aFutureFollows but not in aCurrentFollows
+      const aFollowsToAdd:string[] = [] // in aFutureFollows but not in aCurrentFollows
       for (let z=0; z<aFutureFollows.length; z++) {
         const pk = aFutureFollows[z]
         if (!aCurrentFollows.includes(pk)) {
           aFollowsToAdd.push(pk)
         }
       }
-      const aFollowsToRemove = [] // in aCurrentFollows but not in aFutureFollows
+      const aFollowsToRemove:string[] = [] // in aCurrentFollows but not in aFutureFollows
       for (let z=0; z<aCurrentFollows.length; z++) {
         const pk = aCurrentFollows[z]
         if (!aFutureFollows.includes(pk)) {
@@ -134,6 +135,8 @@ export default async function handler(
         }
       }
 
+      aCypherResults.push({pubkey_parent, kind3EventId, oKind3Event, aCurrentFollows, aFutureFollows, aFollowsToAdd, aFollowsToRemove})
+/*
       // cypher1: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
       const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
       const cypher1_results = await write(cypher1, {})
@@ -182,8 +185,8 @@ export default async function handler(
       const sqlc = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
       const sqlc_results = await connection.query(sqlc);
       console.log(sqlc_results)
+*/
     }
-
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
     
@@ -191,7 +194,8 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj data:`,
       data: { 
-        numUsers: aUsers.length, 
+        numUsers: aUsers.length,
+        aCypherResults,
       }
     }
     res.status(200).json(response)
