@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { read } from '@/lib/neo4j'
+import { ResponseData } from '@/types';
 
 /*
 - sql1: select * from users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL LIMIT ${numUsersToProcess}
@@ -24,12 +25,6 @@ https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObject?
 TODO: get kind0 note from s3 if available and add user data to neo4j node 
 
 */
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
  
 export default async function handler(
   req: NextApiRequest,
@@ -50,6 +45,8 @@ export default async function handler(
     database: process.env.AWS_MYSQL_DB,
   });
 
+  type PubkeyObj = { pubkey: string }
+
   try {
     const sql1 = ` SELECT pubkey FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL LIMIT ${numUsersToProcess} `
     const results1 = await connection.query(sql1);
@@ -62,17 +59,30 @@ export default async function handler(
       
       aCypherResults.push(pubkey_parent)
 
-      const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey LIMIT 1000`
-      const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey LIMIT 1000`
+      const cypher1 = `MATCH (n:NostrUser)-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey LIMIT 1000`
+      const cypher2 = `MATCH (n:NostrUser)-[:MUTES]->(m:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey LIMIT 1000`
   
       aCypherResults.push(cypher1)
       aCypherResults.push(cypher2)
 
-      const result_follow = await read(cypher1, {})
-      const result_mute = await read(cypher2, {})
+      const aFollows:PubkeyObj[] = await read(cypher1, {})
+      const aMutes:PubkeyObj[] = await read(cypher2, {})
 
-      aCypherResults.push(result_follow)
-      aCypherResults.push(result_mute)
+      // aCypherResults.push(aFollows)
+      // aCypherResults.push(aMutes)
+      const oReverseObserveeObject:{[key: string]: string} = {}
+      for (let f=0; f < aFollows.length; f++) {
+        const oFollow:PubkeyObj = aFollows[f]
+        const pk = oFollow.pubkey
+        oReverseObserveeObject[pk]='f'
+      }
+      for (let m=0; m < aMutes.length; m++) {
+        const oMute:PubkeyObj = aMutes[m]
+        const pk = oMute.pubkey
+        oReverseObserveeObject[pk]='m'
+      }
+      aCypherResults.push(oReverseObserveeObject)
+
 
       /*
       const sql2 = ` UPDATE users SET reverseObserveeObject='${sReverseObserveeObject}' WHERE pubkey='${pubkey_parent}' `
@@ -93,6 +103,7 @@ export default async function handler(
 
     const response:ResponseData = {
       success: true,
+      exists: true,
       message: `api/dataManagement/users/updateReverseObserveeObject data:`,
       data: { 
         numUsers: aUsers.length, aCypherResults
