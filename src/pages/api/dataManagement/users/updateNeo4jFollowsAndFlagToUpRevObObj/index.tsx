@@ -167,7 +167,7 @@ export default async function handler(
         const pubkey_child = aFollowsToRemove[z]
 
         // cypher3: remove edge FOLLOWS from pubkey_parent to pubkey_child
-        const cypher3 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_child}'}) DELETE r `
+        const cypher3 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[r:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_child}'}) DELETE r `
         const cypher3_results = await write(cypher3, {})
         // console.log(typeof cypher3_results)
         aCypherResults.push({cypher3, cypher3_results})
