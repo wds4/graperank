@@ -3,7 +3,8 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { validateEvent } from 'nostr-tools'
 import mysql from 'mysql2/promise'
 import { isValidPubkey } from '@/helpers/nip19'
-import { read } from '@/lib/neo4j'
+import { read, write } from '@/lib/neo4j'
+import { ResponseData } from '@/types'
 
 /*
 - sql0: select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 LIMIT ${numUsersToProcess}
@@ -14,7 +15,7 @@ for each row:
   - s3_1: get kind3Event using kind3EventId
   - from kind3Event, calculate aFutureFollows
   - from aFutureFollows and aCurrentFollows, calculate: aFollowsToRemove and aFollowsToAdd (in theory, should usually be just one change)
-  -* cypher1: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
+  -* cypher0b: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
   - for each pk in aFollowsToAdd:
     - get const pubkey_child
     -* cypher1: add node for pubkey_child if does not already exist
@@ -42,12 +43,6 @@ const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 })
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
  
 export default async function handler(
   req: NextApiRequest,
@@ -136,12 +131,12 @@ export default async function handler(
       }
 
       aCypherResults.push({pubkey_parent, created_at_newFollows, kind3EventId, oKind3Event, aCurrentFollows, aFutureFollows, aFollowsToAdd, aFollowsToRemove})
-/*
-      // cypher1: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
-      const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
-      const cypher1_results = await write(cypher1, {})
-      console.log(typeof cypher1_results)
-      // aCypherResults.push({cypher0, cypher1_results})
+
+      // cypher0b: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
+      const cypher0b = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
+      const cypher0b_results = await write(cypher0b, {})
+      // console.log(typeof cypher0b_results)
+      aCypherResults.push({cypher0b, cypher0b_results})
 
       for (let z=0; z<aFollowsToAdd.length; z++) {
         // get const pubkey_child
@@ -149,20 +144,22 @@ export default async function handler(
         // cypher1: add node for pubkey_child if does not already exist
         const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_child}'}) RETURN n.pubkey AS pubkey `
         const cypher1_results = await write(cypher1, {})
-        console.log(typeof cypher1_results)
-        // aCypherResults.push({cypher1, cypher1_results})
+        // console.log(typeof cypher1_results)
+        aCypherResults.push({cypher1, cypher1_results})
 
         // cypher2: add edge FOLLOWS from pubkey_parent to pubkey_child; include timestamp!
         const cypher2 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'}), (m:NostrUser {pubkey: '${pubkey_child}'}) MERGE (n)-[r:FOLLOWS]->(m) SET r.timestamp=${created_at_newFollows} `
         const cypher2_results = await write(cypher2, {})
-        console.log(typeof cypher2_results)
-        // aCypherResults.push({cypher2, cypher2_results})
+        // console.log(typeof cypher2_results)
+        aCypherResults.push({cypher2, cypher2_results})
 
         // ???? sql1a_pre: INSERT IGNORE pubkey='${pubkey_child}' (TODO: need to add pubkey_child to sql table users if not already present ???) (maybe avoid since this will trigger AUTO_INCREMENT and row ought to be present already??)
+        
         // sql1a: UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}'
         const sqla = ` UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}' `
         const sqla_results = await connection.query(sqla);
-        console.log(typeof sqla_results)
+        // console.log(typeof sqla_results)
+        aCypherResults.push({sqla, sqla_results})
       }
 
       for (let z=0; z<aFollowsToRemove.length; z++) {
@@ -172,26 +169,29 @@ export default async function handler(
         // cypher3: remove edge FOLLOWS from pubkey_parent to pubkey_child
         const cypher3 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_child}'}) DELETE r `
         const cypher3_results = await write(cypher3, {})
-        console.log(typeof cypher3_results)
-        // aCypherResults.push({cypher3, cypher3_results})
+        // console.log(typeof cypher3_results)
+        aCypherResults.push({cypher3, cypher3_results})
 
         // sql1b: UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}'
         const sqlb = ` UPDATE users SET flaggedToUpdateReverseObserveeObject=1 WHERE pubkey='${pubkey_child}' `
         const sqlb_results = await connection.query(sqlb);
-        console.log(typeof sqlb_results)
+        // console.log(typeof sqlb_results)
+        aCypherResults.push({sqlb, sqlb_results})
       }
 
       // cleaning up; sqlc: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
       const sqlc = ` UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey='${pubkey_parent}' `
       const sqlc_results = await connection.query(sqlc);
-      console.log(sqlc_results)
-*/
+      // console.log(sqlc_results)
+      aCypherResults.push({sqlc, sqlc_results})
+
     }
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
     
     const response:ResponseData = {
       success: true,
+      exists: true,
       message: `api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj data:`,
       data: { 
         numUsers: aUsers.length,
