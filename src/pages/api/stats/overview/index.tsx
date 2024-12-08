@@ -193,7 +193,7 @@ export default async function handler(
         cronJob5: {
           numUsersToProcess: aUsers5.length,
           sql5,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100',
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj?n=5',
           description: '',
         },
         cronJob5b: {
