@@ -46,17 +46,18 @@ export default async function handler(
   });
 
   try {
-    const sql1 = ` SELECT * FROM users where flaggedToUpdateNeo4jNode=1 `
+    const sql1 = ` SELECT id, pubkey FROM users where flaggedToUpdateNeo4jNode=1 `
     const results1 = await connection.query(sql1);
     const aUsers = JSON.parse(JSON.stringify(results1[0]))
     const aCypherResults = []
 
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
+      const sqluserid_parent = oNextUser.id
       const pubkey_parent = oNextUser.pubkey
 
       // cypher1: add node pubkey_parent if not already exists
-      const cypher1 = await write(`MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `, {})
+      const cypher1 = await write(`MERGE (n:NostrUser {pubkey: '${pubkey_parent}', sqluserid: ${sqluserid_parent}}) RETURN n.pubkey AS pubkey `, {})
       console.log(cypher1)
       aCypherResults.push({cypher1})
 
