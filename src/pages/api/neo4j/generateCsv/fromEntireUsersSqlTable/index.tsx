@@ -12,7 +12,6 @@ to access:
 
 https://graperank.tech/api/neo4j/generateCsv/fromEntireUsersSqlTable
 
-
 /*
 const testCsv2 = `1,1,abcde12345
 2,2,...
