@@ -6,6 +6,10 @@ import { write } from '@/lib/neo4j'
 - select * from users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 (wait until parent node is properly updated)
 for each row:
   - get const pubkey_parent, const kind3EventId
+  - get aFutureFollows, all FUTURE follows from kind3Event
+  - get aOldFollows, all CURRENT follows in neo4j of pubkey_parent (every node pubkey_parent currently follows)
+    cypher0:
+  - compare aFutureFollows and aOldFollows to determine which pubkeys must be followed and which unfollowed, and for them set flaggedToUpdateReverseObserveeObject=1 in sql users
   - cypher1: access https://graperank.tech/api/neo4j/generateCsv/fromSingleKind3EventId?kind3EventId=... and execute via csv import
 
   // TODO: anything else need doing right here ????
@@ -14,8 +18,6 @@ for each row:
   - sql2: UPDATE users SET flaggedToUpdateNeo4jFollows = 0 WHERE pubkey=pubkey_parent
 
 usage:
-
-http://localhost:3000/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
 
 https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=1
 

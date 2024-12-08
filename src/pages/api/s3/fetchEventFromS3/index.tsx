@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { validateEvent } from 'nostr-tools'
+import { NostrEvent } from '@nostr-dev-kit/ndk'
 
 /*
 usage:
@@ -48,7 +49,7 @@ export default async function handler(
         const data = await client.send(command);
         const sEvent = await data.Body?.transformToString()
 
-        let oEvent = ''
+        let oEvent = {}
         if (typeof sEvent == 'string') {
           oEvent = JSON.parse(sEvent) 
         }

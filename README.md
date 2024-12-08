@@ -347,6 +347,8 @@ produces: "graperank-nodejs": "github:Pretty-Good-Freedom-Tech/graperank-nodejs#
 - show compositeWoT as table for graperank app
 
 
+- when do cronJob5 or cronJob5b, make sure to flag flaggedToUpdateReverseObserveeObject=1, but only if rating is added or removed
+- go back to grapeRank endpoint
 
 
 
