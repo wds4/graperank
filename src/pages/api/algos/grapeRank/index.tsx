@@ -83,7 +83,7 @@ export default async function handler(
             const oObserveeObject = JSON.parse(sObserveeObject)
             oRatingsForward[raterId] = oObserveeObject
             const aRatees = Object.keys(oObserveeObject)
-            for (let y=0; y < Math.min(aRatees.length,100); y++) {
+            for (let y=0; y < Math.min(aRatees.length,10000); y++) {
               
               const ratee:string = aRatees[y]
               const rating:string = oObserveeObject[ratee]

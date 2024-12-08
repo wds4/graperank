@@ -44,6 +44,7 @@ export default async function handler(
       command2 += ` kind3EventId VARCHAR(255), `
       command2 += ` kind10000EventId VARCHAR(255), `
       command2 += ` observeeObject TEXT DEFAULT NULL, `
+      command2 += ` reverseObserveeObject TEXT DEFAULT NULL, `
       command2 += ` whenLastListened int, `
       command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedForKind10000EventProcessing INT NOT NULL DEFAULT 0, `
@@ -52,14 +53,24 @@ export default async function handler(
       command2 += ` flaggedToUpdateNeo4jMutes INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateNeo4jReports INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedToUpdateObserveeObject INT NOT NULL DEFAULT 0, `
+      command2 += ` flaggedToUpdateReverseObserveeObject INT NOT NULL DEFAULT 0, `
       command2 += ` whenRowAdded INT NOT NULL DEFAULT 0, `
       command2 += ` PRIMARY KEY (id) `
       command2 += ` ); `
       const results2 = await connection.query(command2);
       console.log(results2);
 
+// observeeObject: compact file of everyone rated by Alice
 // ALTER TABLE users ADD observeeObject TEXT DEFAULT NULL;
 // ALTER TABLE users ADD flaggedToUpdateObserveeObject INT NOT NULL DEFAULT 0;
+
+// 7 dec 2024: may deprecate observeeObject in favor of reverseObserveeObject
+// reverseObserveeObject: compact file of everyone who rates Alice
+// reverseObserveeObject is more useful than observeeObject bc reverseRatingsObject can be made quickly from all reverseObserveeObject
+// and reverseRatingsObject is ready to feed into calculator
+// flaggedToUpdateReverseObserveeObject is flagged whenever a rating (follow or mute) pointing TO a user is added or removed 
+// ALTER TABLE users ADD reverseObserveeObject TEXT DEFAULT NULL;
+// ALTER TABLE users ADD flaggedToUpdateReverseObserveeObject INT NOT NULL DEFAULT 0;
 
       const command3 = ` CREATE TABLE IF NOT EXISTS customers ( 
 id INT NOT NULL AUTO_INCREMENT, 
