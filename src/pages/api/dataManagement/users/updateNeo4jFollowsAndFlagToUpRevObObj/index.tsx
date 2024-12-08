@@ -64,7 +64,7 @@ export default async function handler(
   });
 
   try {
-    const sql0 = ` SELECT * FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 LIMIT ${numUsersToProcess}`
+    const sql0 = ` SELECT id, pubkey, kind3EventId FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0 LIMIT ${numUsersToProcess}`
     const results0 = await connection.query(sql0);
     const aUsers = JSON.parse(JSON.stringify(results0[0]))
     const aCypherResults = []
@@ -130,7 +130,8 @@ export default async function handler(
         }
       }
 
-      aCypherResults.push({pubkey_parent, created_at_newFollows, kind3EventId, oKind3Event, aCurrentFollows, aFutureFollows, aFollowsToAdd, aFollowsToRemove})
+      // aCypherResults.push({pubkey_parent, created_at_newFollows, kind3EventId, oKind3Event, aCurrentFollows, aFutureFollows, aFollowsToAdd, aFollowsToRemove})
+      aCypherResults.push({pubkey_parent, created_at_newFollows, kind3EventId, aFollowsToAdd, aFollowsToRemove})
 
       // cypher0b: add node for pubkey_parent if does not already exist (although in theory, it should already exist)
       const cypher0b = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) RETURN n.pubkey AS pubkey `
