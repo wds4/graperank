@@ -86,15 +86,13 @@ export default async function handler(
           oReverseObserveeObject[sqluserid]='m'
         }
       }
-      aCypherResults.push(oReverseObserveeObject)
+      // aCypherResults.push(oReverseObserveeObject)
 
-      /*
       const sReverseObserveeObject = JSON.stringify(oReverseObserveeObject)
       // update reverseObserveeObject and do cleaning up 
       const sql2 = ` UPDATE users SET reverseObserveeObject='${sReverseObserveeObject}', flaggedToUpdateReverseObserveeObject=0 WHERE pubkey='${pubkey_parent}' `
       const results2 = await connection.query(sql2);
-      console.log(results2)
-      */
+      console.log(typeof results2)
     }
 
     const close_result = await connection.end()
