@@ -16,13 +16,13 @@ Rework this endpoint; start this endpoint at step 3:
 3. create reverseRatingsObject by aggregating each reverseObserveeObject on the fly; should take about 10 seconds
 4. use reverseRatingsObject as input into 
 
-- STEP 1: sql1: SELECT id, pubkey, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NULL NOT NULL 
-- STEP 2: combine results of sql1 into one large raw data object oRatingsReverse of format: [context][ratee][rater] = [score, confidence]
+
+
 
 
 
 Calculate PageRank scores for all pubkeys 
-- STEP 1: sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
+- sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
   (maybe also add: where pagerank is above some threshold?)
 - STEP 2: combine results of sql1 into one large raw data object oRatingsForward of format: [context][rater][ratee] = [score, confidence]
 - STEP 3: process oRatingsForward into oRatings which is of format: [context][ratee][rater] = [score, confidence]
@@ -74,30 +74,87 @@ export default async function handler(
           password: process.env.AWS_MYSQL_PWD,
           database: process.env.AWS_MYSQL_DB,
         });
-
-        // STEP 1
-        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
+  
+        const sql0 = `SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
         // STEP 2
+        // const oRatingsReverse:ObserverObjectV0Compact = {}
+        // const oRatingsForward:ObserverObjectV0Compact = {}
+        // const oRatingsFoo:{[key:number]:string} = {}
+        // type RatingsReverse = {[key:string]:{[key:number]:[number,number]}}
         type RatingsReverse = {[key:string]:{[key:number]:string}}
+        type RatingsForward = {[key:number]:object}
+        const oRatingsForward:RatingsForward = {}
         const oRatingsReverse:RatingsReverse = {}
+        // for (let x=0; x < Math.min(aUsers0.length,100); x++) {
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
-          const sReverseObserveeObject:string = oUserData.reverseObserveeObject
+          const sObserveeObject:string = oUserData.observeeObject
           const raterId:number = oUserData.id
-          oRatingsReverse[raterId] = JSON.parse(sReverseObserveeObject)
+          if (isValidStringifiedObject(sObserveeObject)) {
+            const oObserveeObject = JSON.parse(sObserveeObject)
+            oRatingsForward[raterId] = oObserveeObject
+            const aRatees = Object.keys(oObserveeObject)
+            for (let y=0; y < Math.min(aRatees.length,10000); y++) {
+              
+              const ratee:string = aRatees[y]
+              const rating:string = oObserveeObject[ratee]
+              console.log(rating)
+
+              if (!oRatingsReverse[ratee]) {
+                oRatingsReverse[ratee] = {}
+              }
+              oRatingsReverse[ratee][raterId] = rating 
+              /*
+              // could do this format ...
+              // if (rating == 'f') {
+              //   oRatingsReverse[ratee][raterId] = [followScore, followConfidence]
+              // }
+              // if (rating == 'm') {
+              //   oRatingsReverse[ratee][raterId] = [muteScore, muteConfidence]
+              // }
+              // ... OR this format: (rating equals 'f' or 'm')
+              */
+            }
+          }
         }
 
+        /* PutObjectCommand */
+        const fooFxn = async (oRatingsReverse:RatingsForward) => {
+          const sOutput = JSON.stringify(oRatingsReverse)
+          return sOutput
+        }
 
+        const params_put = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: `customerData/${observer}/forwardRatingsTable`,
+          Body: await fooFxn(oRatingsForward)
+        }
 
+        // const fooFxn = async (oRatingsReverse:RatingsReverse) => {
+        //   const sOutput = JSON.stringify(oRatingsReverse)
+        //   return sOutput
+        // }
+
+        // const params_put = {
+        //   Bucket: 'grapevine-nostr-cache-bucket',
+        //   Key: `customerData/${observer}/ratingsTable`,
+        //   Body: await fooFxn(oRatingsReverse)
+        // }
+
+        const command_put = new PutObjectCommand(params_put);
+        const response_put = await client.send(command_put);
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
 
         const reverseUsersChars = JSON.stringify(oRatingsReverse).length
         const oRatingsReverseSizeInMB = reverseUsersChars / 1048576
+
+        const forwardUsersChars = JSON.stringify(oRatingsForward).length
+        const oRatingsForwardSizeInMB = forwardUsersChars / 1048576
 
         const response:ResponseData = {
           success: true,
@@ -115,6 +172,8 @@ export default async function handler(
             referencePubkey: observer,
             numObserveeObjects: aUsers0.length,
             oRatingsReverseSizeInMB,
+            oRatingsForwardSizeInMB,
+            response_put,
             oRatingsReverse,
           }
         }
