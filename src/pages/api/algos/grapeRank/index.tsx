@@ -1,9 +1,7 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { ResponseData } from '@/types'
-import { isValidStringifiedObject } from '@/helpers'
 
 /*
 This endpoint is likely to be deprecated or reworked in favor of:
@@ -35,14 +33,6 @@ e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
-
-const client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-  },
-})
 
 const attenuationFactor = 0.85
 const muteScore = 0
