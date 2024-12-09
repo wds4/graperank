@@ -2,7 +2,6 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
 import { ResponseData } from '@/types'
-import { convertInputToConfidence } from '@/helpers/grapevine' 
 
 /*
 Given an observer and observee, this endpoint returns:
