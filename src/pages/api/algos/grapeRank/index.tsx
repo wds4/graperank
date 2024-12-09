@@ -70,7 +70,8 @@ export default async function handler(
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
         let observerId = -1
         if (aUsers0[0]) {
-          observerId = aUsers0[0].id
+          const oObserverData = aUsers0[0]
+          observerId = oObserverData.id
         }
 
         const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
