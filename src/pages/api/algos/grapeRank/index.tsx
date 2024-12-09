@@ -92,7 +92,7 @@ export default async function handler(
           const oUserData = aUsers1[x]
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const observeeId:number = oUserData.id
-          if (x < 100) { aDataDepot.push({observeeId, sReverseObserveeObject}) }
+          // if (x < 100) { aDataDepot.push({observeeId, sReverseObserveeObject}) }
           if (isValidStringifiedObject(sReverseObserveeObject)) {
             oRatingsReverse[observeeId] = JSON.parse(sReverseObserveeObject)
             oScorecards[observeeId] = [0,0,0,0]
@@ -102,13 +102,16 @@ export default async function handler(
 
         // STEP 5
         // one round of GrapeRank
-/*
-        const attenuationFactor = 0.85
-        const rigor = 0.25
+
+        // const attenuationFactor = 0.85
+        // const rigor = 0.25
         for (let g=0; g < aUsers1.length; g++) {
           const observeeId = aUsers1[g]
           const oRR = oRatingsReverse[observeeId]
+          if (g < 10) {aDataDepot.push({observeeId, oRR})}
           const aRaters = Object.keys(oRR)
+          console.log(typeof aRaters)
+          /*
           let weights = 0
           let products = 0
           for (let r=0; r < aRaters.length; r++) {
@@ -136,8 +139,8 @@ export default async function handler(
           if (influence > 0) {
             aDataDepot.push({g, observeeId, influence})
           }
+            */
         }
-        */
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
 
