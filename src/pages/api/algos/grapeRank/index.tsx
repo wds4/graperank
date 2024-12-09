@@ -72,8 +72,8 @@ export default async function handler(
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
         
         // if (aUsers0[0]) {
-          const oObserverData = aUsers0[0]
-          observerId = oObserverData.id
+          // const oObserverData = aUsers0[0]
+          // observerId = oObserverData.id
         // }
 
         const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
@@ -152,6 +152,8 @@ export default async function handler(
           exists: true,
           message: `api/algos/grapeRank data:`,
           data: {
+            results_sql0,
+            aUsers0,
             observerId,
             referencePubkey: observer,
             numObserveeObjects: aUsers1.length,
