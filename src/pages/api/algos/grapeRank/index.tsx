@@ -2,6 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
+import { isValidStringifiedObject } from '@/helpers'
 
 /*
 This endpoint is likely to be deprecated or reworked in favor of:
@@ -73,7 +74,9 @@ export default async function handler(
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const raterId:number = oUserData.id
           aDataDepot.push({raterId, sReverseObserveeObject})
-          // oRatingsReverse[raterId] = JSON.parse(sReverseObserveeObject)
+          if (isValidStringifiedObject(sReverseObserveeObject)) {
+            oRatingsReverse[raterId] = JSON.parse(sReverseObserveeObject)
+          }
         }
         
 
