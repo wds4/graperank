@@ -65,7 +65,8 @@ export default async function handler(
         });
 
         // STEP 1
-        let observerId = 1
+        const observerId = 1
+        /*
         const sql0 = `SELECT id FROM users WHERE pubkey='${observer}'; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
@@ -74,6 +75,7 @@ export default async function handler(
           const oObserverData = aUsers0[0]
           observerId = oObserverData.id
         }
+        */
 
         const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
         const results_sql1 = await connection.query(sql1)
@@ -85,21 +87,21 @@ export default async function handler(
         const oRatingsReverse:RatingsReverse = {}
         // oScorecards: oScorecards[rateeId] = average, confidence; probably also average and input; keep all in array for convenience
         // observer is logged in user; context is notSpam;
-        const oScorecards:{[key:string]:[number,number,number,number]} = {} // influence, confidence, average, input
+        // const oScorecards:{[key:string]:[number,number,number,number]} = {} // influence, confidence, average, input
         
         // STEPs 3 and 4
-        const aDataDepot = []
+        // const aDataDepot = []
         for (let x=0; x < aUsers1.length; x++) {
           const oUserData = aUsers1[x]
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const observeeId:number = oUserData.id
-          aDataDepot.push({observeeId, sReverseObserveeObject})
+          // aDataDepot.push({observeeId, sReverseObserveeObject})
           if (isValidStringifiedObject(sReverseObserveeObject)) {
             oRatingsReverse[observeeId] = JSON.parse(sReverseObserveeObject)
-            oScorecards[observeeId] = [0,0,0,0]
+            // oScorecards[observeeId] = [0,0,0,0]
           }
         }
-        oScorecards[observerId] = [1,1,1,9999]
+        // oScorecards[observerId] = [1,1,1,9999]
 
         // STEP 5
         // one round of GrapeRank
@@ -151,10 +153,10 @@ export default async function handler(
           exists: true,
           message: `api/algos/grapeRank data:`,
           data: {
+            observerId,
             referencePubkey: observer,
             numObserveeObjects: aUsers1.length,
             oRatingsReverseSizeInMB,
-            aDataDepot,
           }
         }
         res.status(200).json(response)
