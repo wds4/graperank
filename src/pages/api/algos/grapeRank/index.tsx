@@ -65,10 +65,11 @@ export default async function handler(
         });
 
         // STEP 1
+        let observerId = 1
         const sql0 = `SELECT id FROM users WHERE pubkey='${observer}'; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
-        let observerId = -1
+        
         if (aUsers0[0]) {
           const oObserverData = aUsers0[0]
           observerId = oObserverData.id
@@ -77,7 +78,7 @@ export default async function handler(
         const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
         const results_sql1 = await connection.query(sql1)
         console.log(typeof results_sql1)
-        const aUsers1 = JSON.parse(JSON.stringify(results_sql0[1]))
+        const aUsers1 = JSON.parse(JSON.stringify(results_sql1[1]))
 
         // STEP 2
         type RatingsReverse = {[key:string]:{[key:string]:string}}
