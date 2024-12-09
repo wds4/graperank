@@ -65,7 +65,7 @@ export default async function handler(
         });
 
         // STEP 1
-        let observerId = -1
+        const observerId = -1
 
         const sql0 = `SELECT id, pubkey FROM users WHERE pubkey='${observer}'; `
         const results_sql0 = await connection.query(sql0);
