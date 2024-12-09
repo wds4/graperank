@@ -94,8 +94,11 @@ export default async function handler(
           const observeeId:number = oUserData.id
           // if (x < 100) { aDataDepot.push({observeeId, sReverseObserveeObject}) }
           if (isValidStringifiedObject(sReverseObserveeObject)) {
-            oRatingsReverse[observeeId] = JSON.parse(sReverseObserveeObject)
-            oScorecards[observeeId] = [0,0,0,0]
+            const oRR = JSON.parse(sReverseObserveeObject)
+            if (oRR) {
+              oRatingsReverse[observeeId] = oRR
+              oScorecards[observeeId] = [0,0,0,0]
+            }
           }
         }
         oScorecards[observerId] = [1,1,1,9999]
@@ -105,14 +108,17 @@ export default async function handler(
 
         // const attenuationFactor = 0.85
         // const rigor = 0.25
+        /*
         for (let z=0; z < Object.keys(oRatingsReverse).length; z++) {
           const observeeId = Object.keys(oRatingsReverse)[z]
           const oRR = oRatingsReverse[observeeId]
           if (z < 10) {aDataDepot.push({z, observeeId, oRR})}
         }
+          */
         for (let g=0; g < aUsers1.length; g++) {
           const oUserData = aUsers1[g]
           const observeeId = oUserData.id
+          
           const oRR = oRatingsReverse[observeeId]
           if (g < 10) {aDataDepot.push({g, observeeId, oRR})}
           // const aRaters = Object.keys(oRR)
