@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
 import { isValidStringifiedObject } from '@/helpers'
-import { convertInputToConfidence } from '@/helpers/grapevine'
+// import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
 This endpoint is likely to be deprecated or reworked in favor of:
