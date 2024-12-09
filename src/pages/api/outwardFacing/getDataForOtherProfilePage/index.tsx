@@ -30,14 +30,15 @@ https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer
 WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=c06885ce21d132b3c29e74aea9f4c171a95b2ed56bafac58a5fbfc9bdc5fbb06
 
-NOT WORKING
+WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=1989034e56b8f606c724f45a12ce84a11841621aaf7182a1f6564380b9c4276b
 
 WORKING
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=cbaa0c829ed322c1551cb6619b4c08b9a26ac97ffb4e959205eec78ee9313245
 
-NOT WORKING:
+WORKING:
 https://www.graperank.tech/api/outwardFacing/getDataForOtherProfilePage?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245
+
 */
  
 export default async function handler(
