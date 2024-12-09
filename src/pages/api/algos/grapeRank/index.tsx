@@ -152,6 +152,7 @@ export default async function handler(
           exists: true,
           message: `api/algos/grapeRank data:`,
           data: {
+            sql0,
             results_sql0,
             aUsers0,
             observerId,
