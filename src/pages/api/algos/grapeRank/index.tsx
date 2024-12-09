@@ -60,7 +60,7 @@ export default async function handler(
         });
 
         // STEP 1
-        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users AND reverseObserveeObject IS NOT NULL; `
+        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
