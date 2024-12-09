@@ -34,13 +34,6 @@ https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e
 
 */
 
-const attenuationFactor = 0.85
-const muteScore = 0
-const followScore = 1
-const muteConfidence = 0.1
-const followConfidence = 0.05
-const rigor = 0.25
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -66,19 +59,21 @@ export default async function handler(
         });
 
         // STEP 1
-        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
+        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users WHERE id < 200 AND reverseObserveeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
         // STEP 2
         type RatingsReverse = {[key:string]:{[key:number]:string}}
         const oRatingsReverse:RatingsReverse = {}
+        /*
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const raterId:number = oUserData.id
           oRatingsReverse[raterId] = JSON.parse(sReverseObserveeObject)
         }
+          */
 
 
 
@@ -94,14 +89,8 @@ export default async function handler(
           exists: true,
           message: `api/algos/grapeRank data:`,
           data: {
-            grapeRank: {
-              attenuationFactor,
-              muteScore,
-              followScore,
-              muteConfidence,
-              followConfidence,
-              rigor,
-            },
+            results_sql0,
+            aUsers0,
             referencePubkey: observer,
             numObserveeObjects: aUsers0.length,
             oRatingsReverseSizeInMB,
