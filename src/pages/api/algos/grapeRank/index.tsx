@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
 import { isValidStringifiedObject } from '@/helpers'
-// import { convertInputToConfidence } from '@/helpers/grapevine'
+import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
 This endpoint is likely to be deprecated or reworked in favor of:
@@ -78,7 +78,7 @@ export default async function handler(
         const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
         const results_sql1 = await connection.query(sql1)
         console.log(typeof results_sql1)
-        const aUsers1 = JSON.parse(JSON.stringify(results_sql1[1]))
+        const aUsers1 = JSON.parse(JSON.stringify(results_sql1[0]))
 
         // STEP 2
         type RatingsReverse = {[key:string]:{[key:string]:string}}
@@ -93,9 +93,9 @@ export default async function handler(
           const oUserData = aUsers1[x]
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const observeeId:number = oUserData.id
-          aDataDepot.push({observeeId, sReverseObserveeObject})
+          // aDataDepot.push({observeeId, sReverseObserveeObject})
           if (isValidStringifiedObject(sReverseObserveeObject)) {
-            // oRatingsReverse[observeeId] = JSON.parse(sReverseObserveeObject)
+            oRatingsReverse[observeeId] = JSON.parse(sReverseObserveeObject)
             oScorecards[observeeId] = [0,0,0,0]
           }
         }
@@ -103,7 +103,7 @@ export default async function handler(
 
         // STEP 5
         // one round of GrapeRank
-        /*
+
         const attenuationFactor = 0.85
         const rigor = 0.25
         for (let g=0; g < aUsers1.length; g++) {
@@ -138,7 +138,6 @@ export default async function handler(
             aDataDepot.push({g, observeeId, influence})
           }
         }
-        */
         
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
