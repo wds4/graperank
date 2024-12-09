@@ -59,7 +59,7 @@ export default async function handler(
         });
 
         // STEP 1
-        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users WHERE id < 20 AND reverseObserveeObject IS NOT NULL; `
+        const sql0 = `SELECT id, pubkey, reverseObserveeObject FROM users WHERE id < 10 AND reverseObserveeObject IS NOT NULL; `
         const results_sql0 = await connection.query(sql0);
         const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
 
@@ -67,11 +67,13 @@ export default async function handler(
         type RatingsReverse = {[key:string]:{[key:string]:string}}
         const oRatingsReverse:RatingsReverse = {}
         
+        const aDataDepot = []
         for (let x=0; x < aUsers0.length; x++) {
           const oUserData = aUsers0[x]
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const raterId:number = oUserData.id
-          oRatingsReverse[raterId] = JSON.parse(sReverseObserveeObject)
+          aDataDepot.push({raterId, sReverseObserveeObject})
+          // oRatingsReverse[raterId] = JSON.parse(sReverseObserveeObject)
         }
         
 
@@ -90,6 +92,7 @@ export default async function handler(
           message: `api/algos/grapeRank data:`,
           data: {
             results_sql0,
+            aDataDepot,
             aUsers0,
             referencePubkey: observer,
             numObserveeObjects: aUsers0.length,
