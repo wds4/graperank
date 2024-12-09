@@ -28,16 +28,17 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:FOLLOWS]-(m:NostrUser) RETURN count(m) ` // cypher command 
+      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:FOLLOWS]-(m:NostrUser) RETURN count(m) as numFollowers ` // cypher command 
       try {
-        const result1 = await read(cypher1, {})
-
+        const result1  = await read(cypher1, {})
+        const aResult1 = JSON.parse(JSON.stringify(result1))
+        const numFollowers = aResult1.numFollowers.low
         const response:ResponseData = {
           success: true,
           exists: true,
           message: `api/outwardFacing/singlePubkey/numFollowers data:`,
           data: {
-            pubkey1, cypher1, result1
+            numFollowers, pubkey1, cypher1, result1
           }
         }
         res.status(200).json(response)
