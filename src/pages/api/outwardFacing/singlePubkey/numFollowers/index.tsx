@@ -32,7 +32,7 @@ export default async function handler(
       try {
         const result1  = await read(cypher1, {})
         const aResult1 = JSON.parse(JSON.stringify(result1))
-        const numFollowers = aResult1.numFollowers.low
+        const numFollowers = aResult1[0].numFollowers.low
         const response:ResponseData = {
           success: true,
           exists: true,
