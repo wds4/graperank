@@ -162,7 +162,7 @@ export default async function handler(
         const response:ResponseData = {
           success: true,
           exists: true,
-          message: `api/algos/grapeRank data:`,
+          message: `api/algos/grapeRank data`,
           data: {
             aDataDepot,
             observerId,
