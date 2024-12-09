@@ -106,11 +106,12 @@ export default async function handler(
         // const attenuationFactor = 0.85
         // const rigor = 0.25
         for (let g=0; g < aUsers1.length; g++) {
-          const observeeId = aUsers1[g]
+          const oUserData = aUsers1[g]
+          const observeeId = oUserData.id
           const oRR = oRatingsReverse[observeeId]
           if (g < 10) {aDataDepot.push({observeeId, oRR})}
-          const aRaters = Object.keys(oRR)
-          console.log(typeof aRaters)
+          // const aRaters = Object.keys(oRR)
+          // console.log(typeof aRaters)
           /*
           let weights = 0
           let products = 0
