@@ -161,7 +161,7 @@ export default async function handler(
           oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
           aDataDepot.push({numIterations,changeSquaredSum})
           numIterations++
-          if (numIterations > 6) {
+          if (numIterations > 9) {
             continueIterating = false
           }
         } while (continueIterating)
