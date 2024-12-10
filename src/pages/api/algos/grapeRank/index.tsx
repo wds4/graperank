@@ -98,7 +98,7 @@ export default async function handler(
             const raterId = aRaters[r]
             oScorecards[raterId] = [0,0,0,0]
           }
-          if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
+          // if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
         }
         oScorecards[observerId] = [1,1,1,9999]
 
@@ -136,7 +136,7 @@ export default async function handler(
           const confidence = convertInputToConfidence(weights,rigor)
           const influence = average * confidence
           oScorecards[observeeId] = [influence, confidence, average, weights]
-          if (influence > 0) {
+          if (g < 100) {
             aDataDepot.push({g, observeeId, influence})
           }
         }
