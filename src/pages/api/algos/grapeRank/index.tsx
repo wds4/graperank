@@ -92,7 +92,7 @@ export default async function handler(
           const oUserData = aUsers1[x]
           const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const observeeId:number = oUserData.id
-          // if (x < 100) { aDataDepot.push({observeeId, sReverseObserveeObject}) }
+          if (x < 100) { aDataDepot.push({observeeId, sReverseObserveeObject}) }
           if (isValidStringifiedObject(sReverseObserveeObject)) {
             const oRR = JSON.parse(sReverseObserveeObject)
             if (oRR) {
@@ -120,7 +120,7 @@ export default async function handler(
           const observeeId = oUserData.id
           
           const oRR = oRatingsReverse[observeeId]
-          if (g < 10) {aDataDepot.push({g, observeeId, oRR})}
+          // if (g < 10) {aDataDepot.push({g, observeeId, oRR})}
           // const aRaters = Object.keys(oRR)
           // console.log(typeof aRaters)
           /*
