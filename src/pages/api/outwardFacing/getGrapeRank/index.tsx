@@ -4,6 +4,8 @@ import { GrapeRank, ResponseData, Scorecards } from '@/types'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 
 /*
+TODO: error handling (if data not present)
+
 Given an observer and observee, this endpoint returns the GrapeRank score of the observee, if it has been calculated for the observer.
 If not, return exists: false.
 
@@ -111,11 +113,12 @@ export default async function handler(
         const oScorecards:Scorecards = oGrapeRank.data.scorecards
         const aGrapeRank = Object.keys(oScorecards)
         if (aGrapeRank.includes(observeeId)) {
+          
           oScorecard = {
-            influence: 1,
-            average: 1,
-            confidence: 1,
-            input: 1,
+            influence: oScorecards[observeeId][0],
+            average: oScorecards[observeeId][2],
+            confidence: oScorecards[observeeId][1],
+            input: oScorecards[observeeId][3],
           }
         } else {
           oScorecard = {
@@ -125,15 +128,7 @@ export default async function handler(
             input: 2,
           }
         }
-        // TODO: finish extracting grapeRank scores from S3
-
       }
-
-
-
-      
-
-
 
       const response:ResponseData = {
         success: true,
