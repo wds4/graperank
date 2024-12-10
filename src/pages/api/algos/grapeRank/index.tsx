@@ -46,6 +46,7 @@ type Scorecards = {[key:string]:[number,number,number,number]}
 const attenuationFactor = 0.85
 const rigor = 0.25
 
+let changeSquaredSum = 0
 const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
   const oScorecardsOut:Scorecards = JSON.parse(JSON.stringify(oScorecardsIn))
   for (let g=0; g < aObservees.length; g++) {
@@ -55,6 +56,7 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
     const aRaters = Object.keys(oReverseObserveeObject)
     let weights = 0
     let products = 0
+    changeSquaredSum = 0
     for (let r=0; r < aRaters.length; r++) {
       const raterId = aRaters[r]
       const sRating = oReverseObserveeObject[raterId]
@@ -64,7 +66,7 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
         rating = 0
         ratingConfidence = 0.1
       }
-      const aRaterInfluence = oScorecardsOut[raterId][0]
+      const aRaterInfluence = oScorecardsIn[raterId][0]
       const weight = attenuationFactor * ratingConfidence * aRaterInfluence
       const product = weight * rating
       weights += weight 
@@ -77,6 +79,8 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
     const confidence = convertInputToConfidence(weights,rigor)
     const influence = average * confidence
     oScorecardsOut[observeeId] = [influence, confidence, average, weights]
+    const changeSquared = oScorecardsIn[observeeId][0] - influence
+    changeSquaredSum += changeSquared
   }
   return oScorecardsOut
 }
@@ -128,7 +132,7 @@ export default async function handler(
         let oScorecards:Scorecards = {} // influence, confidence, average, input
         
         // STEPs 3 and 4
-        // const aDataDepot = []
+        const aDataDepot = []
         for (let x=0; x < aObservees.length; x++) {
           const oObserveeData = aObservees[x]
           const observeeId:number = oObserveeData.id
@@ -151,6 +155,7 @@ export default async function handler(
         let numIterations = 0
         do {
           oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
+          aDataDepot.push(numIterations,changeSquaredSum)
           numIterations++
           if (numIterations > 3) {
             continueIterating = false
@@ -168,7 +173,7 @@ export default async function handler(
           exists: true,
           message: `api/algos/grapeRank data`,
           data: {
-            oScorecards,
+            aDataDepot,
             observerId,
             referencePubkey: observer,
             numObserveeObjects: aObservees.length,
