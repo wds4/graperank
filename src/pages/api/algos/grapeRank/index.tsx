@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
 // import { isValidStringifiedObject } from '@/helpers'
-// import { convertInputToConfidence } from '@/helpers/grapevine'
+import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
 This endpoint is likely to be deprecated or reworked in favor of:
@@ -94,47 +94,25 @@ export default async function handler(
           const oReverseObserveeObject = oUserData.reverseObserveeObject
           oRatingsReverse[observeeId] = oReverseObserveeObject
           oScorecards[observeeId] = [0,0,0,0]
-          if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
-          /*
-          const sReverseObserveeObject:string = oUserData.reverseObserveeObject
-          const 
-          if (isValidStringifiedObject(sReverseObserveeObject)) {
-            const oRR = JSON.parse(sReverseObserveeObject)
-            if (oRR) {
-              oRatingsReverse[observeeId] = oRR
-              oScorecards[observeeId] = [0,0,0,0]
-            }
-          }
-          */
+          // if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
         }
         oScorecards[observerId] = [1,1,1,9999]
 
         // STEP 5
         // one round of GrapeRank
 
-        // const attenuationFactor = 0.85
-        // const rigor = 0.25
-        /*
-        for (let z=0; z < Object.keys(oRatingsReverse).length; z++) {
-          const observeeId = Object.keys(oRatingsReverse)[z]
-          const oRR = oRatingsReverse[observeeId]
-          if (z < 10) {aDataDepot.push({z, observeeId, oRR})}
-        }
-          */
+        const attenuationFactor = 0.85
+        const rigor = 0.25
         for (let g=0; g < aUsers1.length; g++) {
           const oUserData = aUsers1[g]
           const observeeId = oUserData.id
-          
           const oReverseObserveeObject = oRatingsReverse[observeeId]
-          if (g < 5) {aDataDepot.push({g, observeeId, oReverseObserveeObject})}
-          // const aRaters = Object.keys(oRR)
-          // console.log(typeof aRaters)
-          /*
+          const aRaters = Object.keys(oReverseObserveeObject)
           let weights = 0
           let products = 0
           for (let r=0; r < aRaters.length; r++) {
             const raterId = aRaters[r]
-            const sRating = oRR[raterId]
+            const sRating = oReverseObserveeObject[raterId]
             let rating = 1
             let ratingConfidence = 0.05
             if (sRating == 'm') {
@@ -157,7 +135,6 @@ export default async function handler(
           if (influence > 0) {
             aDataDepot.push({g, observeeId, influence})
           }
-            */
         }
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
