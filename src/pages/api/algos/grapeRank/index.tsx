@@ -79,8 +79,12 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
     const confidence = convertInputToConfidence(weights,rigor)
     const influence = average * confidence
     oScorecardsOut[observeeId] = [influence, confidence, average, weights]
-    const changeSquared = oScorecardsIn[observeeId][0] - influence
-    changeSquaredSum += changeSquared
+    if (oScorecardsIn[observeeId]) {
+      const influenceChange = oScorecardsIn[observeeId][0] - influence
+      const changeSquared = influenceChange * influenceChange
+      changeSquaredSum += changeSquared
+    }
+    
   }
   return oScorecardsOut
 }
