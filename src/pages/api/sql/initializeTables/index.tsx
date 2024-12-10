@@ -44,7 +44,7 @@ export default async function handler(
       command2 += ` kind3EventId VARCHAR(255), `
       command2 += ` kind10000EventId VARCHAR(255), `
       command2 += ` observeeObject TEXT DEFAULT NULL, `
-      command2 += ` reverseObserveeObject TEXT DEFAULT NULL, `
+      command2 += ` reverseObserveeObject JSON DEFAULT NULL, `
       command2 += ` whenLastListened int, `
       command2 += ` flaggedForKind3EventProcessing INT NOT NULL DEFAULT 0, `
       command2 += ` flaggedForKind10000EventProcessing INT NOT NULL DEFAULT 0, `
@@ -69,7 +69,9 @@ export default async function handler(
 // reverseObserveeObject is more useful than observeeObject bc reverseRatingsObject can be made quickly from all reverseObserveeObject
 // and reverseRatingsObject is ready to feed into calculator
 // flaggedToUpdateReverseObserveeObject is flagged whenever a rating (follow or mute) pointing TO a user is added or removed 
-// ALTER TABLE users ADD reverseObserveeObject TEXT DEFAULT NULL;
+// ALTER TABLE users DROP COLUMN reverseObserveeObject;
+// ALTER TABLE users DROP COLUMN flaggedToUpdateReverseObserveeObject;
+// ALTER TABLE users ADD reverseObserveeObject JSON DEFAULT NULL;
 // ALTER TABLE users ADD flaggedToUpdateReverseObserveeObject INT NOT NULL DEFAULT 0;
 
       const command3 = ` CREATE TABLE IF NOT EXISTS customers ( 

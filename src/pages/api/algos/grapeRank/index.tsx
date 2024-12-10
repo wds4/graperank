@@ -2,7 +2,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
-import { isValidStringifiedObject } from '@/helpers'
+// import { isValidStringifiedObject } from '@/helpers'
 // import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
@@ -90,9 +90,14 @@ export default async function handler(
         const aDataDepot = []
         for (let x=0; x < aUsers1.length; x++) {
           const oUserData = aUsers1[x]
-          const sReverseObserveeObject:string = oUserData.reverseObserveeObject
           const observeeId:number = oUserData.id
-          if (x < 10) { aDataDepot.push({x, observeeId, sReverseObserveeObject}) }
+          const oReverseObserveeObject = oUserData.reverseObserveeObject
+          oRatingsReverse[observeeId] = oReverseObserveeObject
+          oScorecards[observeeId] = [0,0,0,0]
+          if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
+          /*
+          const sReverseObserveeObject:string = oUserData.reverseObserveeObject
+          const 
           if (isValidStringifiedObject(sReverseObserveeObject)) {
             const oRR = JSON.parse(sReverseObserveeObject)
             if (oRR) {
@@ -100,6 +105,7 @@ export default async function handler(
               oScorecards[observeeId] = [0,0,0,0]
             }
           }
+          */
         }
         oScorecards[observerId] = [1,1,1,9999]
 
@@ -119,8 +125,8 @@ export default async function handler(
           const oUserData = aUsers1[g]
           const observeeId = oUserData.id
           
-          const oRR = oRatingsReverse[observeeId]
-          if (g < 5) {aDataDepot.push({g, observeeId, oRR})}
+          const oReverseObserveeObject = oRatingsReverse[observeeId]
+          if (g < 5) {aDataDepot.push({g, observeeId, oReverseObserveeObject})}
           // const aRaters = Object.keys(oRR)
           // console.log(typeof aRaters)
           /*
