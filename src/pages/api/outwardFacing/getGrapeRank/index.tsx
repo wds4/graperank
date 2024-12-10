@@ -105,7 +105,7 @@ export default async function handler(
       let observeeId = 'foo'
       if (sGrapeRank && typeof sGrapeRank == 'string' && sLookupSqlIdsByPubkey && typeof sLookupSqlIdsByPubkey == 'string') {
         const oLookupSqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
-        observeeId = oLookupSqlIdsByPubkey[observee]
+        observeeId = JSON.stringify(oLookupSqlIdsByPubkey[observee])
 
         const oGrapeRank:GrapeRank = JSON.parse(sGrapeRank)
         const oScorecards:Scorecards = oGrapeRank.data.scorecards
