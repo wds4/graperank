@@ -74,7 +74,7 @@ export default async function handler(
         const oObserverData = aUsers0[0]
         observerId = oObserverData.id
 
-        const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE pubkey <> '${observer}' reverseObserveeObject IS NOT NULL; `
+        const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE pubkey <> '${observer}' AND reverseObserveeObject IS NOT NULL; `
         const results_sql1 = await connection.query(sql1)
         console.log(typeof results_sql1)
         const aObservees = JSON.parse(JSON.stringify(results_sql1[0]))
