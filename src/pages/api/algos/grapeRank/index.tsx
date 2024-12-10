@@ -48,8 +48,8 @@ const client = new S3Client({
 
 type RatingsReverse = {[key:string]:{[key:string]:string}}
 
-const attenuationFactor = 0.65
-const rigor = 0.6
+const attenuationFactor = 0.85
+const rigor = 0.25
 
 let changeSquaredSum = 0
 const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
