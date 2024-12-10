@@ -1,8 +1,8 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
-import { ResponseData } from '@/types'
-// import { isValidStringifiedObject } from '@/helpers'
+import { GrapeRank, ResponseData, Scorecards } from '@/types'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
@@ -40,8 +40,15 @@ https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e
 
 */
 
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
+
 type RatingsReverse = {[key:string]:{[key:string]:string}}
-type Scorecards = {[key:string]:[number,number,number,number]}
 
 const attenuationFactor = 0.85
 const rigor = 0.25
@@ -136,7 +143,6 @@ export default async function handler(
         let oScorecards:Scorecards = {} // influence, confidence, average, input
         
         // STEPs 3 and 4
-        const aDataDepot = []
         for (let x=0; x < aObservees.length; x++) {
           const oObserveeData = aObservees[x]
           const observeeId:number = oObserveeData.id
@@ -147,21 +153,24 @@ export default async function handler(
             const raterId = aRaters[r]
             oScorecards[raterId] = [0,0,0,0]
           }
-          // if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
         }
         // delete oRatingsReverse[observerId] // this ensures the scorecard of the seed user will not be overwritten in subsequent steps
         oScorecards[observerId] = [1,1,1,9999]
 
         // STEP 5
-        // one round of GrapeRank
+        // iterate through GrapeRank until max iterations or until convergence
 
         let continueIterating = true
         let numIterations = 0
+        const aConvergenceTracker:{}[] = []
         do {
           oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
-          aDataDepot.push({numIterations,changeSquaredSum})
+          aConvergenceTracker.push({numIterations,changeSquaredSum})
           numIterations++
-          if (numIterations > 9) {
+          if (numIterations > 10) {
+            continueIterating = false
+          }
+          if (changeSquaredSum < 0.0001 ) { // not sure what 
             continueIterating = false
           }
         } while (continueIterating)
@@ -172,16 +181,45 @@ export default async function handler(
         const reverseUsersChars = JSON.stringify(oRatingsReverse).length
         const oRatingsReverseSizeInMB = reverseUsersChars / 1048576
 
+        const currentTimestamp = Math.floor(Date.now() / 1000)
+
+        const grapeRankData:GrapeRank = {
+          metaData: {
+            whenLastUpdated: currentTimestamp,
+            referencePubkey: observer, 
+            aConvergenceTracker,
+          },
+          data: {
+            scorecards: oScorecards,
+          },
+        }
+
+        /* PutObjectCommand */
+        const fooFxn = async (grapeRankData:GrapeRank) => {
+          const sOutput = JSON.stringify(grapeRankData)
+          return sOutput
+        }
+
+        const params_put = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: `customerData/${observer}/graperank`,
+          Body: await fooFxn(grapeRankData)
+        }
+
+        const command_put = new PutObjectCommand(params_put);
+        const response_put = await client.send(command_put);
+
         const response:ResponseData = {
           success: true,
           exists: true,
           message: `api/algos/grapeRank data`,
           data: {
-            aDataDepot,
+            aConvergenceTracker,
             observerId,
             referencePubkey: observer,
             numObserveeObjects: aObservees.length,
             oRatingsReverseSizeInMB,
+            response_put,
           }
         }
         res.status(200).json(response)

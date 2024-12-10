@@ -59,3 +59,22 @@ export type PPR = {
 export type PubkeysBySqlId = {[key: number]: string}
 
 export type SqlIdsByPubkey = {[key: string]: number}
+
+// GrapeRank
+
+export type GrapeRankMetaData = {
+  whenLastUpdated: number,
+  referencePubkey: string,
+  aConvergenceTracker: {}[],
+}
+
+export type Scorecards = {[key:string]:[number,number,number,number]}
+
+type GrapeRankData = {
+  scorecards: Scorecards,
+}
+
+export type GrapeRank = {
+  metaData: GrapeRankMetaData,
+  data: GrapeRankData
+}
