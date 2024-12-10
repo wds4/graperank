@@ -40,6 +40,49 @@ https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e
 
 */
 
+type RatingsReverse = {[key:string]:{[key:string]:string}}
+type Scorecards = {[key:string]:[number,number,number,number]}
+
+const attenuationFactor = 0.85
+const rigor = 0.25
+
+const calculation = (oScorecards:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
+  for (let g=0; g < aObservees.length; g++) {
+    const oObserveeData:{id: string} = aObservees[g]
+    const observeeId = oObserveeData.id
+    const oReverseObserveeObject = oRatingsReverse[observeeId]
+    const aRaters = Object.keys(oReverseObserveeObject)
+    let weights = 0
+    let products = 0
+    for (let r=0; r < aRaters.length; r++) {
+      const raterId = aRaters[r]
+      const sRating = oReverseObserveeObject[raterId]
+      let rating = 1
+      let ratingConfidence = 0.05
+      if (sRating == 'm') {
+        rating = 0
+        ratingConfidence = 0.1
+      }
+      const aRaterInfluence = oScorecards[raterId][0]
+      const weight = attenuationFactor * ratingConfidence * aRaterInfluence
+      const product = weight * rating
+      weights += weight 
+      products += product
+    }
+    let average = 0
+    if (weights) {
+      average = products / weights
+    }
+    const confidence = convertInputToConfidence(weights,rigor)
+    const influence = average * confidence
+    oScorecards[observeeId] = [influence, confidence, average, weights]
+    if (g < 100) {
+      // aDataDepot.push({g, observeeId, influence})
+    }
+  }
+  return oScorecards
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -80,14 +123,14 @@ export default async function handler(
         const aObservees = JSON.parse(JSON.stringify(results_sql1[0]))
 
         // STEP 2
-        type RatingsReverse = {[key:string]:{[key:string]:string}}
+
         const oRatingsReverse:RatingsReverse = {}
         // oScorecards: oScorecards[rateeId] = average, confidence; probably also average and input; keep all in array for convenience
         // observer is logged in user; context is notSpam;
-        const oScorecards:{[key:string]:[number,number,number,number]} = {} // influence, confidence, average, input
+        let oScorecards:Scorecards = {} // influence, confidence, average, input
         
         // STEPs 3 and 4
-        const aDataDepot = []
+        // const aDataDepot = []
         for (let x=0; x < aObservees.length; x++) {
           const oObserveeData = aObservees[x]
           const observeeId:number = oObserveeData.id
@@ -106,41 +149,7 @@ export default async function handler(
         // STEP 5
         // one round of GrapeRank
 
-        const attenuationFactor = 0.85
-        const rigor = 0.25
-        for (let g=0; g < aObservees.length; g++) {
-          const oObserveeData = aObservees[g]
-          const observeeId = oObserveeData.id
-          const oReverseObserveeObject = oRatingsReverse[observeeId]
-          const aRaters = Object.keys(oReverseObserveeObject)
-          let weights = 0
-          let products = 0
-          for (let r=0; r < aRaters.length; r++) {
-            const raterId = aRaters[r]
-            const sRating = oReverseObserveeObject[raterId]
-            let rating = 1
-            let ratingConfidence = 0.05
-            if (sRating == 'm') {
-              rating = 0
-              ratingConfidence = 0.1
-            }
-            const aRaterInfluence = oScorecards[raterId][0]
-            const weight = attenuationFactor * ratingConfidence * aRaterInfluence
-            const product = weight * rating
-            weights += weight 
-            products += product
-          }
-          let average = 0
-          if (weights) {
-            average = products / weights
-          }
-          const confidence = convertInputToConfidence(weights,rigor)
-          const influence = average * confidence
-          oScorecards[observeeId] = [influence, confidence, average, weights]
-          if (g < 100) {
-            aDataDepot.push({g, observeeId, influence})
-          }
-        }
+        oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
@@ -153,7 +162,7 @@ export default async function handler(
           exists: true,
           message: `api/algos/grapeRank data`,
           data: {
-            aDataDepot,
+            oScorecards,
             observerId,
             referencePubkey: observer,
             numObserveeObjects: aObservees.length,
