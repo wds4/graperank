@@ -74,7 +74,7 @@ export default async function handler(
 
         const params_get3 = {
           Bucket: 'grapevine-nostr-cache-bucket',
-          Key: `customerData/${pubkey1}/grapeRank`,
+          Key: `customerData/${pubkey1}/graperank`,
         }
 
         const command_get0 = new GetObjectCommand(params_get0);
