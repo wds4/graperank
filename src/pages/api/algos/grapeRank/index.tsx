@@ -23,8 +23,6 @@ Rework this endpoint; start this endpoint at step 3:
 
 - STEP 2: combine results of sql1 into one large raw data object oRatingsReverse of format: [context][ratee][rater] = [score, confidence]
 
-
-
 Calculate PageRank scores for all pubkeys 
 - STEP 1: sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
   (maybe also add: where pagerank is above some threshold?)
@@ -109,6 +107,7 @@ export default async function handler(
     res.status(500).json(response)
   }
   if (searchParams.pubkey) {
+    const startingTimestamp = Math.floor(Date.now() / 1000)
     const observer = searchParams.pubkey
     if (typeof observer == 'string' && verifyPubkeyValidity(observer)) {
       try {
@@ -162,15 +161,19 @@ export default async function handler(
 
         let continueIterating = true
         let numIterations = 0
-        const aConvergenceTracker:{}[] = []
+        const aConvergenceTracker:{numIterations: number,changeSquaredSum: number}[] = []
         do {
           oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
           aConvergenceTracker.push({numIterations,changeSquaredSum})
           numIterations++
-          if (numIterations > 10) {
+          if (numIterations > 12) {
             continueIterating = false
           }
           if (changeSquaredSum < 0.0001 ) { // not sure what 
+            continueIterating = false
+          }
+          const currentTimestamp = Math.floor(Date.now() / 1000)
+          if (currentTimestamp - startingTimestamp > 50) {
             continueIterating = false
           }
         } while (continueIterating)
