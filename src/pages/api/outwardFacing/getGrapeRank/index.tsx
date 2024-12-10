@@ -102,9 +102,10 @@ export default async function handler(
 
       const sGrapeRank = await getGrapeRankIfAvailable(observer)
 
+      let observeeId = 'foo'
       if (sGrapeRank && typeof sGrapeRank == 'string' && sLookupSqlIdsByPubkey && typeof sLookupSqlIdsByPubkey == 'string') {
         const oLookupSqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
-        const observeeId = oLookupSqlIdsByPubkey[observee]
+        observeeId = oLookupSqlIdsByPubkey[observee]
 
         const oGrapeRank:GrapeRank = JSON.parse(sGrapeRank)
         const oScorecards:Scorecards = oGrapeRank.data.scorecards
@@ -139,7 +140,7 @@ export default async function handler(
         exists: true,
         message: `api/outwardFacing/getGrapeRank data:`,
         data: {
-          observer, observee, grapeRank: oScorecard,
+          observer, observee, observeeId, typeofObserveeId: typeof observeeId, grapeRank: oScorecard,
         }
       }
       res.status(200).json(response)
