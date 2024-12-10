@@ -112,18 +112,20 @@ export default async function handler(
           let products = 0
           for (let r=0; r < aRaters.length; r++) {
             const raterId = aRaters[r]
-            const sRating = oReverseObserveeObject[raterId]
-            let rating = 1
-            let ratingConfidence = 0.05
-            if (sRating == 'm') {
-              rating = 0
-              ratingConfidence = 0.1
+            if (oReverseObserveeObject[raterId]) {
+              const sRating = oReverseObserveeObject[raterId]
+              let rating = 1
+              let ratingConfidence = 0.05
+              if (sRating == 'm') {
+                rating = 0
+                ratingConfidence = 0.1
+              }
+              const aRaterInfluence = oScorecards[raterId][0]
+              const weight = attenuationFactor * ratingConfidence * aRaterInfluence
+              const product = weight * rating
+              weights += weight 
+              products += product
             }
-            const aRaterInfluence = oScorecards[raterId][0]
-            const weight = attenuationFactor * ratingConfidence * aRaterInfluence
-            const product = weight * rating
-            weights += weight 
-            products += product
           }
           let average = 0
           if (weights) {
