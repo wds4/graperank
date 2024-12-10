@@ -100,6 +100,7 @@ export default async function handler(
           }
           // if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
         }
+        delete oRatingsReverse[observerId] // this ensures the scorecard of the seed user will not be overwritten in subsequent steps
         oScorecards[observerId] = [1,1,1,9999]
 
         // STEP 5
