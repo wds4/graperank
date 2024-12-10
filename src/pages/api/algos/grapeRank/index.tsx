@@ -155,7 +155,7 @@ export default async function handler(
         let numIterations = 0
         do {
           oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
-          aDataDepot.push(numIterations,changeSquaredSum)
+          aDataDepot.push({numIterations,changeSquaredSum})
           numIterations++
           if (numIterations > 3) {
             continueIterating = false
