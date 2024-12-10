@@ -74,10 +74,10 @@ export default async function handler(
         const oObserverData = aUsers0[0]
         observerId = oObserverData.id
 
-        const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NOT NULL; `
+        const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE pubkey <> '${observer}' reverseObserveeObject IS NOT NULL; `
         const results_sql1 = await connection.query(sql1)
         console.log(typeof results_sql1)
-        const aUsers1 = JSON.parse(JSON.stringify(results_sql1[0]))
+        const aObservees = JSON.parse(JSON.stringify(results_sql1[0]))
 
         // STEP 2
         type RatingsReverse = {[key:string]:{[key:string]:string}}
@@ -88,10 +88,10 @@ export default async function handler(
         
         // STEPs 3 and 4
         const aDataDepot = []
-        for (let x=0; x < aUsers1.length; x++) {
-          const oUserData = aUsers1[x]
-          const observeeId:number = oUserData.id
-          const oReverseObserveeObject = oUserData.reverseObserveeObject
+        for (let x=0; x < aObservees.length; x++) {
+          const oObserveeData = aObservees[x]
+          const observeeId:number = oObserveeData.id
+          const oReverseObserveeObject = oObserveeData.reverseObserveeObject
           oRatingsReverse[observeeId] = oReverseObserveeObject
           const aRaters = Object.keys(oReverseObserveeObject)
           for (let r=0; r < aRaters.length; r++) {
@@ -100,7 +100,7 @@ export default async function handler(
           }
           // if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
         }
-        delete oRatingsReverse[observerId] // this ensures the scorecard of the seed user will not be overwritten in subsequent steps
+        // delete oRatingsReverse[observerId] // this ensures the scorecard of the seed user will not be overwritten in subsequent steps
         oScorecards[observerId] = [1,1,1,9999]
 
         // STEP 5
@@ -108,9 +108,9 @@ export default async function handler(
 
         const attenuationFactor = 0.85
         const rigor = 0.25
-        for (let g=0; g < aUsers1.length; g++) {
-          const oUserData = aUsers1[g]
-          const observeeId = oUserData.id
+        for (let g=0; g < aObservees.length; g++) {
+          const oObserveeData = aObservees[g]
+          const observeeId = oObserveeData.id
           const oReverseObserveeObject = oRatingsReverse[observeeId]
           const aRaters = Object.keys(oReverseObserveeObject)
           let weights = 0
@@ -156,7 +156,7 @@ export default async function handler(
             aDataDepot,
             observerId,
             referencePubkey: observer,
-            numObserveeObjects: aUsers1.length,
+            numObserveeObjects: aObservees.length,
             oRatingsReverseSizeInMB,
           }
         }
