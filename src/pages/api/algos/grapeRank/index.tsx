@@ -93,7 +93,11 @@ export default async function handler(
           const observeeId:number = oUserData.id
           const oReverseObserveeObject = oUserData.reverseObserveeObject
           oRatingsReverse[observeeId] = oReverseObserveeObject
-          oScorecards[observeeId] = [0,0,0,0]
+          const aRaters = Object.keys(oReverseObserveeObject)
+          for (let r=0; r < aRaters.length; r++) {
+            const raterId = aRaters[r]
+            oScorecards[raterId] = [0,0,0,0]
+          }
           if (x < 3) { aDataDepot.push({x, observeeId, oReverseObserveeObject}) }
         }
         oScorecards[observerId] = [1,1,1,9999]
