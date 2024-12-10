@@ -1,7 +1,7 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
-import { Dos, PPR, PprScore, PprScores, ResponseData } from '@/types'
+import { Dos, GrapeRank, PPR, PprScore, PprScores, ResponseData, Scorecards } from '@/types'
 
 /*
 usage:
@@ -57,6 +57,11 @@ export default async function handler(
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       try {
+        const params_get0 = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: `dataManagement/lookupPubkeysBySqlId`,
+        }
+
         const params_get1 = {
           Bucket: 'grapevine-nostr-cache-bucket',
           Key: `customerData/${pubkey1}/dos`,
@@ -67,6 +72,15 @@ export default async function handler(
           Key: `customerData/${pubkey1}/personalizedPageRank`,
         }
 
+        const params_get3 = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: `customerData/${pubkey1}/grapeRank`,
+        }
+
+        const command_get0 = new GetObjectCommand(params_get0);
+        const response_get0 = await client.send(command_get0);
+        const sLookupPubkeysBySqlId = await response_get0.Body?.transformToString()
+
         const command_get1 = new GetObjectCommand(params_get1);
         const response_get1 = await client.send(command_get1);
         const sDos = await response_get1.Body?.transformToString()
@@ -75,17 +89,26 @@ export default async function handler(
         const response_get2 = await client.send(command_get2);
         const sPPR = await response_get2.Body?.transformToString()
 
-        if (typeof sDos == 'string' && typeof sPPR == 'string') {
+        const command_get3 = new GetObjectCommand(params_get3);
+        const response_get3 = await client.send(command_get3);
+        const sGrapeRank = await response_get3.Body?.transformToString()
+
+        if (typeof sLookupPubkeysBySqlId == 'string' && typeof sDos == 'string' && typeof sPPR == 'string' && typeof sGrapeRank == 'string') {
+          const oLookupPubkeysBySqlId = JSON.parse(sLookupPubkeysBySqlId)
           const oDos:Dos = JSON.parse(sDos)
           const oPPR:PPR = JSON.parse(sPPR)
+          const oGrapeRank:GrapeRank = JSON.parse(sGrapeRank)
 
           const aPubkeysByHop = oDos.data.pubkeysByDoS
           // const aPubkeysByHop = Object.keys(oDos.data.pubkeysByDoS)
           const aPPR:PprScores = oPPR.data.scores
+          const oScorecards:Scorecards = oGrapeRank.data.scorecards
+          const aGrapeRank = Object.keys(oScorecards)
 
           const oPwotScores:PwotScores = {}
           const oFoo:{[key:string]: { dos: number, personalPageRank: number, grapeRank_average: number, grapeRank_confidence: number }} = {}
           
+          // dos 
           for (let hop=0; hop < aPubkeysByHop.length; hop++) {
             const aPubkeys = aPubkeysByHop[hop]
             for (let z=0; z < aPubkeys.length; z++) {
@@ -100,6 +123,7 @@ export default async function handler(
             }
           }
 
+          // personalized pageRank
           for (let x=0; x < aPPR.length; x++) {
             const oBar:PprScore = aPPR[x]
             const pk = oBar.pubkey
@@ -116,7 +140,24 @@ export default async function handler(
             }
           }
 
-          // TODO: add grapeRank scores
+          // grapeRank
+          for (let x=0; x < aGrapeRank.length; x++) {
+            const observeeId:string = aGrapeRank[x]
+            const observeePubkey =  oLookupPubkeysBySqlId[observeeId]
+            const average = oScorecards[observeeId][2]
+            const confidence = oScorecards[observeeId][1]
+            if (oFoo[observeePubkey]) {
+              oFoo[observeePubkey].grapeRank_average = average
+              oFoo[observeePubkey].grapeRank_confidence = confidence
+            } else {
+              oFoo[observeePubkey] = {
+                dos: 999,
+                personalPageRank: -1,
+                grapeRank_average: average,
+                grapeRank_confidence: confidence,
+              }
+            }
+          }
 
           const aFoo = Object.keys(oFoo)
           for (let a=0; a < aFoo.length; a++) {
