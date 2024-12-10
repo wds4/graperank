@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
 // import { isValidStringifiedObject } from '@/helpers'
-// import { convertInputToConfidence } from '@/helpers/grapevine'
+import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
 This endpoint is likely to be deprecated or reworked in favor of:
@@ -104,7 +104,7 @@ export default async function handler(
 
         // STEP 5
         // one round of GrapeRank
-/*
+
         const attenuationFactor = 0.85
         const rigor = 0.25
         for (let g=0; g < aUsers1.length; g++) {
@@ -116,20 +116,18 @@ export default async function handler(
           let products = 0
           for (let r=0; r < aRaters.length; r++) {
             const raterId = aRaters[r]
-            if (oReverseObserveeObject[raterId]) {
-              const sRating = oReverseObserveeObject[raterId]
-              let rating = 1
-              let ratingConfidence = 0.05
-              if (sRating == 'm') {
-                rating = 0
-                ratingConfidence = 0.1
-              }
-              const aRaterInfluence = oScorecards[raterId][0]
-              const weight = attenuationFactor * ratingConfidence * aRaterInfluence
-              const product = weight * rating
-              weights += weight 
-              products += product
+            const sRating = oReverseObserveeObject[raterId]
+            let rating = 1
+            let ratingConfidence = 0.05
+            if (sRating == 'm') {
+              rating = 0
+              ratingConfidence = 0.1
             }
+            const aRaterInfluence = oScorecards[raterId][0]
+            const weight = attenuationFactor * ratingConfidence * aRaterInfluence
+            const product = weight * rating
+            weights += weight 
+            products += product
           }
           let average = 0
           if (weights) {
@@ -142,7 +140,6 @@ export default async function handler(
             aDataDepot.push({g, observeeId, influence})
           }
         }
-          */
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
