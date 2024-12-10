@@ -46,7 +46,8 @@ type Scorecards = {[key:string]:[number,number,number,number]}
 const attenuationFactor = 0.85
 const rigor = 0.25
 
-const calculation = (oScorecards:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
+const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
+  const oScorecardsOut:Scorecards = JSON.parse(JSON.stringify(oScorecardsIn))
   for (let g=0; g < aObservees.length; g++) {
     const oObserveeData:{id: string} = aObservees[g]
     const observeeId = oObserveeData.id
@@ -63,7 +64,7 @@ const calculation = (oScorecards:Scorecards, aObservees:[], oRatingsReverse:Rati
         rating = 0
         ratingConfidence = 0.1
       }
-      const aRaterInfluence = oScorecards[raterId][0]
+      const aRaterInfluence = oScorecardsOut[raterId][0]
       const weight = attenuationFactor * ratingConfidence * aRaterInfluence
       const product = weight * rating
       weights += weight 
@@ -75,12 +76,9 @@ const calculation = (oScorecards:Scorecards, aObservees:[], oRatingsReverse:Rati
     }
     const confidence = convertInputToConfidence(weights,rigor)
     const influence = average * confidence
-    oScorecards[observeeId] = [influence, confidence, average, weights]
-    if (g < 100) {
-      // aDataDepot.push({g, observeeId, influence})
-    }
+    oScorecardsOut[observeeId] = [influence, confidence, average, weights]
   }
-  return oScorecards
+  return oScorecardsOut
 }
 
 export default async function handler(
@@ -149,7 +147,15 @@ export default async function handler(
         // STEP 5
         // one round of GrapeRank
 
-        oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
+        let continueIterating = true
+        let numIterations = 0
+        do {
+          oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
+          numIterations++
+          if (numIterations > 3) {
+            continueIterating = false
+          }
+        } while (continueIterating)
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
