@@ -49,6 +49,7 @@ const rigor = 0.25
 let changeSquaredSum = 0
 const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
   const oScorecardsOut:Scorecards = JSON.parse(JSON.stringify(oScorecardsIn))
+  changeSquaredSum = 0
   for (let g=0; g < aObservees.length; g++) {
     const oObserveeData:{id: string} = aObservees[g]
     const observeeId = oObserveeData.id
@@ -56,7 +57,6 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
     const aRaters = Object.keys(oReverseObserveeObject)
     let weights = 0
     let products = 0
-    changeSquaredSum = 0
     for (let r=0; r < aRaters.length; r++) {
       const raterId = aRaters[r]
       const sRating = oReverseObserveeObject[raterId]
