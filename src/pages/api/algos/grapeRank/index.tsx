@@ -48,10 +48,10 @@ const client = new S3Client({
 
 type RatingsReverse = {[key:string]:{[key:string]:string}}
 
-const attenuationFactor = 0.65
-const rigor = 0.65
+const attenuationFactor = 0.85
+const rigor = 0.25
 const muteRating = 0
-const muteConfidence = 0.05
+const muteConfidence = 0.1
 const followRating = 1
 const followConfidence = 0.05
 
