@@ -54,9 +54,10 @@ const muteRating = -0.5
 const muteConfidence = 0.75
 const followRating = 1
 const followConfidence = 0.05
+const followConfidenceObserver = 0.2
 
 let changeSquaredSum = 0
-const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
+const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse, observerId:string) => {
   const oScorecardsOut:Scorecards = JSON.parse(JSON.stringify(oScorecardsIn))
   changeSquaredSum = 0
   for (let g=0; g < aObservees.length; g++) {
@@ -69,14 +70,22 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
     for (let r=0; r < aRaters.length; r++) {
       const raterId = aRaters[r]
       const sRating = oReverseObserveeObject[raterId]
-      let rating = followRating
-      let ratingConfidence = followConfidence
-      if (sRating == 'm') {
-        rating = muteRating
-        ratingConfidence = muteConfidence
+      
+      const raterInfluence = oScorecardsIn[raterId][0]
+
+      let rating = muteRating
+      let ratingConfidence = muteConfidence
+      if (sRating == 'f') {
+        rating = followRating
+        ratingConfidence = followConfidence
+        if (observerId == raterId) {
+          ratingConfidence = followConfidenceObserver
+        }
       }
-      const aRaterInfluence = oScorecardsIn[raterId][0]
-      const weight = attenuationFactor * ratingConfidence * aRaterInfluence
+      let weight = attenuationFactor * ratingConfidence * raterInfluence
+      if (observerId == raterId) { // remove attenuationFactor
+        weight = ratingConfidence * raterInfluence
+      }
       const product = weight * rating
       weights += weight 
       products += product
@@ -135,6 +144,7 @@ export default async function handler(
         
         const oObserverData = aUsers0[0]
         observerId = oObserverData.id
+        const sObserverId = JSON.stringify(observerId)
 
         const sql1 = `SELECT id, reverseObserveeObject FROM users WHERE pubkey <> '${observer}' AND reverseObserveeObject IS NOT NULL; `
         const results_sql1 = await connection.query(sql1)
@@ -170,7 +180,7 @@ export default async function handler(
         let numIterations = 0
         const aConvergenceTracker:{numIterations: number,changeSquaredSum: number}[] = []
         do {
-          oScorecards = calculation(oScorecards, aObservees, oRatingsReverse)
+          oScorecards = calculation(oScorecards, aObservees, oRatingsReverse, sObserverId)
           aConvergenceTracker.push({numIterations,changeSquaredSum})
           numIterations++
           if (numIterations > 12) {
