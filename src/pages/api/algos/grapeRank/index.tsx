@@ -86,7 +86,10 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
       average = products / weights
     }
     const confidence = convertInputToConfidence(weights,rigor)
-    const influence = average * confidence
+    let influence = average * confidence
+    if (influence < 0) {
+      influence = 0
+    }
     oScorecardsOut[observeeId] = [influence, confidence, average, weights]
     if (oScorecardsIn[observeeId]) {
       const influenceChange = oScorecardsIn[observeeId][0] - influence
