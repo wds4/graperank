@@ -113,7 +113,6 @@ export default async function handler(
         const oScorecards:Scorecards = oGrapeRank.data.scorecards
         const aGrapeRank = Object.keys(oScorecards)
         if (aGrapeRank.includes(observeeId)) {
-          
           oScorecard = {
             influence: oScorecards[observeeId][0],
             average: oScorecards[observeeId][2],
@@ -122,10 +121,10 @@ export default async function handler(
           }
         } else {
           oScorecard = {
-            influence: 2,
-            average: 2,
-            confidence: 2,
-            input: 2,
+            influence: 0,
+            average: 0,
+            confidence: 0,
+            input: 0,
           }
         }
       }
