@@ -230,6 +230,9 @@ export default async function handler(
             numObserveeObjects: aObservees.length,
             oRatingsReverseSizeInMB,
             response_put,
+            grapeRankParameters: {
+              rigor, attenuationFactor,
+            },
           }
         }
         res.status(200).json(response)
