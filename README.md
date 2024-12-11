@@ -350,5 +350,6 @@ produces: "graperank-nodejs": "github:Pretty-Good-Freedom-Tech/graperank-nodejs#
 - when do cronJob5 or cronJob5b, make sure to flag flaggedToUpdateReverseObserveeObject=1, but only if rating is added or removed
 - go back to grapeRank endpoint
 
-
+- use https://www.graperank.tech/api/outwardFacing/getGrapeRank endpoint to show graperank scores on profile page
+- fetch pagerank score 
 

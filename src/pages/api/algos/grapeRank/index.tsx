@@ -50,6 +50,10 @@ type RatingsReverse = {[key:string]:{[key:string]:string}}
 
 const attenuationFactor = 0.65
 const rigor = 0.65
+const muteRating = -1
+const muteConfidence = 0.8
+const followRating = 1
+const followConfidence = 0.05
 
 let changeSquaredSum = 0
 const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse) => {
@@ -65,11 +69,11 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
     for (let r=0; r < aRaters.length; r++) {
       const raterId = aRaters[r]
       const sRating = oReverseObserveeObject[raterId]
-      let rating = 1
-      let ratingConfidence = 0.05
+      let rating = followRating
+      let ratingConfidence = followConfidence
       if (sRating == 'm') {
-        rating = 0
-        ratingConfidence = 0.1
+        rating = muteRating
+        ratingConfidence = muteConfidence
       }
       const aRaterInfluence = oScorecardsIn[raterId][0]
       const weight = attenuationFactor * ratingConfidence * aRaterInfluence
