@@ -50,8 +50,8 @@ type RatingsReverse = {[key:string]:{[key:string]:string}}
 
 const attenuationFactor = 0.65
 const rigor = 0.65
-const muteRating = -1
-const muteConfidence = 0.8
+const muteRating = -0.5
+const muteConfidence = 0.3
 const followRating = 1
 const followConfidence = 0.05
 
