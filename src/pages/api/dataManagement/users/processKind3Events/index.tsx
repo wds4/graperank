@@ -91,7 +91,7 @@ export default async function handler(
             for (let t=0; t < aTags.length; t++) {
               const aTag = aTags[t]
               if (aTag && aTag[0] == 'p' && aTag[1] && isValidPubkey(aTag[1])) {
-                const pubkey_child = aTag[1]
+                const pubkey_child = aTag[1].toLowerCase()
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
                 const sql3 = ` INSERT IGNORE INTO users (pubkey, flaggedToUpdateNeo4jNode) VALUES ('${pubkey_child}', 1) `

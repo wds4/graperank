@@ -5,6 +5,15 @@ import mysql from 'mysql2/promise'
 https://www.graperank.tech/api/tests/lookForDuplicateNpubs
 */
 
+/*
+
+MATCH (n:NostrUser), (m:NostrUser) WHERE lower(n.pubkey)=lower(m.pubkey) AND n.pubkey <> m.pubkey RETURN n,m
+
+SELECT * FROM users WHERE pubkey IN ( 
+SELECT pubkey FROM users GROUP BY pubkey HAVING COUNT(DISTINCT pubkey COLLATE Latin1_General_CS_AS) > 1
+);
+*/
+
 type ResponseData = {
   success: boolean,
   message: string,
@@ -24,7 +33,7 @@ export default async function handler(
         database: process.env.AWS_MYSQL_DB,
       });
       const [results, fields] = await connection.query(
-        'SELECT pubkeys FROM `users` WHERE `id` > 1000'
+        'SELECT id, pubkey FROM `users` WHERE `id` > 1000'
       );
       console.log(results); // results contains rows returned by server
       console.log(fields); // fields contains extra meta data about results, if available

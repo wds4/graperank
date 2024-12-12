@@ -353,3 +353,12 @@ produces: "graperank-nodejs": "github:Pretty-Good-Freedom-Tech/graperank-nodejs#
 - use https://www.graperank.tech/api/outwardFacing/getGrapeRank endpoint to show graperank scores on profile page
 - fetch pagerank score 
 
+- eliminate duplicate pubkeys
+sql already immune to duplicates. So need to merge neo4j nodes with duplicate pubkeys.
+They cannot be eliminated from events, 
+1. use this to find duplicates
+MATCH (n:NostrUser), (m:NostrUser) WHERE lower(n.pubkey)=lower(m.pubkey) AND n.pubkey <> m.pubkey RETURN n,m
+2. merge them using cypher query
+3. make sure algos never get fooled by duplicates; always make sure to change pubkeys to lowercase.
+4. change to lowercase when accepting pubkeys through endpoint url
+

@@ -63,8 +63,9 @@ export default async function handler(
     res.status(500).json(response)
   }
   if (searchParams.pubkey) {
-    const pubkey1 = searchParams.pubkey
-    if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
+    const pubkey0 = searchParams.pubkey
+    if (typeof pubkey0 == 'string' && verifyPubkeyValidity(pubkey0)) {
+      const pubkey1 = pubkey0.toLowerCase()
       const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
         const connection = await mysql.createConnection({
