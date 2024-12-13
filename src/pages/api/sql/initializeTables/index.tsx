@@ -78,8 +78,12 @@ export default async function handler(
 id INT NOT NULL AUTO_INCREMENT, 
 pubkey VARCHAR(255) NOT NULL UNIQUE, 
 whenSignedUp INT NOT NULL DEFAULT 0,
+grapeRankParams JSON DEFAULT NULL,
 PRIMARY KEY (id)
 ); `
+// ALTER TABLE customers ADD grapeRankStatus JSON DEFAULT NULL;
+// ALTER TABLE customers DROP COLUMN grapeRankStatus;
+// ALTER TABLE customers ADD grapeRankParams JSON DEFAULT NULL;
       const results3 = await connection.query(command3);
       console.log(results3);
 

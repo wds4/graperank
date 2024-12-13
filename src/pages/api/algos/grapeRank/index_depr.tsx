@@ -16,20 +16,6 @@ Rework this endpoint; start this endpoint at step 3:
 3. create reverseRatingsObject by aggregating each reverseObserveeObject on the fly; should take about 10 seconds
 4. use reverseRatingsObject as input into 
 
-
-
-
-
-
-Calculate PageRank scores for all pubkeys 
-- sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
-  (maybe also add: where pagerank is above some threshold?)
-- STEP 2: combine results of sql1 into one large raw data object oRatingsForward of format: [context][rater][ratee] = [score, confidence]
-- STEP 3: process oRatingsForward into oRatings which is of format: [context][ratee][rater] = [score, confidence]
-- feed oRatings into GrapeRank calculator
-
-NOT YET COMPLETED
-
 usage:
 e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f

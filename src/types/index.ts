@@ -65,6 +65,7 @@ export type SqlIdsByPubkey = {[key: string]: number}
 export type GrapeRankMetaData = {
   whenLastUpdated: number,
   referencePubkey: string,
+  parameters: object,
   aConvergenceTracker: {numIterations: number,changeSquaredSum: number}[],
 }
 

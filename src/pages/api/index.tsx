@@ -95,4 +95,7 @@ pm2 start cronJobBackgroundListener.js --cron "15,45 * * * *"
 4. restart neo4j USING SUDO (otherwise brainstorm database will not be available)
 sudo neo4j start
 
+check if memory is filling up:
+df -h
+need to do java garbage collection ???
 */

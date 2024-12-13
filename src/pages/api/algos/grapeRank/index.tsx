@@ -6,31 +6,25 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { convertInputToConfidence } from '@/helpers/grapevine'
 
 /*
-This endpoint is likely to be deprecated or reworked in favor of:
+Calculate GrapeRank scores for all pubkeys 
+
+The following steps must be taken (using api/dataManagement/users/updateReverseObserveeObjects) prior to this (api/algos/grapeRank) endpoint:
 1. use neo4j to create reverseObserveeObject for each user (one at a time) and store in sql
-2. update reverseObserveeObject for a user each time a rating is added or deleted, using flag to id user
-
-currently: 'f' or 'm'; MIGHT change to [1, 0.05] vs [0, 0.1]
-
-Rework this endpoint; start this endpoint at step 3:
-3. create reverseRatingsObject by aggregating each reverseObserveeObject on the fly; should take about 10 seconds
-4. initialize Scorecards
-5. use reverseRatingsObject as input into GrapeRank
+2. update reverseObserveeObject (currently records ratings using 'f' or 'm'; MIGHT change to [1, 0.05] vs [0, 0.1]) for a user each time a rating is added or deleted, using flag to id user
 
 - STEP 1: 
-  sql0: SELECTE id FROM users WHERE pubkey='${observer}'
-  sql1: SELECT id, reverseObserveeObject FROM users WHERE reverseObserveeObject IS NULL NOT NULL 
+  sql0: SELECTE id, pubkey FROM users WHERE pubkey='${observer}'
+  sql1: SELECT id, reverseObserveeObject FROM users WHERE pubkey <> '${observer}' AND reverseObserveeObject IS NULL NOT NULL 
 
 - STEP 2: combine results of sql1 into one large raw data object oRatingsReverse of format: [context][ratee][rater] = [score, confidence]
 
-Calculate PageRank scores for all pubkeys 
-- STEP 1: sql1: SELECT id, pubkey, observeeObject FROM users WHERE observeeObject IS NULL NOT NULL 
-  (maybe also add: where pagerank is above some threshold?)
-- STEP 2: combine results of sql1 into one large raw data object oRatingsForward of format: [context][rater][ratee] = [score, confidence]
-- STEP 3: process oRatingsForward into oRatings which is of format: [context][ratee][rater] = [score, confidence]
-- feed oRatings into GrapeRank calculator
+- STEP 3: intialize oScorecards
 
-NOT YET COMPLETED
+- STEP 4: iterate through GrapeRank until max iterations or until convergence
+
+- STEP 5: create grapeRankData and store in S3
+
+- STEP 6: sql2: UPDATE customers SET grapeRankParams='${grapeRankParams}' WHERE pubkey='${pubkey}'
 
 usage:
 e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
@@ -54,7 +48,7 @@ const muteRating = -0.5
 const muteConfidence = 0.75
 const followRating = 1
 const followConfidence = 0.05
-const followConfidenceObserver = 0.2
+const followConfidenceOfObserver = 0.2
 
 let changeSquaredSum = 0
 const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse, observerId:string) => {
@@ -79,7 +73,7 @@ const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:Ra
         rating = followRating
         ratingConfidence = followConfidence
         if (observerId == raterId) {
-          ratingConfidence = followConfidenceObserver
+          ratingConfidence = followConfidenceOfObserver
         }
       }
       let weight = attenuationFactor * ratingConfidence * raterInfluence
@@ -151,14 +145,13 @@ export default async function handler(
         console.log(typeof results_sql1)
         const aObservees = JSON.parse(JSON.stringify(results_sql1[0]))
 
-        // STEP 2
+        // STEPs 2 and 3
 
         const oRatingsReverse:RatingsReverse = {}
         // oScorecards: oScorecards[rateeId] = average, confidence; probably also average and input; keep all in array for convenience
-        // observer is logged in user; context is notSpam;
+        // observer and context are not explicitly stated, bc observer is logged in user; context is "notSpam"
         let oScorecards:Scorecards = {} // influence, confidence, average, input
         
-        // STEPs 3 and 4
         for (let x=0; x < aObservees.length; x++) {
           const oObserveeData = aObservees[x]
           const observeeId:number = oObserveeData.id
@@ -173,7 +166,7 @@ export default async function handler(
         // delete oRatingsReverse[observerId] // this ensures the scorecard of the seed user will not be overwritten in subsequent steps
         oScorecards[observerId] = [1,1,1,9999]
 
-        // STEP 5
+        // STEP 4
         // iterate through GrapeRank until max iterations or until convergence
 
         let continueIterating = true
@@ -195,18 +188,38 @@ export default async function handler(
           }
         } while (continueIterating)
 
+        const currentTimestamp = Math.floor(Date.now() / 1000)
+
+        const grapeRankParams = {
+          whenLastImplemented: currentTimestamp,
+          paramsAtLastImplementation: {
+            attenuationFactor,
+            rigor,
+            muteRating,
+            muteConfidence,
+            followRating,
+            followConfidence,
+            followConfidenceOfObserver,
+          }
+        }
+
+        const sql2 = `UPDATE customers SET grapeRankParams='${grapeRankParams}' WHERE pubkey='${observer}'; `
+        const results_sql2 = await connection.query(sql2);
+        console.log(typeof results_sql2)
+
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
 
         const reverseUsersChars = JSON.stringify(oRatingsReverse).length
         const oRatingsReverseSizeInMB = reverseUsersChars / 1048576
 
-        const currentTimestamp = Math.floor(Date.now() / 1000)
+
 
         const grapeRankData:GrapeRank = {
           metaData: {
             whenLastUpdated: currentTimestamp,
-            referencePubkey: observer, 
+            referencePubkey: observer,
+            parameters: grapeRankParams,
             aConvergenceTracker,
           },
           data: {
@@ -240,9 +253,7 @@ export default async function handler(
             numObserveeObjects: aObservees.length,
             oRatingsReverseSizeInMB,
             response_put,
-            grapeRankParameters: {
-              rigor, attenuationFactor,
-            },
+            grapeRankParams,
           }
         }
         res.status(200).json(response)
