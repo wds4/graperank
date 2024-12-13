@@ -203,7 +203,9 @@ export default async function handler(
           }
         }
 
-        const sql2 = `UPDATE customers SET grapeRankParams='${grapeRankParams}' WHERE pubkey='${observer}'; `
+        const sGrapeRankParams = JSON.stringify(grapeRankParams)
+
+        const sql2 = `UPDATE customers SET grapeRankParams='${sGrapeRankParams}' WHERE pubkey='${observer}'; `
         const results_sql2 = await connection.query(sql2);
         console.log(typeof results_sql2)
 
@@ -212,8 +214,6 @@ export default async function handler(
 
         const reverseUsersChars = JSON.stringify(oRatingsReverse).length
         const oRatingsReverseSizeInMB = reverseUsersChars / 1048576
-
-
 
         const grapeRankData:GrapeRank = {
           metaData: {
