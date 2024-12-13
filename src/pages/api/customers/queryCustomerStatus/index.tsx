@@ -61,6 +61,10 @@ export default async function handler(
           success: true,
           exists,
           message: `api/customers/queryCustomerStatus`,
+          data: {
+            command,
+            results,
+          }
         }
         res.status(200).json(response)
       } catch (error) {
@@ -68,7 +72,7 @@ export default async function handler(
           success: false,
           message: `api/customers/queryCustomerStatus error: ${error}`,
           data: {
-            command
+            command,
           }
         }
         res.status(500).json(response)
