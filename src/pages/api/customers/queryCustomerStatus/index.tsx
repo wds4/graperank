@@ -52,7 +52,7 @@ export default async function handler(
         let exists = false
         if (aCustomers.length == 1) {
           exists = true
-        }   
+        }
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
@@ -63,6 +63,7 @@ export default async function handler(
           message: `api/customers/queryCustomerStatus`,
           data: {
             command,
+            oCustomerData: aCustomers[0],
             results,
           }
         }
