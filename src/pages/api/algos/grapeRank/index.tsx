@@ -122,7 +122,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  let gParams = {
+  const gParams:GrapeRankParams = {
     attenuationFactor: attenuationFactor_default,
     rigor: rigor_default,
     muteRating: muteRating_default,
