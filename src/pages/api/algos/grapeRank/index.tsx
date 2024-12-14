@@ -134,6 +134,15 @@ export default async function handler(
   if (searchParams.attenuationFactor && typeof searchParams.attenuationFactor == 'string') {
     gParams.attenuationFactor = Number(searchParams.attenuationFactor )
   }
+  if (searchParams.rigor && typeof searchParams.rigor == 'string') {
+    gParams.rigor = Number(searchParams.rigor )
+  }
+  if (searchParams.followConfidence && typeof searchParams.followConfidence == 'string') {
+    gParams.followConfidence = Number(searchParams.followConfidence )
+  }
+  if (searchParams.muteConfidence && typeof searchParams.muteConfidence == 'string') {
+    gParams.muteConfidence = Number(searchParams.muteConfidence )
+  }
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
