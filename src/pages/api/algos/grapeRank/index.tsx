@@ -30,6 +30,8 @@ usage:
 e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
+https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&attenuationFactor=0.9
+
 */
 
 const client = new S3Client({
@@ -42,16 +44,27 @@ const client = new S3Client({
 
 type RatingsReverse = {[key:string]:{[key:string]:string}}
 
-const attenuationFactor = 0.85
-const rigor = 0.55
-const muteRating = -0.5
-const muteConfidence = 0.75
-const followRating = 1
-const followConfidence = 0.05
-const followConfidenceOfObserver = 0.2
+type GrapeRankParams = {
+  attenuationFactor: number,
+  rigor: number,
+  muteRating: number,
+  muteConfidence: number,
+  followRating: number,
+  followConfidence: number,
+  followConfidenceOfObserver: number,
+}
+
+const attenuationFactor_default = 0.85
+const rigor_default = 0.55
+const muteRating_default = -0.5
+const muteConfidence_default = 0.75
+const followRating_default = 1
+const followConfidence_default = 0.05
+const followConfidenceOfObserver_default = 0.2
 
 let changeSquaredSum = 0
-const calculation = (oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse, observerId:string) => {
+const calculation = (gParams:GrapeRankParams, oScorecardsIn:Scorecards, aObservees:[], oRatingsReverse:RatingsReverse, observerId:string) => {
+  const {attenuationFactor, rigor, muteRating, muteConfidence, followRating, followConfidence, followConfidenceOfObserver} = gParams
   const oScorecardsOut:Scorecards = JSON.parse(JSON.stringify(oScorecardsIn))
   changeSquaredSum = 0
   for (let g=0; g < aObservees.length; g++) {
@@ -109,6 +122,18 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
+  let gParams = {
+    attenuationFactor: attenuationFactor_default,
+    rigor: rigor_default,
+    muteRating: muteRating_default,
+    muteConfidence: muteConfidence_default,
+    followRating: followRating_default,
+    followConfidence: followConfidence_default,
+    followConfidenceOfObserver: followConfidenceOfObserver_default,
+  }
+  if (searchParams.attenuationFactor && typeof searchParams.attenuationFactor == 'string') {
+    gParams.attenuationFactor = Number(searchParams.attenuationFactor )
+  }
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
@@ -173,7 +198,7 @@ export default async function handler(
         let numIterations = 0
         const aConvergenceTracker:{numIterations: number,changeSquaredSum: number}[] = []
         do {
-          oScorecards = calculation(oScorecards, aObservees, oRatingsReverse, sObserverId)
+          oScorecards = calculation(gParams, oScorecards, aObservees, oRatingsReverse, sObserverId)
           aConvergenceTracker.push({numIterations,changeSquaredSum})
           numIterations++
           if (numIterations > 12) {
@@ -192,15 +217,7 @@ export default async function handler(
 
         const grapeRankParams = {
           whenLastImplemented: currentTimestamp,
-          paramsAtLastImplementation: {
-            attenuationFactor,
-            rigor,
-            muteRating,
-            muteConfidence,
-            followRating,
-            followConfidence,
-            followConfidenceOfObserver,
-          }
+          paramsAtLastImplementation: gParams,
         }
 
         const sGrapeRankParams = JSON.stringify(grapeRankParams)
