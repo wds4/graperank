@@ -271,6 +271,7 @@ export default async function handler(
             oRatingsReverseSizeInMB,
             response_put,
             grapeRankParams,
+            foo: 'bar',
           }
         }
         res.status(200).json(response)
