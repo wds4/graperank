@@ -47,11 +47,19 @@ RETURN p, length(p) as numHops`
         // does not work:
         // const numHops = aResults[0].fields.numHops
 
+        const aPubkeys = [pubkey1]
+        const aSegments = aResults[0].p.segments
+        for (let x = 0; x < aSegments.length; x++) {
+          const oNextSegment = aSegments[x]
+          const endPubkey = oNextSegment.end.properties.pubkey
+          aPubkeys.push(endPubkey)
+        }
+
         const response:ResponseData = {
           success: true,
           message: `api/neo4j/getShortestPath data:`,
           data: {
-            pubkey1, pubkey2, numHops, cypher: cypher1, cypherQueryResult: result_cypher1
+            pubkey1, pubkey2, numHops, aPubkeys, cypher: cypher1, cypherQueryResult: result_cypher1
           }
         }
         res.status(200).json(response)
