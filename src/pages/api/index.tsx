@@ -1,14 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+/*
+Use this endpoint to verify that the server is up
+
+Usage:
+
+https://grapeRank.tech/api
+*/
+
 type ResponseData = {
-  message: string
+  message: string,
+  success: boolean,
 }
  
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  res.status(200).json({ message: `api Hello from Next.js!!!` })
+  res.status(200).json({ message: `api Hello from Next.js!!!`, success: true })
 }
 
 /*
