@@ -114,17 +114,16 @@ export default async function handler(
     console.log(`closing connection: ${close_result}`)
 
     // if (aUsers6.length > 900) { url = url6 } // 900
+    // if (aUsers4.length > 0) { url = url4 } // 1000 as of 14 Dec: Neo4jError: Merge did not find a matching node n and can not create a new node due to conflicts with existing unique nodes!
     
-   
-    if (aUsers4.length > 0) { url = url4 } // 1000
+    if (aUsers5b.length > 10) { url = url5b } // 10
+    if (aUsers5.length > 5) { url = url5 } // 5
     if (aUsers3b.length > 0) { url = url3b } // 10
     if (aUsers3.length > 0) { url = url3 } // 10
     if (aEvents2.length > 1000) { url = url2 } // 1000
     if (aEvents2b.length > 1000) { url = url2b } // 1000
     if (numEvents1 > 200) { url = url1 } // 200
     if (aUsers0.length > 300) { url = url0 } // 300
-    if (aUsers5b.length > 10) { url = url5b } // 10
-    if (aUsers5.length > 5) { url = url5 } // 5
 
     console.log(`url: ${url}`)
     
