@@ -58,8 +58,6 @@ export default async function handler(
     database: process.env.AWS_MYSQL_DB,
   });
   try {
-    let url = url6
-
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
 
@@ -113,9 +111,10 @@ export default async function handler(
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
+    // let url = url6
+    let url = ``
     // if (aUsers6.length > 900) { url = url6 } // 900
     // if (aUsers4.length > 0) { url = url4 } // 1000 as of 14 Dec: Neo4jError: Merge did not find a matching node n and can not create a new node due to conflicts with existing unique nodes!
-    
     if (aUsers5b.length > 10) { url = url5b } // 10
     if (aUsers5.length > 5) { url = url5 } // 5
     if (aUsers3b.length > 0) { url = url3b } // 10
@@ -127,7 +126,9 @@ export default async function handler(
 
     console.log(`url: ${url}`)
     
-    fetch(url)
+    if (url) {
+      fetch(url)
+    }
 
     const response:ResponseData = {
       success: true,
