@@ -143,6 +143,15 @@ export default async function handler(
   if (searchParams.muteConfidence && typeof searchParams.muteConfidence == 'string') {
     gParams.muteConfidence = Number(searchParams.muteConfidence )
   }
+  if (searchParams.followRating && typeof searchParams.followRating == 'string') {
+    gParams.followRating = Number(searchParams.followRating )
+  }
+  if (searchParams.muteRating && typeof searchParams.muteRating == 'string') {
+    gParams.muteRating = Number(searchParams.muteRating )
+  }
+  if (searchParams.followConfidenceOfObserver && typeof searchParams.followConfidenceOfObserver == 'string') {
+    gParams.followConfidenceOfObserver = Number(searchParams.followConfidenceOfObserver )
+  }
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
