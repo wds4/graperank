@@ -14,8 +14,6 @@ import mysql from 'mysql2/promise'
   - extract created_at_old and created_at_new from their respective events
   - if created_at_new > created_at_old, then:
     - sql3: update users set kind10000eventId, flaggedForKind10000EventProcessing=1 where pubkey;
-  
-  
     cleaning up:
   - sql4: update events set flaggedForProcessing=0 where eventId=kind10000EventId_new
 

@@ -64,7 +64,6 @@ export default async function handler(
           data: {
             command,
             oCustomerData: aCustomers[0],
-            results,
           }
         }
         res.status(200).json(response)
