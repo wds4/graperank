@@ -55,9 +55,11 @@ export default async function handler(
   if (searchParams.t) {
     numSeconds = Number(searchParams.t)
   }
-  // const currentTimestamp = Math.floor(Date.now() / 1000)
-  // const sinceTimestamp = currentTimestamp - numSeconds
-  // const startTimestamp = Date.now()
+  const currentTimestamp = Math.floor(Date.now() / 1000)
+  const sinceTimestamp = currentTimestamp - numSeconds
+  const startTimestamp = Date.now()
+  console.log(sinceTimestamp)
+  console.log(startTimestamp)
   try {
     await ndk.connect()
     const filter:NDKFilter = { kinds: [1984] }
