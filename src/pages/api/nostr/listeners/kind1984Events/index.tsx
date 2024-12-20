@@ -55,8 +55,8 @@ export default async function handler(
   if (searchParams.t) {
     numSeconds = Number(searchParams.t)
   }
-  const currentTimestamp = Math.floor(Date.now() / 1000)
-  const sinceTimestamp = currentTimestamp - numSeconds
+  // const currentTimestamp = Math.floor(Date.now() / 1000)
+  // const sinceTimestamp = currentTimestamp - numSeconds
   // const startTimestamp = Date.now()
   try {
     await ndk.connect()
