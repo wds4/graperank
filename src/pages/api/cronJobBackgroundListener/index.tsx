@@ -44,7 +44,7 @@ export default async function handler(
     const currentTimestamp = Math.floor(Date.now() / 1000)
     const sinceTimestamp = currentTimestamp - 1800 // 60 * 30 = 1800, for past 30 minutes
     await ndk.connect()
-    const filter:NDKFilter = { kinds: [3, 10000], since: sinceTimestamp, limit: 10 }
+    const filter:NDKFilter = { kinds: [3, 1984, 10000], since: sinceTimestamp, limit: 10 }
     const sub1 = ndk.subscribe(filter)
     sub1.on('event', async (event:NDKEvent) => {
       if (validateEvent(event)) {

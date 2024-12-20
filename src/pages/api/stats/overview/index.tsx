@@ -56,6 +56,10 @@ export default async function handler(
     const results_sql_events_3 = await connection.query(sql_events_3);
     const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))
 
+    const sql_events_1984 = `SELECT id FROM events WHERE kind = 1984`
+    const results_sql_events_1984 = await connection.query(sql_events_1984);
+    const aEvents_1984 = JSON.parse(JSON.stringify(results_sql_events_1984[0]))
+
     const sql_events_10000 = `SELECT id FROM events WHERE kind = 10000`
     const results_sql_events_10000 = await connection.query(sql_events_10000);
     const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))
@@ -135,6 +139,7 @@ export default async function handler(
           events: {
             total: aEvents.length,
             kind3: aEvents_3.length,
+            kind1984: aEvents_1984.length,
             kind10000: aEvents_10000.length,
           },
           users: {
