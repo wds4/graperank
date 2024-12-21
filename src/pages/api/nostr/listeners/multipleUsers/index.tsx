@@ -132,7 +132,7 @@ export default async function handler(
     }
 
     await ndk.connect()
-    const filter:NDKFilter = { kinds: [3, 10000], authors: aPubkeys }
+    const filter:NDKFilter = { kinds: [3, 1984, 10000], authors: aPubkeys }
     const sub1 = ndk.subscribe(filter)
     const aReceivedEvents:object[] = []        
     sub1.on('event', async (event:NDKEvent) => {
