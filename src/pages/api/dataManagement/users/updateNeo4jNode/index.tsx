@@ -44,6 +44,7 @@ export default async function handler(
     password: process.env.AWS_MYSQL_PWD,
     database: process.env.AWS_MYSQL_DB,
   });
+  const aFirstParent = []
   try {
     const sql1 = ` SELECT id, pubkey FROM users where flaggedToUpdateNeo4jNode=1 `
     const results1 = await connection.query(sql1);
@@ -54,9 +55,10 @@ export default async function handler(
       const oNextUser = aUsers[x]
       const sqluserid_parent = oNextUser.id
       const pubkey_parent = oNextUser.pubkey
-
+      
       // cypher1: add node pubkey_parent if not already exists
       const cypher1 = await write(`MERGE (n:NostrUser {pubkey: '${pubkey_parent}', sqluserid: '${sqluserid_parent}'}) RETURN n.pubkey AS pubkey `, {})
+      if (x==0) { aFirstParent.push({pubkey_parent,sqluserid_parent,cypher1}) }
       console.log(cypher1)
       aCypherResults.push({cypher1})
 
@@ -73,7 +75,7 @@ export default async function handler(
       success: true,
       message: `api/dataManagement/users/updateNeo4jNode data:`,
       data: { 
-        numUsers: aUsers.length, aCypherResults
+        numUsers: aUsers.length, aFirstParent, aCypherResults
       }
     }
     res.status(200).json(response)
@@ -84,6 +86,9 @@ export default async function handler(
     const response:ResponseData = {
       success: false,
       message: `api/dataManagement/users/updateNeo4jNode error: ${error}!`,
+      data: {
+        aFirstParent
+      }
     }
     res.status(500).json(response)
   } finally {
