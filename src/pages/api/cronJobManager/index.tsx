@@ -114,15 +114,14 @@ export default async function handler(
     // let url = url6
     let url = ``
 
-    // 
+    if (aUsers6.length > 900) { url = url6 } // 900
+
     if (aUsers5b.length > 0) { url = url5b } // 10
     if (aUsers5.length > 0) { url = url5 } // 5
     if (aEvents2.length > 0) { url = url2 } // 1000
     if (aEvents2b.length > 0) { url = url2b } // 1000
     if (numEvents1 > 0) { url = url1 } // 200
     if (aUsers0.length > 0) { url = url0 } // 300
-
-    if (aUsers6.length > 900) { url = url6 } // 900
 
     if (aUsers4.length > 0) { url = url4 } // 1000
     if (aUsers5b.length > 10) { url = url5b } // 10

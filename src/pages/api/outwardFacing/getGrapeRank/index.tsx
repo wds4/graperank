@@ -16,6 +16,7 @@ observee: c06885ce21d132b3c29e74aea9f4c171a95b2ed56bafac58a5fbfc9bdc5fbb06 // 3 
 observee: 1989034e56b8f606c724f45a12ce84a11841621aaf7182a1f6564380b9c4276b // 2 hops away
 observee: cbaa0c829ed322c1551cb6619b4c08b9a26ac97ffb4e959205eec78ee9313245 // 1 hop away
 
+PROBLEM:
 observee: aa6c9c18b27d4b541c59925a680cab38fa65966760ac2d7e8eae52f44890bd5a // some sort of error; 
 - no sqlid, no pagerank, in neo4j
 - in sql: kind0EventId, kind3EventId, kind10000EventId are all null
@@ -26,6 +27,14 @@ observee: aa6c9c18b27d4b541c59925a680cab38fa65966760ac2d7e8eae52f44890bd5a // so
 
 PROBLEM: probably resulting from pubkey sometimes with ALL CAPS but sometimes lowercase; sql treats these as the same, but neo4j as 2 different
 SOLUTION: not sure yet. Maybe need to fix the ALL CAPS problem by removing duplicates.
+POSSIBLE ETIOLOGY: maybe because of out of date
+- https://www.graperank.tech/api/dataManagement/users/addSqlIdsByPubkeyLookupToS3 
+and 
+- https://www.graperank.tech/api/dataManagement/users/addPubkeysBySqlIdLookupToS3
+POSSIBLE SOLUTIONS: 
+1. update those more often. (whenever scores are calculated??)
+OR
+2. eliminate dependency on those files; create them on the fly when they are needed.
 
 https://www.graperank.tech/api/outwardFacing/getGrapeRank?observer=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&observee=d6462c102cc630f3f742d7f4871e2f14bdbf563dbc50bc1e83c4ae906c12c62d
 
