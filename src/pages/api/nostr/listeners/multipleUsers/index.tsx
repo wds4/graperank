@@ -26,7 +26,7 @@ focus modes:
 - if kind3EventId=true, cycle only through users where !kind3EventId
 - if kind10000EventId=true, cycle only through users where !kind10000EventId
 
-sql1: SELECT * FROM users [WHERE kind[x]EventId IS NOT NULL] ORDER BY whenLastListened ASC LIMIT ${maxNumPubkeysForFilter}
+sql1: SELECT pubkey FROM users [WHERE kind[x]EventId IS NOT NULL] ORDER BY whenLastListened ASC LIMIT ${maxNumPubkeysForFilter}
 extract const aPubkeys from sql1_results
 nostr filter = { kinds: [3, 10000], authors: aPubkeys }
 for each received event: add event to s3 under recentlyAddedEventsByEventId
@@ -71,7 +71,7 @@ export default async function handler(
   console.log(`maxNumPubkeysForFilter: ${maxNumPubkeysForFilter}`)
 
   let numFocusModes = 0
-  let sql1 = `SELECT * FROM users `
+  let sql1 = `SELECT pubkey FROM users `
 
   if (searchParams.kind0EventId) { numFocusModes++ }
   if (searchParams.kind3EventId) { numFocusModes++ }
@@ -79,18 +79,18 @@ export default async function handler(
 
   if (numFocusModes == 0) {
     // no WHERE clause
-    sql1 = `SELECT * FROM users `
+    sql1 = `SELECT pubkey FROM users `
   }
   if (numFocusModes == 1) {
     // WHERE clause, no need for parantheses
-    sql1 = `SELECT * FROM users WHERE `
+    sql1 = `SELECT pubkey FROM users WHERE `
     if (searchParams.kind0EventId) { sql1 += ` kind0EventId IS NULL ` }
     if (searchParams.kind3EventId) { sql1 += ` kind3EventId IS NULL ` }
     if (searchParams.kind10000EventId) { sql1 += ` kind10000EventId IS NULL ` }
   }
   if (numFocusModes > 1) {
     // WHERE clause, grouped by OR, in parentheses 
-    sql1 = `SELECT * FROM users WHERE ( `
+    sql1 = `SELECT pubkey FROM users WHERE ( `
     let needOrYet = false
     if (searchParams.kind0EventId) {
       if (needOrYet) { sql1 += `OR` }
