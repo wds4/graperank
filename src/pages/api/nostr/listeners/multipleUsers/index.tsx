@@ -79,18 +79,18 @@ export default async function handler(
 
   if (numFocusModes == 0) {
     // no WHERE clause
-    sql1 = `SELECT pubkey FROM users `
+    sql1 = `SELECT pubkey FROM users WHERE whenLastListened IS NULL `
   }
   if (numFocusModes == 1) {
     // WHERE clause, no need for parantheses
-    sql1 = `SELECT pubkey FROM users WHERE `
+    sql1 = `SELECT pubkey FROM users WHERE whenLastListened IS NULL OR `
     if (searchParams.kind0EventId) { sql1 += ` kind0EventId IS NULL ` }
     if (searchParams.kind3EventId) { sql1 += ` kind3EventId IS NULL ` }
     if (searchParams.kind10000EventId) { sql1 += ` kind10000EventId IS NULL ` }
   }
   if (numFocusModes > 1) {
     // WHERE clause, grouped by OR, in parentheses 
-    sql1 = `SELECT pubkey FROM users WHERE ( `
+    sql1 = `SELECT pubkey FROM users WHERE whenLastListened IS NULL OR ( `
     let needOrYet = false
     if (searchParams.kind0EventId) {
       if (needOrYet) { sql1 += `OR` }
