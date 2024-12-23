@@ -54,12 +54,12 @@ type GrapeRankParams = {
   followConfidenceOfObserver: number,
 }
 
-const attenuationFactor_default = 0.75
-const rigor_default = 0.65
-const muteRating_default = -0.2
+const attenuationFactor_default = 0.85
+const rigor_default = 0.5
+const muteRating_default = -0.1
 const muteConfidence_default = 0.5
 const followRating_default = 1
-const followConfidence_default = 0.02
+const followConfidence_default = 0.03
 const followConfidenceOfObserver_default = 0.2
 
 let changeSquaredSum = 0
