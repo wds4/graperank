@@ -17,7 +17,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  res.status(200).json({ message: `api Hello from Next.js!!!`, success: true })
+  res.status(200).json({ message: `api Hello from Next.js!`, success: true })
 }
 
 /*
