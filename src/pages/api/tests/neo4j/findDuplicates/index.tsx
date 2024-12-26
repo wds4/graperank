@@ -32,7 +32,7 @@ export default async function handler(
 
   const response:ResponseData = {
     success: true,
-    message: 'api/tests/neo4j/findDuplicates Hello from Next.js!',
+    message: 'api/tests/neo4j/findDuplicates Hello from Next.js!!',
     data: {
       cypher1,
       aPubkeyPairs,
