@@ -111,6 +111,8 @@ export default async function handler(
             message: `api/tests/listeners/nip51Events eose!`,
             data: {
               kinds,
+              nowTimestamp,
+              interval: nowTimestamp - currentTimestamp,
               numEvents: receivedEvents.length,
               receivedEvents,
             }
