@@ -104,6 +104,19 @@ export default async function handler(
       if (validateEvent(event)) {
         console.log(`received event.kind: ${event.kind}; event.id: ${event.id}`)
         receivedEvents.push(event.id)
+        const nowTimestamp = Math.floor(Date.now() / 1000)
+        if (nowTimestamp - currentTimestamp > 50) {
+          const response = {
+            success: true,
+            message: `api/tests/listeners/nip51Events eose!`,
+            data: {
+              kinds,
+              numEvents: receivedEvents.length,
+              receivedEvents,
+            }
+          }
+          res.status(200).json(response)
+        }
         /* PutObjectCommand */
         /*
         const params = {
