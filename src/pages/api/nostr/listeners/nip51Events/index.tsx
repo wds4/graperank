@@ -35,6 +35,8 @@ STANDARD LISTS
 10101 good wiki authors
 10102 good wiki relays
 
+kinds = [10000, 10001, 10003, 10004, 10005, 10006, 10007, 10009, 10015, 10030, 10050, 10101, 10102, 30000, 30002, 30003, 30004, 30005, 30007, 30015, 30030, 30063]
+
 SETS
 30000 follow sets
 30002 relay sets
@@ -79,7 +81,8 @@ export default async function handler(
 ) {
   const searchParams = req.query
   let numSeconds = 3600 // the default number of seconds
-  let kinds = [10003]
+  // let kinds = [10003]
+  let kinds = [10000, 10001, 10003, 10004, 10005, 10006, 10007, 10009, 10015, 10030, 10050, 10101, 10102, 30000, 30002, 30003, 30004, 30005, 30007, 30015, 30030, 30063]
   if (searchParams.t) {
     numSeconds = Number(searchParams.t)
   }
@@ -93,6 +96,7 @@ export default async function handler(
   console.log(startTimestamp)
   try {
     await ndk.connect()
+    
     const filter:NDKFilter = { kinds }
     const sub1 = ndk.subscribe(filter)
     const receivedEvents:string[] = []        
