@@ -226,7 +226,7 @@ export default async function handler(
             continueIterating = false
           }
           const currentTimestamp = Math.floor(Date.now() / 1000)
-          if (currentTimestamp - startingTimestamp > 50) {
+          if (currentTimestamp - startingTimestamp > 45) {
             continueIterating = false
           }
         } while (continueIterating)
@@ -289,7 +289,6 @@ export default async function handler(
             oRatingsReverseSizeInMB,
             response_put,
             grapeRankParams,
-            foo: 'bar',
           }
         }
         res.status(200).json(response)
