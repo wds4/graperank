@@ -71,7 +71,7 @@ export default async function handler(
     for (let x=0; x < aUsers.length; x++) {
       const oNextUser = aUsers[x]
       // get const pubkey_parent, const kind3EventId
-      const pubkey_parent = oNextUser.pubkey
+      const pubkey_parent = oNextUser.pubkey.toLowerCase()
       const kind3EventId = oNextUser.kind3EventId
 
       // cypher0: calculate aCurrentFollows
@@ -108,7 +108,7 @@ export default async function handler(
         for (let t=0; t < aTags.length; t++) {
           const aTag = aTags[t]
           if (aTag && aTag[0] == 'p' && aTag[1] && isValidPubkey(aTag[1])) {
-            const pubkey_child = aTag[1]
+            const pubkey_child = aTag[1].toLowerCase()
             aFutureFollows.push(pubkey_child)
           }
         }
@@ -141,7 +141,7 @@ export default async function handler(
 
       for (let z=0; z<aFollowsToAdd.length; z++) {
         // get const pubkey_child
-        const pubkey_child = aFollowsToAdd[z]
+        const pubkey_child = aFollowsToAdd[z].toLowerCase()
         // cypher1: add node for pubkey_child if does not already exist
         const cypher1 = `MERGE (n:NostrUser {pubkey: '${pubkey_child}'}) RETURN n.pubkey AS pubkey `
         const cypher1_results = await write(cypher1, {})
@@ -165,7 +165,7 @@ export default async function handler(
 
       for (let z=0; z<aFollowsToRemove.length; z++) {
         // get const pubkey_child
-        const pubkey_child = aFollowsToRemove[z]
+        const pubkey_child = aFollowsToRemove[z].toLowerCase()
 
         // cypher3: remove edge FOLLOWS from pubkey_parent to pubkey_child
         const cypher3 = `MATCH (n:NostrUser {pubkey: '${pubkey_parent}'})-[r:FOLLOWS]->(m:NostrUser {pubkey: '${pubkey_child}'}) DELETE r `

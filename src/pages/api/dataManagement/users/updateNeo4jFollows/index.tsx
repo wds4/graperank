@@ -70,7 +70,7 @@ export default async function handler(
     const aCypherResults = []
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
-      const pubkey_parent = oNextUser.pubkey
+      const pubkey_parent = oNextUser.pubkey.toLowerCase()
       const kind3EventId = oNextUser.kind3EventId
 
       // cypher1: add node pubkey_parent if not already exists
@@ -104,7 +104,7 @@ export default async function handler(
             for (let t=0; t < aTags.length; t++) {
               const aTag = aTags[t]
               if (aTag && aTag[0] == 'p' && aTag[1] && isValidPubkey(aTag[1])) {
-                const pubkey_child = aTag[1]
+                const pubkey_child = aTag[1].toLowerCase()
                 console.log(pubkey_child)
                 aPubkeysDiscovered.push(pubkey_child)
 

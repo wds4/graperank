@@ -54,7 +54,7 @@ export default async function handler(
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
       const kind10000EventId = oNextUser.kind10000EventId
-      const pubkey_parent = oNextUser.pubkey
+      const pubkey_parent = oNextUser.pubkey.toLowerCase()
       // TODO: ? verify kind10000EventId is valid
       const cypher1 = `LOAD CSV FROM 'https://graperank.tech/api/neo4j/generateCsv/fromSingleKind10000EventId?kind10000EventId=${kind10000EventId}'
       AS row
