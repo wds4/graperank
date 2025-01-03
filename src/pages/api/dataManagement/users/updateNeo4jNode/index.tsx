@@ -54,7 +54,8 @@ export default async function handler(
     for (let x=0; x < Math.min(numUsersToProcess, aUsers.length); x++) {
       const oNextUser = aUsers[x]
       const sqluserid_parent = oNextUser.id
-      const pubkey_parent = oNextUser.pubkey
+      const pubkey_parent = oNextUser.pubkey.toLowerCase()
+
       const query1 = `MERGE (n:NostrUser {pubkey: '${pubkey_parent}'}) SET n.sqluserid='${sqluserid_parent}' RETURN n.pubkey AS pubkey `
       if (x==0) { aFirstParent.push({pubkey_parent,sqluserid_parent,query1}) }
       // cypher1: add node pubkey_parent if not already exists
