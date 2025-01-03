@@ -315,7 +315,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/algos/grapeRank: pubkey was not provided`
+      message: `api/algos/grapeRank: pubkey was not provided `
     }
     res.status(500).json(response)
   }
