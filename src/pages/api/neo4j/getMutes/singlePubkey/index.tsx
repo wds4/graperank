@@ -49,7 +49,7 @@ export default async function handler(
           success: true,
           message: `api/neo4j/getMutes/singlePubkey data:`,
           data: {
-            cypher: cypher1, numMuters: aPubkeys.length, aPubkeys,
+            cypher: cypher1, numMutes: aPubkeys.length, aPubkeys,
           }
         }
         res.status(200).json(response)
