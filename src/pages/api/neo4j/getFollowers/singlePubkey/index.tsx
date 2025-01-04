@@ -1,6 +1,7 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
+import { ResponseData } from '@/types'
 
 /*
 usage:
@@ -8,12 +9,6 @@ pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/neo4j/getFollowers/singlePubkey?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
  
 export default async function handler(
   req: NextApiRequest,
@@ -47,6 +42,7 @@ export default async function handler(
 
         const response:ResponseData = {
           success: true,
+          exists: true,
           message: `api/neo4j/getFollowers/singlePubkey data:`,
           data: {
             cypher: cypher1, numFollowers: aPubkeys.length, aPubkeys,
