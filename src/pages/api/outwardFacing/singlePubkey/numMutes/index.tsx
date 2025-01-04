@@ -1,18 +1,14 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { read } from '@/lib/neo4j'
+import { ResponseData } from '@/types'
 
 /*
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/neo4j/getMutes/singlePubkey?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-*/
+https://www.graperank.tech/api/outwardFacing/singlePubkey/numMutes?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
+*/
  
 export default async function handler(
   req: NextApiRequest,
@@ -25,37 +21,31 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/neo4j/getMutes/singlePubkey: no pubkey was provided`
+      message: `api/outwardFacing/singlePubkey/numMutes: no pubkey was provided`
     }
     res.status(500).json(response)
   }
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})-[:MUTES]->(m:NostrUser) RETURN m ` // cypher command 
+      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:MUTES]-(m:NostrUser) RETURN count(m) as numMutes ` // cypher command 
       try {
-        const result1 = await read(cypher1, {})
-        console.log(result1)
-        const aPubkeys = []
-        const aUsers = JSON.parse(JSON.stringify(result1))
-        for (let x=0; x < aUsers.length; x++) {
-          const oNextUserData = aUsers[x]
-          const pk = oNextUserData.m.properties.pubkey
-          aPubkeys.push(pk)
-        }
-
+        const result1  = await read(cypher1, {})
+        const aResult1 = JSON.parse(JSON.stringify(result1))
+        const numMutes = aResult1[0].numMutes.low
         const response:ResponseData = {
           success: true,
-          message: `api/neo4j/getMutes/singlePubkey data:`,
+          exists: true,
+          message: `api/outwardFacing/singlePubkey/numMutes data:`,
           data: {
-            cypher: cypher1, numMutes: aPubkeys.length, aPubkeys,
+            numMutes, pubkey1, cypher1, result1
           }
         }
         res.status(200).json(response)
       } catch (error) {
         const response = {
           success: false,
-          message: `api/neo4j/getMutes/singlePubkey error: ${error}`,
+          message: `api/outwardFacing/singlePubkey/numMutes error: ${error}`,
           data: {
             pubkey1,
             cypher1
@@ -66,7 +56,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/neo4j/getMutes/singlePubkey: the provided pubkey is invalid`,
+        message: `api/outwardFacing/singlePubkey/numMutes: the provided pubkey is invalid`,
         data: {
           pubkey1
         }
@@ -76,7 +66,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/neo4j/getMutes/singlePubkey: no pubkey was provided`
+      message: `api/outwardFacing/singlePubkey/numMutes: no pubkey was provided`
     }
     res.status(500).json(response)
   }
