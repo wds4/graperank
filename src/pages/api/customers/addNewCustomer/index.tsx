@@ -35,7 +35,8 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       // add new customer to sql database
       const currentTimestamp = Math.floor(Date.now() / 1000)
-      const command = ` INSERT IGNORE INTO customers (pubkey, whenSignedUp) VALUES ( '${pubkey1}', ${currentTimestamp} ); `
+      const command0 = ` SELECT count(id) FROM customers WHERE pubkey='${pubkey1}' `
+      const command1 = ` INSERT IGNORE INTO customers (pubkey, whenSignedUp) VALUES ( '${pubkey1}', ${currentTimestamp} ); `
       try {
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
@@ -45,8 +46,10 @@ export default async function handler(
           database: process.env.AWS_MYSQL_DB,
         });
 
-        const results = await connection.query(command);
-        console.log(results);
+        const results0 = await connection.query(command0);
+
+        const results1 = await connection.query(command1);
+        console.log(results1);
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
@@ -55,8 +58,10 @@ export default async function handler(
           success: true,
           message: `api/customers/addNewCustomer data:`,
           data: {
-            command,
-            results
+            command0,
+            results0,
+            command1,
+            results1
           }
         }
         res.status(200).json(response)
@@ -65,7 +70,7 @@ export default async function handler(
           success: false,
           message: `api/customers/addNewCustomer error: ${error}`,
           data: {
-            command
+            command1
           }
         }
         res.status(500).json(response)
