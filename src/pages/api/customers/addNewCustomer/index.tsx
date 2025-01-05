@@ -35,7 +35,7 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       // add new customer to sql database
       const currentTimestamp = Math.floor(Date.now() / 1000)
-      const command = ` INSERT INTO customers (pubkey, whenSignedUp) VALUES ( '${pubkey1}', ${currentTimestamp} ); `
+      const command = ` INSERT IGNORE INTO customers (pubkey, whenSignedUp) VALUES ( '${pubkey1}', ${currentTimestamp} ); `
       try {
         const connection = await mysql.createConnection({
           host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',

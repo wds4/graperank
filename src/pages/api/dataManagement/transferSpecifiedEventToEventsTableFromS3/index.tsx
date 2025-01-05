@@ -68,7 +68,7 @@ export default async function handler(
         if (validateEvent(oEvent)) {
           /* insert event into sql table: events */
           const event:NostrEvent = oEvent
-          const command = ` INSERT INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
+          const command = ` INSERT IGNORE INTO events (pubkey, eventID, created_at, kind) VALUES ( '${event.id}', '${event.pubkey}', ${event.created_at}, ${event.kind} ); `
           const results = await connection.query(command);
           console.log(results);
           
