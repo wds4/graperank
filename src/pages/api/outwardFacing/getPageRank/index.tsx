@@ -113,30 +113,21 @@ export default async function handler(
       let aPageRankScores:PprScores = []
 
       let observeeId = 'foo'
+      let personalizedPageRankScore = -1
       if (sPageRank && typeof sPageRank == 'string' && sLookupSqlIdsByPubkey && typeof sLookupSqlIdsByPubkey == 'string') {
         const oLookupSqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
         observeeId = JSON.stringify(oLookupSqlIdsByPubkey[observee])
 
         const oPersonalizedPageRank:PPR = JSON.parse(sPageRank)
         aPageRankScores = oPersonalizedPageRank.data.scores
-        /*
-        const aGrapeRank = Object.keys(oScorecards)
-        if (aGrapeRank.includes(observeeId)) {
-          oScorecard = {
-            influence: oScorecards[observeeId][0],
-            average: oScorecards[observeeId][2],
-            confidence: oScorecards[observeeId][1],
-            input: oScorecards[observeeId][3],
-          }
-        } else {
-          oScorecard = {
-            influence: 0,
-            average: 0,
-            confidence: 0,
-            input: 0,
+        for (let x=0; x < aPageRankScores.length; x++) {
+          const oPageRankScore = aPageRankScores[x]
+          const pk = oPageRankScore.pubkey
+          const sc = oPageRankScore.score
+          if (pk == observee) {
+            personalizedPageRankScore = sc
           }
         }
-        */
       }
 
       const response:ResponseData = {
@@ -144,7 +135,7 @@ export default async function handler(
         exists: true,
         message: `api/outwardFacing/getPageRank data:`,
         data: {
-          observer, observee, observeeId, typeofObserveeId: typeof observeeId, aPageRankScores
+          observer, observee, observeeId, typeofObserveeId: typeof observeeId, personalizedPageRankScore
         }
       }
       res.status(200).json(response)
