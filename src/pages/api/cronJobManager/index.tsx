@@ -30,7 +30,7 @@ const url2b = `https://www.graperank.tech/api/dataManagement/events/processKind1
 const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10`
 const url3b = `https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10`
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
-const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj?n=5`
+const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj?n=20`
 const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesAndFlagToUpRevObObj?n=10`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true`
 
