@@ -100,24 +100,12 @@ export default async function handler(
   const observee = searchParams.observee  
   if (typeof observer == 'string' && verifyPubkeyValidity(observer) && typeof observee == 'string' && verifyPubkeyValidity(observee)) {
     try {
-      const params_get0 = {
-        Bucket: 'grapevine-nostr-cache-bucket',
-        Key: `dataManagement/lookupSqlIdsByPubkey`,
-      }
-      const command_get0 = new GetObjectCommand(params_get0);
-      const response_get0 = await client.send(command_get0);
-      const sLookupSqlIdsByPubkey = await response_get0.Body?.transformToString()
-
       const sPageRank = await getPageRankIfAvailable(observer)
 
       let aPageRankScores:PprScores = []
 
-      let observeeId = 'foo'
       let personalizedPageRankScore = -1
-      if (sPageRank && typeof sPageRank == 'string' && sLookupSqlIdsByPubkey && typeof sLookupSqlIdsByPubkey == 'string') {
-        const oLookupSqlIdsByPubkey = JSON.parse(sLookupSqlIdsByPubkey)
-        observeeId = JSON.stringify(oLookupSqlIdsByPubkey[observee])
-
+      if (sPageRank && typeof sPageRank == 'string') {
         const oPersonalizedPageRank:PPR = JSON.parse(sPageRank)
         aPageRankScores = oPersonalizedPageRank.data.scores
         for (let x=0; x < aPageRankScores.length; x++) {
@@ -135,7 +123,7 @@ export default async function handler(
         exists: true,
         message: `api/outwardFacing/getPageRank data:`,
         data: {
-          observer, observee, observeeId, typeofObserveeId: typeof observeeId, personalizedPageRankScore
+          observer, observee, personalizedPageRankScore
         }
       }
       res.status(200).json(response)
