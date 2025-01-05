@@ -35,7 +35,7 @@ export default async function handler(
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
       // add new customer to sql database
       const currentTimestamp = Math.floor(Date.now() / 1000)
-      const command0 = ` SELECT count(id) FROM customers WHERE pubkey='${pubkey1}' `
+      const command0 = ` SELECT count(id) AS countid FROM customers WHERE pubkey='${pubkey1}' `
       const command1 = ` INSERT IGNORE INTO customers (pubkey, whenSignedUp) VALUES ( '${pubkey1}', ${currentTimestamp} ); `
       try {
         const connection = await mysql.createConnection({
@@ -47,9 +47,17 @@ export default async function handler(
         });
 
         const results0 = await connection.query(command0);
+        const oResults0 = JSON.parse(JSON.stringify(results0))
 
-        const results1 = await connection.query(command1);
-        console.log(results1);
+        const countId = oResults0[0][0].countid
+
+        let alreadyCustomer = true 
+        let results1 = {}
+        if (countId == 0) {
+          alreadyCustomer = false
+          results1 = await connection.query(command1);
+          console.log(results1);
+        }
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
@@ -58,6 +66,7 @@ export default async function handler(
           success: true,
           message: `api/customers/addNewCustomer data:`,
           data: {
+            alreadyCustomer,
             command0,
             results0,
             command1,
