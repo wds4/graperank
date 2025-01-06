@@ -28,7 +28,7 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:MUTES]-(m:NostrUser) RETURN count(m) as numMutes ` // cypher command 
+      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})-[:MUTES]->(m:NostrUser) RETURN count(m) as numMutes ` // cypher command 
       try {
         const result1  = await read(cypher1, {})
         const aResult1 = JSON.parse(JSON.stringify(result1))
