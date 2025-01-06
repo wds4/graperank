@@ -11,7 +11,6 @@ usage:
 http://localhost:3000/api/dataManagement/transferEventsToEventsTableFromS3?n=3
 
 https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=3
-
 */
 
 const client = new S3Client({

@@ -1,6 +1,8 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
+import { ResponseData } from '@/types'
 
 /*
 usage:
@@ -8,11 +10,13 @@ pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/customers/unsubscribe?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 */
 
-type ResponseData = {
-  success: boolean,
-  message: string,
-  data?: object,
-}
+const client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+})
  
 export default async function handler(
   req: NextApiRequest,
@@ -48,6 +52,15 @@ export default async function handler(
 
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
+
+        // s3 DeleteObjectCommand: delete customerData from recentlyAddedEventsByEventId
+        const params_delete = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Key: 'customerData/' + pubkey1,
+        }
+        const command_s3_delete = new DeleteObjectCommand(params_delete);
+        const data_delete = await client.send(command_s3_delete);
+        console.log(typeof data_delete)
 
         const response:ResponseData = {
           success: true,
