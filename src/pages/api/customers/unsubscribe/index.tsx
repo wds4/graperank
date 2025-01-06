@@ -1,6 +1,6 @@
 import { verifyPubkeyValidity } from '@/helpers/nip19'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
 import { ResponseData } from '@/types'
 
@@ -53,12 +53,36 @@ export default async function handler(
         const close_result = await connection.end()
         console.log(`closing connection: ${close_result}`)
 
-        // s3 DeleteObjectCommand: delete customerData from recentlyAddedEventsByEventId
+        
+        /*
+        // s3 DeleteObjectCommand: delete customerData
         const params_delete = {
           Bucket: 'grapevine-nostr-cache-bucket',
           Key: 'customerData/' + pubkey1,
         }
-        const command_s3_delete = new DeleteObjectCommand(params_delete);
+        */
+
+        // s3 DeleteObjectsCommand: delete customerData
+        const params_delete = {
+          Bucket: 'grapevine-nostr-cache-bucket',
+          Delete: {
+            Objects: [
+              {
+                Key: 'customerData/' + pubkey1 + '/combinedWebsOfTrust',
+              },
+              {
+                Key: 'customerData/' + pubkey1 + '/dos',
+              },
+              {
+                Key: 'customerData/' + pubkey1 + '/graperank',
+              },
+              {
+                Key: 'customerData/' + pubkey1 + '/personalizedPageRank',
+              },
+            ],
+          },
+        }
+        const command_s3_delete = new DeleteObjectsCommand(params_delete);
         const data_delete = await client.send(command_s3_delete);
         console.log(typeof data_delete)
 
