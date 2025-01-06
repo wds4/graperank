@@ -52,6 +52,10 @@ export default async function handler(
     const results_sql_events = await connection.query(sql_events);
     const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
 
+    const sql_events_count = `SELECT count(id) AS countId FROM events`
+    const results_sql_events_count = await connection.query(sql_events_count);
+    const aEvents_count = JSON.parse(JSON.stringify(results_sql_events_count[0]))
+
     const sql_events_3 = `SELECT id FROM events WHERE kind = 3`
     const results_sql_events_3 = await connection.query(sql_events_3);
     const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))
@@ -135,6 +139,7 @@ export default async function handler(
       success: true,
       message: `api/stats/overview data:`,
       data: {
+        aEvents_count,
         sqlTableStats: {
           events: {
             total: aEvents.length,
