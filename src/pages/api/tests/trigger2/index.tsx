@@ -11,7 +11,8 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   try {
-    const { stdout, stderr } = exec('node /src/api/tests/trigger2/test_script.js');
+    // const { stdout, stderr } = exec('node /src/api/tests/trigger2/test_script.js'); // doesn't work
+    const { stdout, stderr } = exec('node /api/tests/trigger2/test_script.js');
 
     const response:ResponseData = {
       success: true,
