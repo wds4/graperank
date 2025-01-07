@@ -31,5 +31,5 @@ connection.query(command0, (err, results) => {
 
 connection.end()
 
-console.log('end of script!');
+console.log('end of script!!');
 
