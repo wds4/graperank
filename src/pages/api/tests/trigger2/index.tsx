@@ -13,7 +13,8 @@ export default async function handler(
   try {
     // const { stdout, stderr } = exec('node /src/api/tests/trigger2/test_script.js'); // doesn't work
     // const { stdout, stderr } = exec('node /api/tests/trigger2/test_script.js'); // doesn't work
-    const { stdout, stderr } = exec('node api/tests/trigger2/test_script.js');
+    // const { stdout, stderr } = exec('node api/tests/trigger2/test_script.js'); // doesn't work
+    const { stdout, stderr } = exec('node test_script.js');
 
     const response:ResponseData = {
       success: true,
