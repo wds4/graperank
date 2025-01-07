@@ -25,7 +25,7 @@ export default async function handler(
   } catch (error) {
     console.log(error)
     const response:ResponseData = {
-      success: true,
+      success: false,
       message: `api/tests/trigger data:`,
       data: {
        error
