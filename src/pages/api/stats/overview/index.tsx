@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
-// import { read } from '@/lib/neo4j'
+import { read } from '@/lib/neo4j'
 
 /*
 https://grapeRank.tech/api/stats/overview
