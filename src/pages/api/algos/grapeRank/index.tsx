@@ -219,7 +219,7 @@ export default async function handler(
           oScorecards = calculation(gParams, oScorecards, aObservees, oRatingsReverse, sObserverId)
           aConvergenceTracker.push({numIterations,changeSquaredSum})
           numIterations++
-          if (numIterations > 12) {
+          if (numIterations > 4) { // 12
             continueIterating = false
           }
           if (changeSquaredSum < 0.0001 ) { // not sure what 
