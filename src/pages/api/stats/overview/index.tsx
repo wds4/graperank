@@ -162,6 +162,7 @@ export default async function handler(
         },
         cronJob0: {
           numEvents: aUsers_0.length,
+          numEvents_: aEvents_count[0].countId,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
           description: 'need to create reverseObserveeObject file',
         },
