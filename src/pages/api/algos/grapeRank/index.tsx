@@ -226,7 +226,7 @@ export default async function handler(
             continueIterating = false
           }
           const currentTimestamp = Math.floor(Date.now() / 1000)
-          if (currentTimestamp - startingTimestamp > 40) {
+          if (currentTimestamp - startingTimestamp > 30) {
             continueIterating = false
           }
         } while (continueIterating)
