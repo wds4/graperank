@@ -56,9 +56,6 @@ export default async function handler(
     const results_sql_events_3 = await connection.query(sql_events_3);
     const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))[0].countId
 
-
-
-
     const sql_events_1984 = `SELECT count(id) AS countId FROM events WHERE kind = 1984`
     const results_sql_events_1984 = await connection.query(sql_events_1984);
     const aEvents_1984 = JSON.parse(JSON.stringify(results_sql_events_1984[0]))[0].countId
@@ -91,6 +88,7 @@ export default async function handler(
     const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
     const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))[0].countId
 
+    /*
     const sql2 = ` SELECT count(id) AS countId FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))[0].countId
@@ -122,7 +120,8 @@ export default async function handler(
     const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))[0].countId
-
+    */
+   
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
@@ -168,6 +167,7 @@ export default async function handler(
           endpoint: 'https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200',
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
         },
+        /*
         cronJob2: {
           numEventsToProcess: aEvents2,
           sql2,
@@ -216,6 +216,7 @@ export default async function handler(
           endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true',
           description: '',
         },
+        */
       }
     }
     res.status(200).json(response)
