@@ -44,10 +44,9 @@ export default async function handler(
     const cypher1 = `MATCH (n:NostrUser) RETURN n `
     const cypher1_result = await read(cypher1, {})
 
-    const sql_users_0_count = `SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
-    const results_sql_users_0_count = await connection.query(sql_users_0_count);
-    const aUsers_0_count = JSON.parse(JSON.stringify(results_sql_users_0_count[0]))[0].countId
-    // const aUsers_0_count = aUsers_0_count_[0].countId
+    const sql_users_0 = `SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
+    const results_sql_users_0 = await connection.query(sql_users_0);
+    const aUsers_0 = JSON.parse(JSON.stringify(results_sql_users_0[0]))
 
     /*
     const sql_events = `SELECT id FROM events`
@@ -164,7 +163,7 @@ export default async function handler(
 
         },
         cronJob0: {
-          numEvents: aUsers_0_count,
+          numEvents: aUsers_0.length,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
           description: 'need to create reverseObserveeObject file',
         },
