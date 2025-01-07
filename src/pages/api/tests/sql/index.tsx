@@ -40,7 +40,7 @@ export default async function handler(
           fields
         }
       }
-      res.status(500).json(response)
+      res.status(200).json(response)
     } catch (error) {
       console.log(`error: ${JSON.stringify(error)}`)
       const response:ResponseData = {
