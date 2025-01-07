@@ -24,7 +24,7 @@ export default async function handler(
         database: process.env.AWS_MYSQL_DB,
       });
       const [results, fields] = await connection.query(
-        'SELECT * FROM `users` WHERE `id` = 1'
+        'SELECT count(id) AS countCustomers FROM `customers`'
       );
       console.log(results); // results contains rows returned by server
       console.log(fields); // fields contains extra meta data about results, if available
