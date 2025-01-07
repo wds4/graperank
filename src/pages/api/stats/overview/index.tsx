@@ -41,8 +41,8 @@ export default async function handler(
   });
 
   try {
-    // const cypher1 = `MATCH (n:NostrUser) RETURN n `
-    // const cypher1_result = await read(cypher1, {})
+    const cypher1 = `MATCH (n:NostrUser) RETURN count(n) AS countNostrUsers `
+    const cypher1_result = await read(cypher1, {})
 
     const sql_users_0_count = `SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0_count = await connection.query(sql_users_0_count);
@@ -144,7 +144,8 @@ export default async function handler(
           },
           users: {
             total: aUsers,
-            // neo4jNodes: cypher1_result.length,
+            // neo4jNodes: cypher1_result,
+            cypher1_result,
             withKind3Event: aUsers_yesKind3Event,
             withoutKind3Event: aUsers_noKind3Event,
             withoutKind10000Event: aUsers_noKind10000Event,
