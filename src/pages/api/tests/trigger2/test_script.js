@@ -23,10 +23,21 @@ connection.connect((err) => {
 const command0 = `show tables; `
 connection.query(command0, (err, results) => {
     if (err) {
-        console.error('Error executing query:', err);
+        console.error('Error executing command0 query:', err);
         return;
     }
     console.log(`command0 results: ${JSON.stringify(results, null, 4)}`);
+});
+
+const currentTimestamp = Math.floor(Date.now() / 1000)
+
+const command1 = `UPDATE testTable SET whenupdated = ${currentTimestamp} WHERE name = 'fred'; `
+connection.query(command1, (err, results) => {
+    if (err) {
+        console.error('Error executing command1 query:', err);
+        return;
+    }
+    console.log(`command1 results: ${JSON.stringify(results, null, 4)}`);
 });
 
 connection.end()
