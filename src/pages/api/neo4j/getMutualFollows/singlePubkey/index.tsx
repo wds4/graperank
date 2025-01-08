@@ -42,18 +42,40 @@ export default async function handler(
         const result1 = await read(cypher1, {})
         console.log(result1)
 
-        const aPubkeys = []
-        const aFollows = JSON.parse(JSON.stringify(result0))
-        const aFollowers = JSON.parse(JSON.stringify(result1))
+        const aFollows_ = JSON.parse(JSON.stringify(result0))
+        const aFollowers_ = JSON.parse(JSON.stringify(result1))
+
+        const aFollows = []
+        const aFollowers = []
         const aMutuals = []
+        const aFans = [] // in followers but not in follows
+        const aIdols = [] // in follows but not in followers
+
+        for (let x=0; x < aFollows_.length; x++) {
+          const oNextUserData = aFollows_[x]
+          const pk = oNextUserData.m.properties.pubkey
+          aFollows.push(pk)
+        }
+        for (let x=0; x < aFollowers_.length; x++) {
+          const oNextUserData = aFollowers_[x]
+          const pk = oNextUserData.m.properties.pubkey
+          aFollowers.push(pk)
+        }
 
         for (let x=0; x < aFollows.length; x++) {
-          const oNextUserData = aFollows[x]
-          const pk = oNextUserData.m.properties.pubkey
+          const pk = aFollows[x]
           if (aFollowers.includes(pk)) {
             aMutuals.push(pk)
+          } else {
+            aIdols.push(pk)
           }
-          aPubkeys.push(pk)
+        }
+
+        for (let x=0; x < aFollowers.length; x++) {
+          const pk = aFollowers[x]
+          if (!aFollows.includes(pk)) {
+            aFans.push(pk)
+          }
         }
 
         const response:ResponseData = {
@@ -65,9 +87,13 @@ export default async function handler(
             numFollows: aFollows.length,
             numFollowers: aFollowers.length,
             numMutuals: aMutuals.length,
+            numFans: aFans.length,
+            numIdols: aIdols.length,
             aFollows,
             aFollowers,
             aMutuals,
+            aFans,
+            aIdols,
           }
         }
         res.status(200).json(response)
