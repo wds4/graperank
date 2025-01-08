@@ -10,6 +10,9 @@ usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/neo4j/getMutualFollows/singlePubkey?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
+50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164 (Tekkadan)
+https://www.graperank.tech/api/neo4j/getMutualFollows/singlePubkey?pubkey=50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164
+
 */
  
 export default async function handler(
@@ -30,16 +33,26 @@ export default async function handler(
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     if (typeof pubkey1 == 'string' && verifyPubkeyValidity(pubkey1)) {
-      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:FOLLOWS]->(m:NostrUser) RETURN m ` // cypher command 
-      // const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m ` // cypher command 
+      const cypher0 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})-[:FOLLOWS]->(m:NostrUser) RETURN m ` // cypher command 
+      const cypher1 = `MATCH (n:NostrUser {pubkey: '${pubkey1}'})<-[:FOLLOWS]-(m:NostrUser) RETURN m ` // cypher command 
       try {
+        const result0 = await read(cypher0, {})
+        console.log(result0)
+
         const result1 = await read(cypher1, {})
         console.log(result1)
+
         const aPubkeys = []
-        const aUsers = JSON.parse(JSON.stringify(result1))
-        for (let x=0; x < aUsers.length; x++) {
-          const oNextUserData = aUsers[x]
+        const aFollows = JSON.parse(JSON.stringify(result0))
+        const aFollowers = JSON.parse(JSON.stringify(result1))
+        const aMutuals = []
+
+        for (let x=0; x < aFollows.length; x++) {
+          const oNextUserData = aFollows[x]
           const pk = oNextUserData.m.properties.pubkey
+          if (aFollowers.includes(pk)) {
+            aMutuals.push(pk)
+          }
           aPubkeys.push(pk)
         }
 
@@ -48,7 +61,13 @@ export default async function handler(
           exists: true,
           message: `api/neo4j/getMutualFollows/singlePubkey data:`,
           data: {
-            cypher: cypher1, referencePubkey: pubkey1, numMutualFollows: aPubkeys.length, aPubkeys,
+            referencePubkey: pubkey1,
+            numFollows: aFollows.length,
+            numFollowers: aFollowers.length,
+            numMutuals: aMutuals.length,
+            aFollows,
+            aFollowers,
+            aMutuals,
           }
         }
         res.status(200).json(response)
