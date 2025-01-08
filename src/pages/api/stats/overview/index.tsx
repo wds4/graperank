@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
-import { read } from '@/lib/neo4j'
+// import { read } from '@/lib/neo4j'
 
 /*
 https://grapeRank.tech/api/stats/overview
@@ -41,9 +41,11 @@ export default async function handler(
   });
 
   try {
+    /*
     const cypher1 = `MATCH (n:NostrUser) RETURN count(n) AS countNostrUsers `
     const cypher1_result = await read(cypher1, {})
     const numNeo4jUsers = JSON.parse(JSON.stringify(cypher1_result))[0].countNostrUsers.low
+  */
 
     const sql_users_0_count = `SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0_count = await connection.query(sql_users_0_count);
@@ -145,7 +147,7 @@ export default async function handler(
           },
           users: {
             total: aUsers,
-            numNeo4jUsers,
+            // numNeo4jUsers,
             // neo4jNodes: cypher1_result,
             // neo4jNodes: cypher1_result[0].countNostrUsers.low,
             // cypher1_result,
