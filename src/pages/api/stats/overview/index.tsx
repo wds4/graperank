@@ -69,7 +69,6 @@ export default async function handler(
     const results_sql_events_10000 = await connection.query(sql_events_10000);
     const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))[0].countId
 
-    /*
     const sql_customers = `SELECT count(id) AS countId FROM customers`
     const results_sql_customers = await connection.query(sql_customers);
     const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))[0].countId
@@ -94,6 +93,7 @@ export default async function handler(
     const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
     const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))[0].countId
 
+    /*
     const sql2 = ` SELECT count(id) AS countId FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))[0].countId
@@ -125,7 +125,8 @@ export default async function handler(
     const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))[0].countId
-       */
+    */
+    
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
@@ -150,7 +151,6 @@ export default async function handler(
             kind1984: aEvents_1984,
             kind10000: aEvents_10000,
           },
-          /*
           users: {
             total: aUsers,
             // numNeo4jUsers,
@@ -165,7 +165,6 @@ export default async function handler(
           customers: {
             total: aCustomers,
           },
-        */
         },
         /*
         cronJob0: {
