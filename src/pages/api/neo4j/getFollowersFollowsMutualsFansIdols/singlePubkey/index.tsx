@@ -8,10 +8,10 @@ This returns the intersection of the followers and the follows of the provided p
 
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
-https://www.graperank.tech/api/neo4j/getMutualFollows/singlePubkey?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://www.graperank.tech/api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164 (Tekkadan)
-https://www.graperank.tech/api/neo4j/getMutualFollows/singlePubkey?pubkey=50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164
+https://www.graperank.tech/api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey?pubkey=50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164
 
 */
  
@@ -26,7 +26,7 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: `api/neo4j/getMutualFollows/singlePubkey: no pubkey was provided`
+      message: `api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey: no pubkey was provided`
     }
     res.status(500).json(response)
   }
@@ -81,7 +81,7 @@ export default async function handler(
         const response:ResponseData = {
           success: true,
           exists: true,
-          message: `api/neo4j/getMutualFollows/singlePubkey data:`,
+          message: `api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey data:`,
           data: {
             referencePubkey: pubkey1,
             numFollows: aFollows.length,
@@ -100,7 +100,7 @@ export default async function handler(
       } catch (error) {
         const response = {
           success: false,
-          message: `api/neo4j/getMutualFollows/singlePubkey error: ${error}`,
+          message: `api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey error: ${error}`,
           data: {
             pubkey1,
             cypher1
@@ -111,7 +111,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: `api/neo4j/getMutualFollows/singlePubkey: the provided pubkey is invalid`,
+        message: `api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey: the provided pubkey is invalid`,
         data: {
           pubkey1
         }
@@ -121,7 +121,7 @@ export default async function handler(
   } else {
     const response:ResponseData = {
       success: false,
-      message: `api/neo4j/getMutualFollows/singlePubkey: no pubkey was provided`
+      message: `api/neo4j/getFollowersFollowsMutualsFansIdols/singlePubkey: no pubkey was provided`
     }
     res.status(500).json(response)
   }
