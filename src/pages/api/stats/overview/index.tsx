@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
-// import { read } from '@/lib/neo4j'
+import { read } from '@/lib/neo4j'
 
 /*
 https://grapeRank.tech/api/stats/overview
@@ -41,17 +41,13 @@ export default async function handler(
   });
 
   try {
-    /*
     const cypher1 = `MATCH (n:NostrUser) RETURN count(n) AS countNostrUsers `
     const cypher1_result = await read(cypher1, {})
     const numNeo4jUsers = JSON.parse(JSON.stringify(cypher1_result))[0].countNostrUsers.low
-  */
 
-    /*
     const sql_users_0_count = `SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0_count = await connection.query(sql_users_0_count);
     const aUsers_0_count = JSON.parse(JSON.stringify(results_sql_users_0_count[0]))[0].countId
-    */
     
     const sql_events_count = `SELECT count(id) AS countId FROM events`
     const results_sql_events_count = await connection.query(sql_events_count);
@@ -93,7 +89,6 @@ export default async function handler(
     const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
     const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))[0].countId
 
-    /*
     const sql2 = ` SELECT count(id) AS countId FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
     const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))[0].countId
@@ -125,7 +120,6 @@ export default async function handler(
     const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))[0].countId
-    */
     
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
@@ -133,12 +127,10 @@ export default async function handler(
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
 
-    /*
     let numEvents1 = -1
     if (data_s3.Contents) {
       numEvents1 = data_s3.Contents.length
     }
-      */
 
     const response:ResponseData = {
       success: true,
@@ -153,10 +145,9 @@ export default async function handler(
           },
           users: {
             total: aUsers,
-            // numNeo4jUsers,
-            // neo4jNodes: cypher1_result,
-            // neo4jNodes: cypher1_result[0].countNostrUsers.low,
-            // cypher1_result,
+            numNeo4jUsers,
+            neo4jNodes: cypher1_result,
+            cypher1_result,
             withKind3Event: aUsers_yesKind3Event,
             withoutKind3Event: aUsers_noKind3Event,
             withoutKind10000Event: aUsers_noKind10000Event,
@@ -166,7 +157,6 @@ export default async function handler(
             total: aCustomers,
           },
         },
-        /*
         cronJob0: {
           numEvents: aUsers_0_count,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
@@ -225,7 +215,6 @@ export default async function handler(
           endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true',
           description: '',
         },
-        */
       }
     }
     res.status(200).json(response)
