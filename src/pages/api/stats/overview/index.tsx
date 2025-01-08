@@ -47,10 +47,12 @@ export default async function handler(
     const numNeo4jUsers = JSON.parse(JSON.stringify(cypher1_result))[0].countNostrUsers.low
   */
 
+    /*
     const sql_users_0_count = `SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0_count = await connection.query(sql_users_0_count);
     const aUsers_0_count = JSON.parse(JSON.stringify(results_sql_users_0_count[0]))[0].countId
-
+    */
+    
     const sql_events_count = `SELECT count(id) AS countId FROM events`
     const results_sql_events_count = await connection.query(sql_events_count);
     const aEvents_count = JSON.parse(JSON.stringify(results_sql_events_count[0]))[0].countId
@@ -67,6 +69,7 @@ export default async function handler(
     const results_sql_events_10000 = await connection.query(sql_events_10000);
     const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))[0].countId
 
+    /*
     const sql_customers = `SELECT count(id) AS countId FROM customers`
     const results_sql_customers = await connection.query(sql_customers);
     const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))[0].countId
@@ -122,17 +125,19 @@ export default async function handler(
     const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
     const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))[0].countId
-   
+       */
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
 
+    /*
     let numEvents1 = -1
     if (data_s3.Contents) {
       numEvents1 = data_s3.Contents.length
     }
+      */
 
     const response:ResponseData = {
       success: true,
@@ -145,6 +150,7 @@ export default async function handler(
             kind1984: aEvents_1984,
             kind10000: aEvents_10000,
           },
+          /*
           users: {
             total: aUsers,
             // numNeo4jUsers,
@@ -159,8 +165,9 @@ export default async function handler(
           customers: {
             total: aCustomers,
           },
-
+        */
         },
+        /*
         cronJob0: {
           numEvents: aUsers_0_count,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
@@ -219,6 +226,7 @@ export default async function handler(
           endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true',
           description: '',
         },
+        */
       }
     }
     res.status(200).json(response)
