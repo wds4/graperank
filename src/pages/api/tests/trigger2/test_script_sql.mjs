@@ -2,17 +2,17 @@
 // const mysql = require('mysql2');
 import mysql from 'mysql2/promise'
 
-console.log('Node.js script executed!');
+console.log('Node.js test_script_sql.mjs executed!');
 // Perform your desired operations here
 
-const connection = mysql.createConnection({
-    host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
-    port: 3306,
-    user: 'pgft',
-    password: 'vehZyt-cuspuj-8ruvma',
-    database: 'grapevineNostrCacheDb',
+const connection = await mysql.createConnection({
+  host: 'grapevine-nostr-cache-db.cp4a4040m8c9.us-east-1.rds.amazonaws.com',
+  port: 3306,
+  user: 'pgft',
+  password: 'vehZyt-cuspuj-8ruvma',
+  database: 'grapevineNostrCacheDb',
 });
-
+/*
 connection.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL:', err);
@@ -40,8 +40,9 @@ connection.query(command1, (err, results) => {
     }
     console.log(`command1 results: ${JSON.stringify(results, null, 4)}`);
 });
+*/
 
-connection.end()
+const close_result = await connection.end()
+console.log(`closing connection: ${close_result}`)
 
 console.log('end of script!!');
-
