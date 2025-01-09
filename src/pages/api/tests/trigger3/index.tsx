@@ -16,7 +16,7 @@ export default async function handler(
     // const { stdout, stderr } = exec('node api/tests/trigger2/test_script.js'); // doesn't work
     // const { stdout, stderr } = exec('node test_script.js'); // doesn't work
     // const { stdout, stderr } = exec('node src/pages/api/tests/trigger2/test_script.js'); // WORKS!!
-    const { stdout, stderr } = exec('node test_script.js');
+    const { stdout, stderr } = exec('node test_script.js'); // WORKS!!
 
     const response:ResponseData = {
       success: true,

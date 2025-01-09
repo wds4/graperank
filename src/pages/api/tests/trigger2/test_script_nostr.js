@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const NDK = require('@nostr-dev-kit/ndk')
+const NDK = require('@nostr-dev-kit/ndk').NDK
 
 console.log('Node.js script executed!');
 
