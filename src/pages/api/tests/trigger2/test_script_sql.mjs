@@ -12,6 +12,11 @@ const connection = await mysql.createConnection({
   password: 'vehZyt-cuspuj-8ruvma',
   database: 'grapevineNostrCacheDb',
 });
+
+const command0 = `show tables; `
+const [results] = await connection.query(command0);
+console.log(`command0 results: ${JSON.stringify(results, null, 4)}`);
+
 /*
 connection.connect((err) => {
     if (err) {
@@ -43,6 +48,6 @@ connection.query(command1, (err, results) => {
 */
 
 const close_result = await connection.end()
-console.log(`closing connection: ${close_result}`)
+console.log(`closing connection: ${JSON.stringify(close_result)}`)
 
 console.log('end of script!!');
