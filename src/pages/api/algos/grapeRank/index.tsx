@@ -32,6 +32,9 @@ https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e
 
 https://www.graperank.tech/api/algos/grapeRank?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&attenuationFactor=0.9
 
+726a1e261cc6474674e8285e3951b3bb139be9a773d1acf49dc868db861a1c11 (franzap)
+
+
 */
 
 const client = new S3Client({

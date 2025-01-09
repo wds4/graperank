@@ -8,6 +8,10 @@ usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/outwardFacing/singlePubkey/numFollowersFollowsMutualsFansIdols?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
+
+pubkey: 50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164 (Tekkadan)
+https://www.graperank.tech/api/outwardFacing/singlePubkey/numFollowersFollowsMutualsFansIdols?pubkey=50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164
+
 */
  
 export default async function handler(

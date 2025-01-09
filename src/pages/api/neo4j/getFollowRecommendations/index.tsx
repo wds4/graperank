@@ -14,10 +14,12 @@ but whom the recommendee does not already follow
 Intersection of recommender mutuals and the recommendee fans
 
 usage:
-recommender: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+recommender: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f (wds4)
 recommendee: 50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164 (Tekkadan)
 https://www.graperank.tech/api/neo4j/getFollowRecommendations?recommender=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f&recommendee=50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164
 
+swap above recommender and recommendee:
+https://www.graperank.tech/api/neo4j/getFollowRecommendations?recommender=50809a53fef95904513a840d4082a92b45cd5f1b9e436d9d2b92a89ce091f164&recommendee=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
  

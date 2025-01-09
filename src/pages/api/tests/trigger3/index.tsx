@@ -3,7 +3,7 @@ import { exec } from 'child_process'
 import { ResponseData } from '@/types';
 
 /*
-https://www.graperank.tech/api/tests/trigger2
+https://www.graperank.tech/api/tests/trigger3
 */
  
 export default async function handler(
@@ -16,11 +16,11 @@ export default async function handler(
     // const { stdout, stderr } = exec('node api/tests/trigger2/test_script.js'); // doesn't work
     // const { stdout, stderr } = exec('node test_script.js'); // doesn't work
     // const { stdout, stderr } = exec('node src/pages/api/tests/trigger2/test_script.js'); // WORKS!!
-    const { stdout, stderr } = exec('node src/algos/test_script.js')
+    const { stdout, stderr } = exec('node test_script.js');
 
     const response:ResponseData = {
       success: true,
-      message: `api/tests/trigger2 data:`,
+      message: `api/tests/trigger3 data:`,
       data: {
         stdout,
         stderr
@@ -31,7 +31,7 @@ export default async function handler(
     console.log(error)
     const response:ResponseData = {
       success: false,
-      message: `api/tests/trigger2 data:`,
+      message: `api/tests/trigger3 data:`,
       data: {
        error
       }
