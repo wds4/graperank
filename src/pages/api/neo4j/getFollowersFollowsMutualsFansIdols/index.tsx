@@ -8,5 +8,5 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  res.status(200).json({ message: 'api/neo4j/getFollowers Hello from Next.js!' })
+  res.status(200).json({ message: 'api/neo4j/getFollowersFollowsMutualsFansIdols Hello from Next.js!' })
 }

@@ -4,7 +4,12 @@ import { read } from '@/lib/neo4j'
 import { ResponseData } from '@/types'
 
 /*
-This returns the intersection of the followers and the follows of the provided pubkey
+This returns the followers, follows, mutuals, fans, and idols of the provided pubkey
+- followers: setA
+- follows: setB
+- mutuals: intersection of setA and setB
+- fans: in setA but not setB
+- idols: in setB but not setA
 
 usage:
 pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
