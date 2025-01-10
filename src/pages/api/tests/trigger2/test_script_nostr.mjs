@@ -37,6 +37,12 @@ const filter = { kinds: [3, 10000], authors: [pubkey], limit: 10 }
 
 const ndk = new NDK({explicitRelayUrls})
 
+const pablo = ndk.getUser({
+  npub: "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft",
+});
+
+console.log(`pablo: ${typeof pablo}`)
+
 console.log('Node.js test_script_nostr.mjs A!');
 
 await ndk.connect()
@@ -51,7 +57,7 @@ const receivedEvents = []
 
 sub1.on('event', async (event) => {
   console.log(`event.id: ${event.id}`)
-  const command1 = `INSERT INTO testTable (name) VALUES ('jack'); `
+  const command1 = `INSERT INTO testTable (name) VALUES ('${event.id}'); `
   await runSqlCommand(command1)
   receivedEvents.push(event.id)
 })
