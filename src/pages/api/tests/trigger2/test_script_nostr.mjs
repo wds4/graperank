@@ -14,6 +14,7 @@ const connection = await mysql.createConnection({
 });
 
 const runSqlCommand = async () => {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
   const command1 = `UPDATE testTable SET whenupdated = ${currentTimestamp} WHERE name = 'fred'; `
   const [results] = await connection.query(command1);
   console.log(`command1 results: ${JSON.stringify(results, null, 4)}`);

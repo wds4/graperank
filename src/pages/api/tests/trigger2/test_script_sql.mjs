@@ -17,9 +17,8 @@ const command0 = `show tables; `
 const [results] = await connection.query(command0);
 console.log(`command0 results: ${JSON.stringify(results, null, 4)}`);
 
-const currentTimestamp = Math.floor(Date.now() / 1000)
-
 const secondSqlCommand = async () => {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
   const command1 = `UPDATE testTable SET whenupdated = ${currentTimestamp} WHERE name = 'fred'; `
   const [results] = await connection.query(command1);
   console.log(`command1 results: ${JSON.stringify(results, null, 4)}`);
