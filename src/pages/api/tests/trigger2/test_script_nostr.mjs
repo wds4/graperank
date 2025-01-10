@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // const NDK = require('@nostr-dev-kit/ndk').NDK
+
 import NDK from '@nostr-dev-kit/ndk'
 import mysql from 'mysql2/promise'
 
@@ -42,7 +43,7 @@ const pablo = ndk.getUser({
 });
 
 console.log(`typeof pablo: ${typeof pablo}`)
-console.log(`pablo.name: ${pablo.name}`)
+console.log(`pablo.profile.name: ${pablo.profile.name}`)
 
 console.log('Node.js test_script_nostr.mjs A!');
 
