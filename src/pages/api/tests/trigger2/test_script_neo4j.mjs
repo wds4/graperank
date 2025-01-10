@@ -1,4 +1,7 @@
-import { read } from '@/lib/neo4j'
+import { read } from 'src/lib/neo4j'
+
+// as of 9 Jan 2025: cannot get neo4j to work 
+// Cannot find package '@/lib' imported from /home/ubuntu/graperank/src/pages/api/tests/trigger2/test_script_neo4j.mjs
 
 const pubkey1 = `e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f`
 
