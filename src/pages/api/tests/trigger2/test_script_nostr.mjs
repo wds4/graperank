@@ -41,7 +41,8 @@ const pablo = ndk.getUser({
   npub: "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft",
 });
 
-console.log(`pablo: ${typeof pablo}`)
+console.log(`typeof pablo: ${typeof pablo}`)
+console.log(`pablo.name: ${pablo.name}`)
 
 console.log('Node.js test_script_nostr.mjs A!');
 
