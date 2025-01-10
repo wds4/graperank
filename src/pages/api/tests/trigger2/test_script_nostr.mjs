@@ -30,33 +30,29 @@ const explicitRelayUrls = [
   'wss://profiles.nostr1.com',
   'wss://relay.damus.io'
 ]
-const ndk = new NDK({explicitRelayUrls})
-
 const pubkey = 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'
 
-try {
-    console.log('Node.js test_script_nostr.mjs A!');
-    await ndk.connect()
-    console.log('Node.js test_script_nostr.mjs B!');
-    const filter = { kinds: [3, 10000], authors: [pubkey], limit: 10 }
-    const sub1 = ndk.subscribe(filter)
-    const receivedEvents = []
-    sub1.on('event', async (event) => {
-      console.log(`event.id: ${event.id}`)
-      receivedEvents.push(event.id)
-    })
-    sub1.on('eose', async () => {
-      const response = {
-        success: true,
-        message: `test_script_nostr eose!`,
-        data: receivedEvents
-      }
-      res.status(200).json(response)
-    })
-  } catch (e) {
-    const response = {
-      success: false,
-      message: `test_script_nostr error: ${e}`
-    }
-    res.status(500).json(response)
-  }
+const filter = { kinds: [3, 10000], authors: [pubkey], limit: 10 }
+
+const ndk = new NDK({explicitRelayUrls})
+
+console.log('Node.js test_script_nostr.mjs A!');
+
+await ndk.connect()
+
+console.log('Node.js test_script_nostr.mjs B!');
+
+const sub1 = ndk.subscribe(filter)
+
+console.log('Node.js test_script_nostr.mjs C!');
+
+const receivedEvents = []
+
+sub1.on('event', async (event) => {
+  console.log(`event.id: ${event.id}`)
+  receivedEvents.push(event.id)
+})
+
+console.log('Node.js test_script_nostr.mjs D!');
+
+console.log(`Node.js test_script_nostr.mjs receivedEvents: ${JSON.stringify(receivedEvents)}`);
