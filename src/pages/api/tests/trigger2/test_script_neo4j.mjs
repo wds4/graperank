@@ -1,4 +1,4 @@
-import { read } from 'src/lib/neo4j'
+import { read } from '/home/ubuntu/graperank/src/lib/neo4j'
 
 // as of 9 Jan 2025: cannot get neo4j to work 
 // Cannot find package '@/lib' imported from /home/ubuntu/graperank/src/pages/api/tests/trigger2/test_script_neo4j.mjs
