@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // const NDK = require('@nostr-dev-kit/ndk').NDK
 
+// as of 9 jan 2025: cannot get nostr results to display 
+
 import NDK from '@nostr-dev-kit/ndk'
 import mysql from 'mysql2/promise'
 

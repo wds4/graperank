@@ -9,7 +9,7 @@ pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 https://www.graperank.tech/api/outwardFacing/singlePubkey/numFollowers?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
- 
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
