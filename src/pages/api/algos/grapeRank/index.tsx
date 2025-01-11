@@ -222,14 +222,14 @@ export default async function handler(
           oScorecards = calculation(gParams, oScorecards, aObservees, oRatingsReverse, sObserverId)
           aConvergenceTracker.push({numIterations,changeSquaredSum})
           numIterations++
-          if (numIterations > 24) { // 12
+          if (numIterations > 12) { // 12
             continueIterating = false
           }
           if (changeSquaredSum < 0.0001 ) { // not sure what 
             continueIterating = false
           }
           const currentTimestamp = Math.floor(Date.now() / 1000)
-          if (currentTimestamp - startingTimestamp > 100) { // 45
+          if (currentTimestamp - startingTimestamp > 45) { // 45
             continueIterating = false
           }
         } while (continueIterating)
