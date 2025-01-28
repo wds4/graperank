@@ -34,12 +34,6 @@ const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFol
 const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesAndFlagToUpRevObObj?n=10`
 const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true`
 
-// DEPRECATED
-// const url0 = `https://www.graperank.tech/api/dataManagement/updateObserveeObjects?n=200`
-// const url6 = `https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind0EventId=true&kind3EventId&kind10000EventId=true`
-// const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsByCsv?n=100` 
-// const url5b = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesByCsv?n=100`
-
 type ResponseData = {
   success: boolean,
   message: string,
@@ -59,6 +53,9 @@ export default async function handler(
   });
   try {
     const currentTimestamp_start = Math.floor(Date.now() / 1000)
+
+    let url = ``
+    let continueSearch = true
     
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
@@ -68,72 +65,134 @@ export default async function handler(
       numEvents1 = data_s3.Contents.length
     }
 
-    /*
-    const sql0 = ` SELECT id FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL)) `
+    const sql0 = ` SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
     const results_sql0 = await connection.query(sql0);
-    const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
-    */
+    const aUsers0_count = JSON.parse(JSON.stringify(results_sql0[0]))[0].countId
+    if (aUsers0_count > 300) { // 300
+      url = url0
+      continueSearch = false
+    }
 
-    const sql0 = ` SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
-    const results_sql0 = await connection.query(sql0);
-    const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
+    if (numEvents1 > 200) {
+      url = url1
+      continueSearch = false
+    } // 200
 
-    const sql2 = ` SELECT id FROM events where kind=3 and flaggedForProcessing=1 `
-    const results_sql2 = await connection.query(sql2);
-    const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
+    let aEvents2b_count = -999
+    const sql2b = ` SELECT count(id) AS countId FROM events where kind=10000 and flaggedForProcessing=1 `
+    if (continueSearch) {
+      const results_sql2b = await connection.query(sql2b);
+      aEvents2b_count = JSON.parse(JSON.stringify(results_sql2b[0]))[0].countId
+      if (aEvents2b_count > 1000) { // 1000
+        url = url2b
+        continueSearch = false
+      }
+    }
 
-    const sql2b = ` SELECT id FROM events where kind=10000 and flaggedForProcessing=1 `
-    const results_sql2b = await connection.query(sql2b);
-    const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))
+    let aEvents2_count = -999
+    const sql2 = ` SELECT count(id) AS countId FROM events where kind=3 and flaggedForProcessing=1 `
+    if (continueSearch) {
+      const results_sql2 = await connection.query(sql2);
+      aEvents2_count = JSON.parse(JSON.stringify(results_sql2[0]))[0].countId
+      if (aEvents2_count > 1000) { // 1000
+        url = url2
+        continueSearch = false
+      }
+    }
 
-    const sql3 = `SELECT id from users WHERE flaggedForKind3EventProcessing=1;`
-    const results_sql3 = await connection.query(sql3);
-    const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
+    let aUsers3_count = -999
+    const sql3 = `SELECT count(id) AS countId FROM users WHERE flaggedForKind3EventProcessing=1;`
+    if (continueSearch) {
+      const results_sql3 = await connection.query(sql3);
+      aUsers3_count = JSON.parse(JSON.stringify(results_sql3[0]))[0].countId
+      if (aUsers3_count > 0) { // 10
+        url = url3
+        continueSearch = false
+      } 
+    }
 
-    const sql3b = `SELECT id from users WHERE flaggedForKind10000EventProcessing=1;`
-    const results_sql3b = await connection.query(sql3b);
-    const aUsers3b= JSON.parse(JSON.stringify(results_sql3b[0]))
+    let aUsers3b_count = -999
+    const sql3b = `SELECT count(id) AS countId FROM users WHERE flaggedForKind10000EventProcessing=1;`
+    if (continueSearch) {
+      const results_sql3b = await connection.query(sql3b);
+      aUsers3b_count = JSON.parse(JSON.stringify(results_sql3b[0]))[0].countId
+      if (aUsers3b_count > 0) { // 10
+        url = url3b
+        continueSearch = false
+      }
+    }
 
-    const sql4 = `SELECT id FROM users where flaggedToUpdateNeo4jNode=1;`
-    const results_sql4 = await connection.query(sql4);
-    const aUsers4= JSON.parse(JSON.stringify(results_sql4[0]))
+    let aUsers5_count = -999
+    const sql5 = `SELECT count(id) AS countId FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
+    if (continueSearch) {
+      const results_sql5 = await connection.query(sql5);
+      aUsers5_count = JSON.parse(JSON.stringify(results_sql5[0]))[0].countId 
+      if (aUsers5_count > 5) { // 5
+        url = url5
+        continueSearch = false
+      }
+    }
 
-    const sql5 = `SELECT id FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
-    const results_sql5 = await connection.query(sql5);
-    const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
+    let aUsers5b_count = -999
+    const sql5b = `SELECT count(id) AS countId FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
+    if (continueSearch) {
+      const results_sql5b = await connection.query(sql5b);
+      aUsers5b_count = JSON.parse(JSON.stringify(results_sql5b[0]))[0].countId
+      if (aUsers5b_count > 10) { // 10
+        url = url5b
+        continueSearch = false
+      }
+    }
 
-    const sql5b = `SELECT id FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
-    const results_sql5b = await connection.query(sql5b);
-    const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
+    let aUsers4_count = -999
+    const sql4 = `SELECT count(id) AS countId FROM users where flaggedToUpdateNeo4jNode=1;`
+    if (continueSearch) {
+      const results_sql4 = await connection.query(sql4);
+      aUsers4_count = JSON.parse(JSON.stringify(results_sql4[0]))[0].countId
+      if (aUsers4_count > 0) { // 1000
+        url = url4
+        continueSearch = false
+      }
+    }
 
-    const sql6 = `SELECT id FROM users WHERE kind3EventId IS NULL;`
-    const results_sql6 = await connection.query(sql6);
-    const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
+    if (aUsers0_count > 0) {
+      url = url0
+      continueSearch = false
+    } // 300
+    if (numEvents1 > 0) {
+      url = url1
+      continueSearch = false
+    } // 200
+    if (aEvents2b_count > 0) {
+      url = url2b
+      continueSearch = false
+    } // 1000
+    if (aEvents2_count > 0) {
+      url = url2
+      continueSearch = false
+    } // 1000
+    if (aUsers5_count > 0) {
+      url = url5
+      continueSearch = false
+    } // 5
+    if (aUsers5b_count > 0) {
+      url = url5b
+      continueSearch = false
+    } // 10
+
+    let aUsers6_count = -999
+    const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
+    if (continueSearch) {
+      const results_sql6 = await connection.query(sql6);
+      aUsers6_count = JSON.parse(JSON.stringify(results_sql6[0]))[0].countId
+      if (aUsers6_count > 900) { // 900
+        url = url6
+        continueSearch = false
+      }
+    }
 
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
-
-    // let url = url6
-    let url = ``
-
-    if (aUsers6.length > 900) { url = url6 } // 900
-
-    if (aUsers5b.length > 0) { url = url5b } // 10
-    if (aUsers5.length > 0) { url = url5 } // 5
-    if (aEvents2.length > 0) { url = url2 } // 1000
-    if (aEvents2b.length > 0) { url = url2b } // 1000
-    if (numEvents1 > 0) { url = url1 } // 200
-    if (aUsers0.length > 0) { url = url0 } // 300
-
-    if (aUsers4.length > 0) { url = url4 } // 1000
-    if (aUsers5b.length > 10) { url = url5b } // 10
-    if (aUsers5.length > 5) { url = url5 } // 5
-    if (aUsers3b.length > 0) { url = url3b } // 10
-    if (aUsers3.length > 0) { url = url3 } // 10
-    if (aEvents2.length > 1000) { url = url2 } // 1000
-    if (aEvents2b.length > 1000) { url = url2b } // 1000
-    if (numEvents1 > 200) { url = url1 } // 200
-    if (aUsers0.length > 300) { url = url0 } // 300
 
     console.log(`url: ${url}`)
     
@@ -152,7 +211,7 @@ export default async function handler(
         url,
         duration,
         cronJob0: {
-          numUsers: aUsers0.length,
+          numUsers: aUsers0_count,
           endpoint: url0,
           description: 'creating reverseObserveeObjects',
         },
@@ -162,49 +221,49 @@ export default async function handler(
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
         },
         cronJob2: {
-          numEventsToProcess: aEvents2.length,
+          numEventsToProcess: aEvents2_count,
           sql2,
           endpoint: url2,
           description: '',
         },
         cronJob2b: {
-          numEventsToProcess: aEvents2b.length,
+          numEventsToProcess: aEvents2b_count,
           sql2b,
           endpoint: url2b,
           description: '',
         },
         cronJob3: {
-          numUsersToProcess: aUsers3.length,
+          numUsersToProcess: aUsers3_count,
           sql3,
           endpoint: url3,
           description: '',
         },
         cronJob3b: {
-          numUsersToProcess: aUsers3b.length,
+          numUsersToProcess: aUsers3b_count,
           sql3b,
           endpoint: url3b,
           description: '',
         },
         cronJob4: {
-          numUsersToProcess: aUsers4.length,
+          numUsersToProcess: aUsers4_count,
           sql4,
           endpoint: url4,
           description: '',
         },
         cronJob5: {
-          numUsersToProcess: aUsers5.length,
+          numUsersToProcess: aUsers5_count,
           sql5,
           endpoint: url5,
           description: '',
         },
         cronJob5b: {
-          numUsersToProcess: aUsers5b.length,
+          numUsersToProcess: aUsers5b_count,
           sql5b,
           endpoint: url5b,
           description: '',
         },
         cronJob6: {
-          numUsersToProcess: aUsers6.length,
+          numUsersToProcess: aUsers6_count,
           sql6,
           endpoint: url6,
           description: '',
