@@ -73,10 +73,25 @@ wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o
 echo 'deb [signed-by=/etc/apt/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
 sudo apt-get update
 apt list -a neo4j
-java -version
+java -version // Command 'java' not found ...
+
+** I probaby ran (and forgot to record): sudo apt-get install neo4j=1:5.26.1 (or whichever version)
+
+java -version // openjdk version "17.0.13" 2024-10-15 ... (apparently installing neo4j also installs java)
 sudo nano /etc/neo4j/neo4j.conf
-(make 3 changes to file)
-sudo service neo4j restart
+// make these changes to the file:
+initial.dbms.default_database=brainstorm
+server.memory.heap.initial_size=4g
+server.memory.heap.max_size=4g
+server.bolt.listen_address=0.0.0.0:7687
+server.http.listen_address=0.0.0.0:7474
+server.https.listen_address=0.0.0.0:7473
+dbms.security.procedures.unrestricted=gds.*
+dbms.security.procedures.allowlist=gds.*
+# Increasing the JSON log string maximum length
+// server.jvm.additional=-Dlog4j.layout.jsonTemplate.maxStringLength=32768 // already in default
+// 
+sudo service neo4j restart (or just start)
 neo4j status
 ```
 
@@ -147,7 +162,7 @@ server {
 sudo systemctl restart nginx 
 ```
 
-Currently http://52.91.115.172 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https:/graperank.tech shows nextjs landing page
+Currently http://52.91.115.172 directs to nginx landing page (bc /etc/nginx/sites-available/default) and https://graperank.tech shows nextjs landing page
 
 add secrets to github (settings, secrets and variables, Actions, Repository Secrets)
 AWS_EC2_USER: ubuntu 
@@ -327,6 +342,9 @@ with plan later to change to:
 ```
 add_header 'Access-Control-Allow-Origin' 'https://grapevine-brainstorm.vercel.app/' always;
 ```
+## start automatically on system start
+
+sudo systemctl enable neo4j
 
 ## import ManiMe's code
 
