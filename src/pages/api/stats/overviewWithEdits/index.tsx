@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
+import { read } from '@/lib/neo4j'
 
 /*
 https://grapeRank.tech/api/stats/overviewWithEdits
@@ -40,6 +41,8 @@ export default async function handler(
   });
 
   try {
+    const cypher1 = `MATCH (n:NostrUser) RETURN n `
+    const cypher1_result = await read(cypher1, {})
 
     const sql_users_0 = `SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0 = await connection.query(sql_users_0);
@@ -65,11 +68,36 @@ export default async function handler(
     const results_sql_customers = await connection.query(sql_customers);
     const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))
 
+    const sql_users = `SELECT id FROM users`
+    const results_sql_users = await connection.query(sql_users);
+    const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
+
+    const sql_users_neverListened = `SELECT id FROM users WHERE whenLastListened IS NULL`
+    const results_sql_users_neverListened = await connection.query(sql_users_neverListened);
+    const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))
+
+    const sql_users_yesKind3Event = `SELECT id FROM users WHERE kind3EventId IS NOT NULL`
+    const results_sql_users_yesKind3Event = await connection.query(sql_users_yesKind3Event);
+    const aUsers_yesKind3Event = JSON.parse(JSON.stringify(results_sql_users_yesKind3Event[0]))
+
+    const sql_users_noKind3Event = `SELECT id FROM users WHERE kind3EventId IS NULL`
+    const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
+    const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))
+
+    const sql_users_noKind10000Event = `SELECT id FROM users WHERE kind10000EventId IS NULL`
+    const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
+    const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))
+
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
+
+    let numEvents1 = -1
+    if (data_s3.Contents) {
+      numEvents1 = data_s3.Contents.length
+    }
 
     const response:ResponseData = {
       success: true,
@@ -83,6 +111,14 @@ export default async function handler(
             kind1984: aEvents_1984.length,
             kind10000: aEvents_10000.length,
           },
+          users: {
+            total: aUsers.length,
+            neo4jNodes: cypher1_result.length,
+            withKind3Event: aUsers_yesKind3Event.length,
+            withoutKind3Event: aUsers_noKind3Event.length,
+            withoutKind10000Event: aUsers_noKind10000Event.length,
+            neverListenedForEvents: aUsers_neverListened.length,
+          },
           customers: {
             total: aCustomers.length,
           },
@@ -93,6 +129,11 @@ export default async function handler(
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
           description: 'need to create reverseObserveeObject file',
         },
+        cronJob1: {
+          numEvents: numEvents1,
+          endpoint: 'https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200',
+          description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
+        },
       }
     }
     res.status(200).json(response)
@@ -100,7 +141,7 @@ export default async function handler(
     console.log(`error: ${JSON.stringify(error)}`)
     const response:ResponseData = {
       success: false,
-      message: `api/stats/overview error: ${error}!`,
+      message: `api/stats/overviewWithEdits error: ${error}!`,
     }
     res.status(500).json(response)
   }
