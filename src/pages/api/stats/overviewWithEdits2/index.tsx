@@ -1,10 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3'
 import mysql from 'mysql2/promise'
-import { read } from '@/lib/neo4j'
 
 /*
-https://grapeRank.tech/api/stats/overview
+https://grapeRank.tech/api/stats/overviewWithEdits2
 */
 
 const client = new S3Client({
@@ -43,9 +42,6 @@ export default async function handler(
   try {
     const currentTimestamp_start = Math.floor(Date.now() / 1000)
 
-    const cypher1 = `MATCH (n:NostrUser) RETURN n `
-    const cypher1_result = await read(cypher1, {})
-
     const sql_users_0 = `SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0 = await connection.query(sql_users_0);
     const aUsers_0 = JSON.parse(JSON.stringify(results_sql_users_0[0]))
@@ -59,42 +55,6 @@ export default async function handler(
     const sql_events_count = `SELECT count(id) AS countId FROM events`
     const results_sql_events_count = await connection.query(sql_events_count);
     const aEvents_count = JSON.parse(JSON.stringify(results_sql_events_count[0]))
-
-    const sql_events_3 = `SELECT id FROM events WHERE kind = 3`
-    const results_sql_events_3 = await connection.query(sql_events_3);
-    const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))
-
-    const sql_events_1984 = `SELECT id FROM events WHERE kind = 1984`
-    const results_sql_events_1984 = await connection.query(sql_events_1984);
-    const aEvents_1984 = JSON.parse(JSON.stringify(results_sql_events_1984[0]))
-
-    const sql_events_10000 = `SELECT id FROM events WHERE kind = 10000`
-    const results_sql_events_10000 = await connection.query(sql_events_10000);
-    const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))
-
-    const sql_customers = `SELECT id FROM customers`
-    const results_sql_customers = await connection.query(sql_customers);
-    const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))
-
-    const sql_users = `SELECT id FROM users`
-    const results_sql_users = await connection.query(sql_users);
-    const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
-
-    const sql_users_neverListened = `SELECT id FROM users WHERE whenLastListened IS NULL`
-    const results_sql_users_neverListened = await connection.query(sql_users_neverListened);
-    const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))
-
-    const sql_users_yesKind3Event = `SELECT id FROM users WHERE kind3EventId IS NOT NULL`
-    const results_sql_users_yesKind3Event = await connection.query(sql_users_yesKind3Event);
-    const aUsers_yesKind3Event = JSON.parse(JSON.stringify(results_sql_users_yesKind3Event[0]))
-
-    const sql_users_noKind3Event = `SELECT id FROM users WHERE kind3EventId IS NULL`
-    const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
-    const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))
-
-    const sql_users_noKind10000Event = `SELECT id FROM users WHERE kind10000EventId IS NULL`
-    const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
-    const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))
 
     const sql2 = ` SELECT id FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
@@ -145,30 +105,10 @@ export default async function handler(
 
     const response:ResponseData = {
       success: true,
-      message: `api/stats/overview data:`,
+      message: `api/stats/overviewWithEdits2 data:`,
       data: {
         duration,
         aEvents_count,
-        sqlTableStats: {
-          events: {
-            total: aEvents_count[0].countId,
-            kind3: aEvents_3.length,
-            kind1984: aEvents_1984.length,
-            kind10000: aEvents_10000.length,
-          },
-          users: {
-            total: aUsers.length,
-            neo4jNodes: cypher1_result.length,
-            withKind3Event: aUsers_yesKind3Event.length,
-            withoutKind3Event: aUsers_noKind3Event.length,
-            withoutKind10000Event: aUsers_noKind10000Event.length,
-            neverListenedForEvents: aUsers_neverListened.length,
-          },
-          customers: {
-            total: aCustomers.length,
-          },
-
-        },
         cronJob0: {
           numEvents: aUsers_0.length,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
@@ -234,7 +174,7 @@ export default async function handler(
     console.log(`error: ${JSON.stringify(error)}`)
     const response:ResponseData = {
       success: false,
-      message: `api/stats/overview error: ${error}!`,
+      message: `api/stats/overviewWithEdits2 error: ${error}!`,
     }
     res.status(500).json(response)
   }

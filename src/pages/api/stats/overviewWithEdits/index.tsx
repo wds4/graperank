@@ -41,6 +41,8 @@ export default async function handler(
   });
 
   try {
+    const currentTimestamp_start = Math.floor(Date.now() / 1000)
+
     const cypher1 = `MATCH (n:NostrUser) RETURN n `
     const cypher1_result = await read(cypher1, {})
 
@@ -99,10 +101,15 @@ export default async function handler(
       numEvents1 = data_s3.Contents.length
     }
 
+    const currentTimestamp_finish = Math.floor(Date.now() / 1000)
+
+    const duration = currentTimestamp_finish - currentTimestamp_start
+
     const response:ResponseData = {
       success: true,
-      message: `api/stats/overview data:`,
+      message: `api/stats/overviewWithEdits data:`,
       data: {
+        duration,
         aEvents_count,
         sqlTableStats: {
           events: {
@@ -122,7 +129,6 @@ export default async function handler(
           customers: {
             total: aCustomers.length,
           },
-
         },
         cronJob0: {
           numEvents: aUsers_0.length,

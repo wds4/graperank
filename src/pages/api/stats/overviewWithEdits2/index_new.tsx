@@ -4,7 +4,7 @@ import mysql from 'mysql2/promise'
 import { read } from '@/lib/neo4j'
 
 /*
-https://grapeRank.tech/api/stats/overview
+https://grapeRank.tech/api/stats/overview/index_new.tsx
 */
 
 const client = new S3Client({
@@ -41,93 +41,86 @@ export default async function handler(
   });
 
   try {
-    const currentTimestamp_start = Math.floor(Date.now() / 1000)
-
-    const cypher1 = `MATCH (n:NostrUser) RETURN n `
+    const cypher1 = `MATCH (n:NostrUser) RETURN count(n) AS countNostrUsers `
     const cypher1_result = await read(cypher1, {})
+    const numNeo4jUsers = JSON.parse(JSON.stringify(cypher1_result))[0].countNostrUsers.low
 
-    const sql_users_0 = `SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
-    const results_sql_users_0 = await connection.query(sql_users_0);
-    const aUsers_0 = JSON.parse(JSON.stringify(results_sql_users_0[0]))
-
-    /*
-    const sql_events = `SELECT id FROM events`
-    const results_sql_events = await connection.query(sql_events);
-    const aEvents = JSON.parse(JSON.stringify(results_sql_events[0]))
-    */
-
+    const sql_users_0_count = `SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
+    const results_sql_users_0_count = await connection.query(sql_users_0_count);
+    const aUsers_0_count = JSON.parse(JSON.stringify(results_sql_users_0_count[0]))[0].countId
+    
     const sql_events_count = `SELECT count(id) AS countId FROM events`
     const results_sql_events_count = await connection.query(sql_events_count);
-    const aEvents_count = JSON.parse(JSON.stringify(results_sql_events_count[0]))
+    const aEvents_count = JSON.parse(JSON.stringify(results_sql_events_count[0]))[0].countId
 
-    const sql_events_3 = `SELECT id FROM events WHERE kind = 3`
+    const sql_events_3 = `SELECT count(id) AS countId FROM events WHERE kind = 3`
     const results_sql_events_3 = await connection.query(sql_events_3);
-    const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))
+    const aEvents_3 = JSON.parse(JSON.stringify(results_sql_events_3[0]))[0].countId
 
-    const sql_events_1984 = `SELECT id FROM events WHERE kind = 1984`
+    const sql_events_1984 = `SELECT count(id) AS countId FROM events WHERE kind = 1984`
     const results_sql_events_1984 = await connection.query(sql_events_1984);
-    const aEvents_1984 = JSON.parse(JSON.stringify(results_sql_events_1984[0]))
+    const aEvents_1984 = JSON.parse(JSON.stringify(results_sql_events_1984[0]))[0].countId
 
-    const sql_events_10000 = `SELECT id FROM events WHERE kind = 10000`
+    const sql_events_10000 = `SELECT count(id) AS countId FROM events WHERE kind = 10000`
     const results_sql_events_10000 = await connection.query(sql_events_10000);
-    const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))
+    const aEvents_10000 = JSON.parse(JSON.stringify(results_sql_events_10000[0]))[0].countId
 
-    const sql_customers = `SELECT id FROM customers`
+    const sql_customers = `SELECT count(id) AS countId FROM customers`
     const results_sql_customers = await connection.query(sql_customers);
-    const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))
+    const aCustomers = JSON.parse(JSON.stringify(results_sql_customers[0]))[0].countId
 
-    const sql_users = `SELECT id FROM users`
+    const sql_users = `SELECT count(id) AS countId FROM users`
     const results_sql_users = await connection.query(sql_users);
-    const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))
+    const aUsers = JSON.parse(JSON.stringify(results_sql_users[0]))[0].countId
 
-    const sql_users_neverListened = `SELECT id FROM users WHERE whenLastListened IS NULL`
+    const sql_users_neverListened = `SELECT count(id) AS countId FROM users WHERE whenLastListened IS NULL`
     const results_sql_users_neverListened = await connection.query(sql_users_neverListened);
-    const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))
+    const aUsers_neverListened = JSON.parse(JSON.stringify(results_sql_users_neverListened[0]))[0].countId
 
-    const sql_users_yesKind3Event = `SELECT id FROM users WHERE kind3EventId IS NOT NULL`
+    const sql_users_yesKind3Event = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NOT NULL`
     const results_sql_users_yesKind3Event = await connection.query(sql_users_yesKind3Event);
-    const aUsers_yesKind3Event = JSON.parse(JSON.stringify(results_sql_users_yesKind3Event[0]))
+    const aUsers_yesKind3Event = JSON.parse(JSON.stringify(results_sql_users_yesKind3Event[0]))[0].countId
 
-    const sql_users_noKind3Event = `SELECT id FROM users WHERE kind3EventId IS NULL`
+    const sql_users_noKind3Event = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL`
     const results_sql_users_noKind3Event = await connection.query(sql_users_noKind3Event);
-    const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))
+    const aUsers_noKind3Event = JSON.parse(JSON.stringify(results_sql_users_noKind3Event[0]))[0].countId
 
-    const sql_users_noKind10000Event = `SELECT id FROM users WHERE kind10000EventId IS NULL`
+    const sql_users_noKind10000Event = `SELECT count(id) AS countId FROM users WHERE kind10000EventId IS NULL`
     const results_sql_users_noKind10000Event = await connection.query(sql_users_noKind10000Event);
-    const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))
+    const aUsers_noKind10000Event = JSON.parse(JSON.stringify(results_sql_users_noKind10000Event[0]))[0].countId
 
-    const sql2 = ` SELECT id FROM events where kind=3 and flaggedForProcessing=1 `
+    const sql2 = ` SELECT count(id) AS countId FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
-    const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))
+    const aEvents2 = JSON.parse(JSON.stringify(results_sql2[0]))[0].countId
     
-    const sql2b = ` SELECT id FROM events where kind=10000 and flaggedForProcessing=1 `
+    const sql2b = ` SELECT count(id) AS countId FROM events where kind=10000 and flaggedForProcessing=1 `
     const results_sql2b = await connection.query(sql2b);
-    const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))
+    const aEvents2b = JSON.parse(JSON.stringify(results_sql2b[0]))[0].countId
 
-    const sql3 = `SELECT id from users WHERE flaggedForKind3EventProcessing=1;`
+    const sql3 = `SELECT count(id) AS countId from users WHERE flaggedForKind3EventProcessing=1;`
     const results_sql3 = await connection.query(sql3);
-    const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))
+    const aUsers3= JSON.parse(JSON.stringify(results_sql3[0]))[0].countId
 
-    const sql3b = `SELECT id from users WHERE flaggedForKind10000EventProcessing=1;`
+    const sql3b = `SELECT count(id) AS countId from users WHERE flaggedForKind10000EventProcessing=1;`
     const results_sql3b = await connection.query(sql3b);
-    const aUsers10000= JSON.parse(JSON.stringify(results_sql3b[0]))
+    const aUsers10000= JSON.parse(JSON.stringify(results_sql3b[0]))[0].countId
 
-    const sql4 = `SELECT id FROM users where flaggedToUpdateNeo4jNode=1;`
+    const sql4 = `SELECT count(id) AS countId FROM users where flaggedToUpdateNeo4jNode=1;`
     const results_sql4 = await connection.query(sql4);
-    const aUsers4= JSON.parse(JSON.stringify(results_sql4[0]))
+    const aUsers4= JSON.parse(JSON.stringify(results_sql4[0]))[0].countId
 
-    const sql5 = `SELECT id FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
+    const sql5 = `SELECT count(id) AS countId FROM users where flaggedToUpdateNeo4jFollows=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5 = await connection.query(sql5);
-    const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))
+    const aUsers5= JSON.parse(JSON.stringify(results_sql5[0]))[0].countId
 
-    const sql5b = `SELECT id FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
+    const sql5b = `SELECT count(id) AS countId FROM users where flaggedToUpdateNeo4jMutes=1 AND flaggedToUpdateNeo4jNode=0;`
     const results_sql5b = await connection.query(sql5b);
-    const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))
+    const aUsers5b= JSON.parse(JSON.stringify(results_sql5b[0]))[0].countId
 
-    const sql6 = `SELECT id FROM users WHERE kind3EventId IS NULL;`
+    const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
     const results_sql6 = await connection.query(sql6);
-    const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))
-
+    const aUsers6= JSON.parse(JSON.stringify(results_sql6[0]))[0].countId
+    
     const close_result = await connection.end()
     console.log(`closing connection: ${close_result}`)
 
@@ -139,38 +132,33 @@ export default async function handler(
       numEvents1 = data_s3.Contents.length
     }
 
-    const currentTimestamp_finish = Math.floor(Date.now() / 1000)
-
-    const duration = currentTimestamp_finish - currentTimestamp_start
-
     const response:ResponseData = {
       success: true,
       message: `api/stats/overview data:`,
       data: {
-        duration,
-        aEvents_count,
         sqlTableStats: {
           events: {
-            total: aEvents_count[0].countId,
-            kind3: aEvents_3.length,
-            kind1984: aEvents_1984.length,
-            kind10000: aEvents_10000.length,
+            total: aEvents_count,
+            kind3: aEvents_3,
+            kind1984: aEvents_1984,
+            kind10000: aEvents_10000,
           },
           users: {
-            total: aUsers.length,
-            neo4jNodes: cypher1_result.length,
-            withKind3Event: aUsers_yesKind3Event.length,
-            withoutKind3Event: aUsers_noKind3Event.length,
-            withoutKind10000Event: aUsers_noKind10000Event.length,
-            neverListenedForEvents: aUsers_neverListened.length,
+            total: aUsers,
+            numNeo4jUsers,
+            neo4jNodes: cypher1_result,
+            cypher1_result,
+            withKind3Event: aUsers_yesKind3Event,
+            withoutKind3Event: aUsers_noKind3Event,
+            withoutKind10000Event: aUsers_noKind10000Event,
+            neverListenedForEvents: aUsers_neverListened,
           },
           customers: {
-            total: aCustomers.length,
+            total: aCustomers,
           },
-
         },
         cronJob0: {
-          numEvents: aUsers_0.length,
+          numEvents: aUsers_0_count,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
           description: 'need to create reverseObserveeObject file',
         },
@@ -180,49 +168,49 @@ export default async function handler(
           description: 'events in s3 with Prefix: recentlyAddedEventsByEventId/',
         },
         cronJob2: {
-          numEventsToProcess: aEvents2.length,
+          numEventsToProcess: aEvents2,
           sql2,
           endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000',
           description: '',
         },
         cronJob2b: {
-          numEventsToProcess: aEvents2b.length,
+          numEventsToProcess: aEvents2b,
           sql2b,
           endpoint: 'https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000',
           description: '',
         },
         cronJob3: {
-          numUsersToProcess: aUsers3.length,
+          numUsersToProcess: aUsers3,
           sql3,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10',
           description: '',
         },
         cronJob3b: {
-          numUsersToProcess: aUsers10000.length,
+          numUsersToProcess: aUsers10000,
           sql3b,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10',
           description: '',
         },
         cronJob4: {
-          numUsersToProcess: aUsers4.length,
+          numUsersToProcess: aUsers4,
           sql4,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000',
           description: '',
         },
         cronJob5: {
-          numUsersToProcess: aUsers5.length,
+          numUsersToProcess: aUsers5,
           sql5,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj?n=20',
           description: '',
         },
         cronJob5b: {
-          numUsersToProcess: aUsers5b.length,
+          numUsersToProcess: aUsers5b,
           sql5b,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateNeo4jMutesAndFlagToUpRevObObj?n=10',
           description: '',
         },
         cronJob6: {
-          numUsersToProcess: aUsers6.length,
+          numUsersToProcess: aUsers6,
           sql6,
           endpoint: 'https://graperank.tech/api/nostr/listeners/multipleUsers?n=900&kind3EventId=true',
           description: '',
