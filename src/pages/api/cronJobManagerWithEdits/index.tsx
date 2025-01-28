@@ -66,15 +66,9 @@ export default async function handler(
       numEvents1 = data_s3.Contents.length
     }
 
-    /*
-    const sql0 = ` SELECT id FROM users WHERE ((kind3EventId IS NOT NULL) OR (kind10000EventId IS NOT NULL)) AND ((flaggedToUpdateObserveeObject=1) OR (observeeObject IS NULL)) `
+    const sql0 = ` SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
     const results_sql0 = await connection.query(sql0);
-    const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
-    */
-
-    const sql0 = ` SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
-    const results_sql0 = await connection.query(sql0);
-    const aUsers0 = JSON.parse(JSON.stringify(results_sql0[0]))
+    const aUsers0_count = JSON.parse(JSON.stringify(results_sql0[0]))[0].countId
 
     const sql2 = ` SELECT id FROM events where kind=3 and flaggedForProcessing=1 `
     const results_sql2 = await connection.query(sql2);
@@ -121,7 +115,7 @@ export default async function handler(
     if (aEvents2.length > 0) { url = url2 } // 1000
     if (aEvents2b.length > 0) { url = url2b } // 1000
     if (numEvents1 > 0) { url = url1 } // 200
-    if (aUsers0.length > 0) { url = url0 } // 300
+    if (aUsers0_count > 0) { url = url0 } // 300
 
     if (aUsers4.length > 0) { url = url4 } // 1000
     if (aUsers5b.length > 10) { url = url5b } // 10
@@ -131,7 +125,7 @@ export default async function handler(
     if (aEvents2.length > 1000) { url = url2 } // 1000
     if (aEvents2b.length > 1000) { url = url2b } // 1000
     if (numEvents1 > 200) { url = url1 } // 200
-    if (aUsers0.length > 300) { url = url0 } // 300
+    if (aUsers0_count > 300) { url = url0 } // 300
 
     console.log(`url: ${url}`)
     
@@ -145,7 +139,7 @@ export default async function handler(
       data: {
         url,
         cronJob0: {
-          numUsers: aUsers0.length,
+          numUsers: aUsers0_count,
           endpoint: url0,
           description: 'creating reverseObserveeObjects',
         },

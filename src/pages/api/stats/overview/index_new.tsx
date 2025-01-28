@@ -4,7 +4,7 @@ import mysql from 'mysql2/promise'
 import { read } from '@/lib/neo4j'
 
 /*
-https://grapeRank.tech/api/stats/overview
+https://grapeRank.tech/api/stats/overview/index_new.tsx
 */
 
 const client = new S3Client({
