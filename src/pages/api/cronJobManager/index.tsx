@@ -58,6 +58,8 @@ export default async function handler(
     database: process.env.AWS_MYSQL_DB,
   });
   try {
+    const currentTimestamp_start = Math.floor(Date.now() / 1000)
+    
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
 
@@ -135,6 +137,10 @@ export default async function handler(
 
     console.log(`url: ${url}`)
     
+    const currentTimestamp_finish = Math.floor(Date.now() / 1000)
+
+    const duration = currentTimestamp_finish - currentTimestamp_start
+
     if (url) {
       fetch(url)
     }
@@ -144,6 +150,7 @@ export default async function handler(
       message: `api/cronJobManager data:`,
       data: {
         url,
+        duration,
         cronJob0: {
           numUsers: aUsers0.length,
           endpoint: url0,
