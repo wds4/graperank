@@ -155,30 +155,32 @@ export default async function handler(
       }
     }
 
-    if (aUsers0_count > 0) {
-      url = url0
-      continueSearch = false
-    } // 300
-    if (numEvents1 > 0) {
-      url = url1
-      continueSearch = false
-    } // 200
-    if (aEvents2b_count > 0) {
-      url = url2b
-      continueSearch = false
-    } // 1000
-    if (aEvents2_count > 0) {
-      url = url2
-      continueSearch = false
-    } // 1000
-    if (aUsers5_count > 0) {
-      url = url5
-      continueSearch = false
-    } // 5
-    if (aUsers5b_count > 0) {
-      url = url5b
-      continueSearch = false
-    } // 10
+    if (url == '') {
+      if (aUsers0_count > 0) {
+        url = url0
+        continueSearch = false
+      } // 300
+      if (numEvents1 > 0) {
+        url = url1
+        continueSearch = false
+      } // 200
+      if (aEvents2b_count > 0) {
+        url = url2b
+        continueSearch = false
+      } // 1000
+      if (aEvents2_count > 0) {
+        url = url2
+        continueSearch = false
+      } // 1000
+      if (aUsers5_count > 0) {
+        url = url5
+        continueSearch = false
+      } // 5
+      if (aUsers5b_count > 0) {
+        url = url5b
+        continueSearch = false
+      } // 10
+    }
 
     let aUsers6_count = -999
     const sql6 = `SELECT count(id) AS countId FROM users WHERE kind3EventId IS NULL;`
