@@ -21,7 +21,7 @@ for each pubkey_parent:
 
 http://localhost:3000/api/dataManagement/users/processKind3Events?n=10
 
-https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10
+https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=8
 
 */
 

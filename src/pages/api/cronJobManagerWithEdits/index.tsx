@@ -27,7 +27,7 @@ const url0 = `https://www.graperank.tech/api/dataManagement/users/updateReverseO
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFROMS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
 const url2b = `https://www.graperank.tech/api/dataManagement/events/processKind10000Events?n=1000`
-const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10`
+const url3 = `https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=8`
 const url3b = `https://www.graperank.tech/api/dataManagement/users/processKind10000Events?n=10`
 const url4 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jNode?n=1000`
 const url5 = `https://www.graperank.tech/api/dataManagement/users/updateNeo4jFollowsAndFlagToUpRevObObj?n=20`

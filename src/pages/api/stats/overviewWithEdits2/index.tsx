@@ -134,7 +134,7 @@ export default async function handler(
         cronJob3: {
           numUsersToProcess: aUsers3.length,
           sql3,
-          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10',
+          endpoint: 'https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=8',
           description: '',
         },
         cronJob3b: {
