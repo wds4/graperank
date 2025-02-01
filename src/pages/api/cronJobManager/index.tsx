@@ -56,7 +56,7 @@ export default async function handler(
 
     const sql_threads = `show status where variable_name = 'threads_connected';`
     const results_sql_threads = await connection.query(sql_threads);
-    const threadCount = JSON.parse(JSON.stringify(results_sql_threads[0]))[0].Value
+    const threadCount = Number(JSON.parse(JSON.stringify(results_sql_threads[0]))[0].Value)
 
     let url = ``
     let continueSearch = true
