@@ -54,6 +54,9 @@ export default async function handler(
   try {
     const currentTimestamp_start = Math.floor(Date.now() / 1000)
 
+    const sql_threads = `show status where variable_name = 'threads_connected';`
+    const results_sql_threads = await connection.query(sql_threads);
+
     let url = ``
     let continueSearch = true
     
@@ -210,6 +213,7 @@ export default async function handler(
       success: true,
       message: `api/cronJobManager data:`,
       data: {
+        results_sql_threads,
         url,
         duration,
         cronJob0: {
