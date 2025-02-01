@@ -22,7 +22,6 @@ const params = {
 
 const command_s3 = new ListObjectsCommand(params);
 
-
 const url0 = `https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300`
 const url1 = `https://www.graperank.tech/api/dataManagement/transferEventsToEventsTableFromS3?n=200`
 const url2 = `https://www.graperank.tech/api/dataManagement/events/processKind3Events?n=1000`
@@ -60,6 +59,10 @@ export default async function handler(
 
     let url = ``
     let continueSearch = true
+
+    if (!threadCount || threadCount > 8) {
+      continueSearch = false
+    }
     
     const data_s3 = await client.send(command_s3);
     console.log(`= data_s3: ${JSON.stringify(data_s3)}`)
@@ -68,19 +71,23 @@ export default async function handler(
     if (data_s3.Contents) {
       numEvents1 = data_s3.Contents.length
     }
-
-    const sql0 = ` SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
-    const results_sql0 = await connection.query(sql0);
-    const aUsers0_count = JSON.parse(JSON.stringify(results_sql0[0]))[0].countId
-    if (aUsers0_count > 300) { // 300
-      url = url0
-      continueSearch = false
+    if (continueSearch) {
+      if (numEvents1 > 200) { // 200
+        url = url1
+        continueSearch = false
+      }
     }
 
-    if (numEvents1 > 200) {
-      url = url1
-      continueSearch = false
-    } // 200
+    let aUsers0_count = -999
+    const sql0 = ` SELECT count(id) AS countId FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL `
+    if (continueSearch) {
+      const results_sql0 = await connection.query(sql0);
+      aUsers0_count = JSON.parse(JSON.stringify(results_sql0[0]))[0].countId
+      if (aUsers0_count > 300) { // 300
+        url = url0
+        continueSearch = false
+      }
+    }
 
     let aEvents2b_count = -999
     const sql2b = ` SELECT count(id) AS countId FROM events where kind=10000 and flaggedForProcessing=1 `
