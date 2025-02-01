@@ -42,6 +42,10 @@ export default async function handler(
   try {
     const currentTimestamp_start = Math.floor(Date.now() / 1000)
 
+    const sql_threads = `show status where variable_name = 'threads_connected';`
+    const results_sql_threads = await connection.query(sql_threads);
+    const mysqlThreadCount = Number(JSON.parse(JSON.stringify(results_sql_threads[0]))[0].Value)
+
     const sql_events_count = `SELECT count(id) AS countId FROM events`
     const results_sql_events_count = await connection.query(sql_events_count);
     const aEvents_count = JSON.parse(JSON.stringify(results_sql_events_count[0]))
@@ -74,6 +78,7 @@ export default async function handler(
       message: `api/stats/overviewWithEdits2 data:`,
       data: {
         duration,
+        mysqlThreadCount,
         aEvents_count,
         cronJob1: {
           numEvents: numEvents1,

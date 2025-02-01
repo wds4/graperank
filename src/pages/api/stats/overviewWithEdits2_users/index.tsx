@@ -42,6 +42,10 @@ export default async function handler(
   try {
     const currentTimestamp_start = Math.floor(Date.now() / 1000)
 
+    const sql_threads = `show status where variable_name = 'threads_connected';`
+    const results_sql_threads = await connection.query(sql_threads);
+    const mysqlThreadCount = Number(JSON.parse(JSON.stringify(results_sql_threads[0]))[0].Value)
+
     const sql_users_0 = `SELECT id FROM users where flaggedToUpdateReverseObserveeObject=1 OR reverseObserveeObject IS NULL`
     const results_sql_users_0 = await connection.query(sql_users_0);
     const aUsers_0 = JSON.parse(JSON.stringify(results_sql_users_0[0]))
@@ -85,8 +89,9 @@ export default async function handler(
       message: `api/stats/overviewWithEdits2 data:`,
       data: {
         duration,
+        mysqlThreadCount,
         cronJob0: {
-          numEvents: aUsers_0.length,
+          numUsersNeedingReverseObserveeObjectUpdate: aUsers_0.length,
           endpoint: 'https://www.graperank.tech/api/dataManagement/users/updateReverseObserveeObjects?n=300', 
           description: 'need to create reverseObserveeObject file',
         },
