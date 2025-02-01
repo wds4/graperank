@@ -60,7 +60,7 @@ export default async function handler(
     let url = ``
     let continueSearch = true
 
-    if (!mysqlThreadCount || mysqlThreadCount > 4) {
+    if (!mysqlThreadCount || mysqlThreadCount > 3) {
       continueSearch = false
     }
     
