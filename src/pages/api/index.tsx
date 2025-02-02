@@ -106,7 +106,8 @@ sudo neo4j start
 
 5. restart cronJob6 (do this from /home/ubuntu/graperank/src/cronJobs)
 pm2 start cronJob6.js --cron "0 * * * *"
-This should decrease neverListenedForEvents by 500 each hour
+This should decrease neverListenedForEvents by 500 each hour; check with:
+https://graperank.tech/api/stats/overviewWithEdits1_users
 
 check if memory is filling up:
 df -h
