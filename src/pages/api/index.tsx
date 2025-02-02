@@ -45,7 +45,7 @@ sql: SELECT * FROM events where kind=3 and flaggedForProcessing=1;
 (super fast, should be able to do a lot at once; n=200 took under 3 seconds; n=1000 took about 12 seconds)
 
 cronJob3.js
-https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=8
+https://www.graperank.tech/api/dataManagement/users/processKind3Events?n=10
 sql: SELECT * from users WHERE flaggedForKind3EventProcessing=1;
 (slow; n=10 took maybe 30-45 sec ??? )
 
