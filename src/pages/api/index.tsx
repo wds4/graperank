@@ -104,6 +104,10 @@ pm2 start cronJobBackgroundListener.js --cron "15,45 * * * *"
 4. restart neo4j USING SUDO (otherwise brainstorm database will not be available)
 sudo neo4j start
 
+5. restart cronJob6 (do this from /home/ubuntu/graperank/src/cronJobs)
+pm2 start cronJob6.js --cron "0 * * * *"
+This should decrease neverListenedForEvents by 500 each hour
+
 check if memory is filling up:
 df -h
 need to do java garbage collection ???
