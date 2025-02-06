@@ -121,17 +121,25 @@ ORDER BY score DESC, pubkey ASC`
       const cypher3 = `CALL gds.graph.drop('personalizedPageRank_${pubkey1}') YIELD graphName
 `
       try {
+        const startingTimestamp = Math.floor(Date.now() / 1000)
+
         const result_cypher1 = await write(cypher1, {})
         // console.log(result_cypher1)
         // const aResults1 = JSON.parse(JSON.stringify(result_cypher1))
+
+        const refTimestamp_a = Math.floor(Date.now() / 1000)
 
         const result_cypher2 = await write(cypher2, {})
         // console.log(result_cypher2)
         const aResults2:PprScores = JSON.parse(JSON.stringify(result_cypher2))
 
+        const refTimestamp_b = Math.floor(Date.now() / 1000)
+
         const result_cypher3 = await write(cypher3, {})
         // console.log(result_cypher3)
         // const aResults3 = JSON.parse(JSON.stringify(result_cypher3))
+
+        const refTimestamp_c = Math.floor(Date.now() / 1000)
 
         const currentTimestamp = Math.floor(Date.now() / 1000)
 
@@ -164,11 +172,17 @@ ORDER BY score DESC, pubkey ASC`
         const command_put = new PutObjectCommand(params_put);
         const response_put = await client.send(command_put);
 
+        const refTimestamp_d = Math.floor(Date.now() / 1000)
+
         const response:ResponseData = {
           success: true,
           exists: true,
           message: `api/algos/personalizedPageRank/fullWoT_updateS3 data:`,
           data: {
+            interval1: refTimestamp_a - startingTimestamp,
+            interval2: refTimestamp_b - refTimestamp_a,
+            interval3: refTimestamp_c - refTimestamp_b,
+            interval4: refTimestamp_d - refTimestamp_c,
             result_cypher1,
             result_cypher3,
             response_put,
